@@ -158,17 +158,39 @@ flowchart TB
 
 Los 3 flujos usan **credenciales de n8n** (no secretos hardcodeados) y webhooks con header token.
 
-## 6. Publicación en Internet (alternativa elegida)
+## 6. Publicación en Internet (implementada)
 
 ```
-Internet → Cloudflare (HTTPS, WAF básico) → cloudflared (túnel saliente) → nginx → app
+Internet
+   │ HTTPS 443
+   ▼
+Cloudflare (borde: TLS, DDoS, oculta la IP del origen)
+   │ túnel saliente QUIC/HTTP2  ← el host no abre puertos
+   ▼
+cloudflared
+   ├──▶ frontend:80 ──▶ backend:3000 ──▶ db:5432
+   └──▶ edge:8080/8081 ──▶ pgAdmin / Mantis (HTTP Basic)
 ```
+
+| Servicio | Ruta pública | Autenticación |
+|---|---|---|
+| Aplicación | `https://<random>.trycloudflare.com` | login propio (JWT) |
+| pgAdmin | `https://<random>.trycloudflare.com` | Basic auth + login de pgAdmin |
+| Mantis | `https://<random>.trycloudflare.com` | Basic auth + login de Mantis |
+
+Ningún puerto del host está publicado fuera de loopback: `nmap` desde la LAN devuelve
+**todos los puertos `filtered`** y desde Internet solo se ve el 443 de Cloudflare
+(`evidence/09/nmap.log`).
 
 | Opción | Costo | HTTPS | Pros | Contras |
 |---|---|---|---|---|
-| **Cloudflare Tunnel** (elegida) | Gratis | Automático | No abre puertos en el router, no expone IP, WAF/rate-limit | Depende de Cloudflare; dominio o `trycloudflare.com` |
-| Tailscale Funnel | Gratis | Automático | Simple, identidad por dispositivo | URL `ts.net`; menos "producto" |
+| **Cloudflare Tunnel** (elegida) | Gratis | Automático | No abre puertos, no expone IP, borde con DDoS | Depende de Cloudflare; el túnel rápido es efímero |
+| Tailscale Funnel | Gratis | Automático | Simple, identidad por dispositivo | Requiere cuenta; URL `ts.net`; sin borde DDoS |
 | VPS | Pago | Manual (Caddy/LE) | Control total | Costo; el enunciado no lo exige |
 
-Riesgo a documentar (§9 lo pide): si el túnel cae, la app queda inaccesible → **plan B Tailscale
-configurado y probado antes de la demo**.
+**Plan B**: Tailscale Funnel quedó **documentado, no implementado** — requiere cuenta y un
+`tailscale up` interactivo, igual que un túnel con nombre de Cloudflare requiere dominio propio. No
+se declara como probado porque no lo está (`docs/informe/10-publicacion.md` §7).
+
+Riesgo asumido: si el túnel cae, la app queda inaccesible. Es una dependencia de un tercero,
+declarada en el informe y en la matriz de riesgos.
