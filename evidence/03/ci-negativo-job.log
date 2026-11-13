@@ -1,0 +1,192 @@
+﻿﻿2026-11-13T15:44:07.4882497Z Current runner version: '2.338.2'
+2026-11-13T15:44:07.4902965Z ##[group]Runner Image Provisioner
+2026-11-13T15:44:07.4903642Z Hosted Compute Agent
+2026-11-13T15:44:07.4904000Z Version: 20261103.629
+2026-11-13T15:44:07.4904467Z Commit: 15dbd9ccb5dbf34fae002b6ed1a2670f52df37bc
+2026-11-13T15:44:07.4904916Z Build Date: 2026-11-03T17:26:59Z
+2026-11-13T15:44:07.4905327Z Worker ID: {575a549d-c825-4dc3-9c97-68d3344a9553}
+2026-11-13T15:44:07.4905843Z Region: centralus
+2026-11-13T15:44:07.4906186Z Cloud: Azure
+2026-11-13T15:44:07.4906583Z ##[endgroup]
+2026-11-13T15:44:07.4907411Z ##[group]Operating System
+2026-11-13T15:44:07.4907804Z Ubuntu
+2026-11-13T15:44:07.4908190Z 24.04.5
+2026-11-13T15:44:07.4908512Z LTS
+2026-11-13T15:44:07.4908889Z ##[endgroup]
+2026-11-13T15:44:07.4909241Z ##[group]Runner Image
+2026-11-13T15:44:07.4909835Z Image: ubuntu-24.04
+2026-11-13T15:44:07.4910245Z Version: 20261111.370.1
+2026-11-13T15:44:07.4911072Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20261111.370/images/ubuntu/Ubuntu2404-Readme.md
+2026-11-13T15:44:07.4911994Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20261111.370
+2026-11-13T15:44:07.4912562Z ##[endgroup]
+2026-11-13T15:44:07.4913285Z ##[group]GITHUB_TOKEN Permissions
+2026-11-13T15:44:07.4914605Z Contents: read
+2026-11-13T15:44:07.4915019Z Metadata: read
+2026-11-13T15:44:07.4915369Z ##[endgroup]
+2026-11-13T15:44:07.4916897Z Secret source: Actions
+2026-11-13T15:44:07.4917530Z Cache mode: write
+2026-11-13T15:44:07.4917968Z Prepare workflow directory
+2026-11-13T15:44:07.5197443Z Prepare all required actions
+2026-11-13T15:44:07.5243848Z Getting action download info
+2026-11-13T15:44:07.7712583Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-13T15:44:08.2445434Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-13T15:44:08.3952256Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-13T15:44:08.6357596Z Complete job name: frontend
+2026-11-13T15:44:08.6933926Z ##[group]Run actions/checkout@v4
+2026-11-13T15:44:08.6934355Z with:
+2026-11-13T15:44:08.6934611Z   repository: TomasGudi/HIA-2026
+2026-11-13T15:44:08.6936708Z   token: ***
+2026-11-13T15:44:08.6936948Z   ssh-strict: true
+2026-11-13T15:44:08.6937192Z   ssh-user: git
+2026-11-13T15:44:08.6937440Z   persist-credentials: true
+2026-11-13T15:44:08.6937708Z   clean: true
+2026-11-13T15:44:08.6937953Z   sparse-checkout-cone-mode: true
+2026-11-13T15:44:08.6938241Z   fetch-depth: 1
+2026-11-13T15:44:08.6938479Z   fetch-tags: false
+2026-11-13T15:44:08.6938722Z   show-progress: true
+2026-11-13T15:44:08.6938967Z   lfs: false
+2026-11-13T15:44:08.6939194Z   submodules: false
+2026-11-13T15:44:08.6939445Z   set-safe-directory: true
+2026-11-13T15:44:08.6939855Z   allow-unsafe-pr-checkout: false
+2026-11-13T15:44:08.6940213Z ##[endgroup]
+2026-11-13T15:44:11.1246044Z Syncing repository: TomasGudi/HIA-2026
+2026-11-13T15:44:11.1247257Z ##[group]Getting Git version info
+2026-11-13T15:44:11.1247580Z Working directory is '/home/runner/work/HIA-2026/HIA-2026'
+2026-11-13T15:44:11.1247998Z [command]/usr/bin/git version
+2026-11-13T15:44:11.2725478Z git version 2.56.1
+2026-11-13T15:44:11.2739915Z ##[endgroup]
+2026-11-13T15:44:11.2752769Z Temporarily overriding HOME='/home/runner/work/_temp/a306f948-d65f-40e6-8da7-9e2fbd3945ff' before making global git config changes
+2026-11-13T15:44:11.2753616Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-13T15:44:11.2757293Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HIA-2026/HIA-2026
+2026-11-13T15:44:11.3023221Z Deleting the contents of '/home/runner/work/HIA-2026/HIA-2026'
+2026-11-13T15:44:11.3026599Z ##[group]Initializing the repository
+2026-11-13T15:44:11.3030354Z [command]/usr/bin/git init /home/runner/work/HIA-2026/HIA-2026
+2026-11-13T15:44:11.3611679Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-13T15:44:11.3612494Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-13T15:44:11.3612854Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-13T15:44:11.3613153Z hint: call:
+2026-11-13T15:44:11.3613307Z hint:
+2026-11-13T15:44:11.3613557Z hint: 	git config --global init.defaultBranch <name>
+2026-11-13T15:44:11.3613769Z hint:
+2026-11-13T15:44:11.3613979Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-13T15:44:11.3614280Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-13T15:44:11.3614541Z hint:
+2026-11-13T15:44:11.3614689Z hint: 	git branch -m <name>
+2026-11-13T15:44:11.3614849Z hint:
+2026-11-13T15:44:11.3615056Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-13T15:44:11.3711030Z Initialized empty Git repository in /home/runner/work/HIA-2026/HIA-2026/.git/
+2026-11-13T15:44:11.3720372Z [command]/usr/bin/git remote add origin https://github.com/TomasGudi/HIA-2026
+2026-11-13T15:44:11.3969425Z ##[endgroup]
+2026-11-13T15:44:11.3970194Z ##[group]Disabling automatic garbage collection
+2026-11-13T15:44:11.3972452Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-13T15:44:11.4015867Z ##[endgroup]
+2026-11-13T15:44:11.4016353Z ##[group]Setting up auth
+2026-11-13T15:44:11.4021233Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-13T15:44:11.4065945Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-13T15:44:11.6323677Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-13T15:44:11.6370755Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-13T15:44:11.6595148Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-13T15:44:11.6639097Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-13T15:44:11.6858057Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-13T15:44:11.6906573Z ##[endgroup]
+2026-11-13T15:44:11.6907187Z ##[group]Fetching the repository
+2026-11-13T15:44:11.6916902Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +8a2c78987987b8d723e833aaa597863c875719e5:refs/remotes/pull/6/merge
+2026-11-13T15:44:12.2738189Z From https://github.com/TomasGudi/HIA-2026
+2026-11-13T15:44:12.2738938Z  * [new ref]         8a2c78987987b8d723e833aaa597863c875719e5 -> pull/6/merge
+2026-11-13T15:44:12.2742960Z ##[endgroup]
+2026-11-13T15:44:12.2743448Z ##[group]Determining the checkout info
+2026-11-13T15:44:12.2745387Z ##[endgroup]
+2026-11-13T15:44:12.2750992Z [command]/usr/bin/git sparse-checkout disable
+2026-11-13T15:44:12.2911792Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-13T15:44:12.2955769Z ##[group]Checking out the ref
+2026-11-13T15:44:12.2958927Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/6/merge
+2026-11-13T15:44:12.3173247Z Note: switching to 'refs/remotes/pull/6/merge'.
+2026-11-13T15:44:12.3173567Z 
+2026-11-13T15:44:12.3173745Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-13T15:44:12.3174025Z changes and commit them, and you can discard any commits you make in this
+2026-11-13T15:44:12.3174289Z state without impacting any branches by switching back to a branch.
+2026-11-13T15:44:12.3174473Z 
+2026-11-13T15:44:12.3174581Z If you want to create a new branch to retain commits you create, you may
+2026-11-13T15:44:12.3174832Z do so (now or later) by using -c with the switch command. Example:
+2026-11-13T15:44:12.3175284Z 
+2026-11-13T15:44:12.3175364Z   git switch -c <new-branch-name>
+2026-11-13T15:44:12.3175465Z 
+2026-11-13T15:44:12.3175524Z Or undo this operation with:
+2026-11-13T15:44:12.3175617Z 
+2026-11-13T15:44:12.3175716Z   git switch -
+2026-11-13T15:44:12.3175837Z 
+2026-11-13T15:44:12.3175970Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-13T15:44:12.3176136Z 
+2026-11-13T15:44:12.3176329Z HEAD is now at 8a2c789 Merge e1fd5741286174b66173bea229d7cdbc82c98ab0 into 5fd1e00707ee5be0cba3fe92f1daf575e45546fb
+2026-11-13T15:44:12.3225424Z ##[endgroup]
+2026-11-13T15:44:12.3276232Z [command]/usr/bin/git log -1 --format=%H
+2026-11-13T15:44:12.3309029Z 8a2c78987987b8d723e833aaa597863c875719e5
+2026-11-13T15:44:12.3650132Z ##[group]Run actions/setup-node@v4
+2026-11-13T15:44:12.3650332Z with:
+2026-11-13T15:44:12.3650451Z   node-version: 20
+2026-11-13T15:44:12.3650569Z   cache: npm
+2026-11-13T15:44:12.3650719Z   cache-dependency-path: app/frontend/package-lock.json
+2026-11-13T15:44:12.3650921Z   always-auth: false
+2026-11-13T15:44:12.3651043Z   check-latest: false
+2026-11-13T15:44:12.3652495Z   token: ***
+2026-11-13T15:44:12.3652612Z ##[endgroup]
+2026-11-13T15:44:12.5003741Z Attempting to download 20...
+2026-11-13T15:44:12.5541039Z (node:2161) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-13T15:44:12.5541835Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-13T15:44:13.4598998Z Acquiring 20.20.2 - x64 from https://github.com/actions/node-versions/releases/download/20.20.2-23521894959/node-20.20.2-linux-x64.tar.gz
+2026-11-13T15:44:13.9419958Z Extracting ...
+2026-11-13T15:44:13.9558635Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/9f499a35-404d-412c-a82d-85b99786bdb9 -f /home/runner/work/_temp/698e1134-60cc-4630-8dfb-f05dff92fc66
+2026-11-13T15:44:14.7184655Z Adding to the cache ...
+2026-11-13T15:44:16.5428419Z ##[group]Environment details
+2026-11-13T15:44:16.8405450Z node: v20.20.2
+2026-11-13T15:44:16.8405725Z npm: 10.8.2
+2026-11-13T15:44:16.8405898Z yarn: 1.22.22
+2026-11-13T15:44:16.8406357Z ##[endgroup]
+2026-11-13T15:44:16.8418535Z [command]/opt/hostedtoolcache/node/20.20.2/x64/bin/npm config get cache
+2026-11-13T15:44:16.9182104Z /home/runner/.npm
+2026-11-13T15:44:17.0634988Z Cache hit for: node-cache-Linux-x64-npm-c05288afd4242ed95072208e8956f5eccff055339ab4a1421a7df3dd0c623685
+2026-11-13T15:44:17.0705961Z (node:2161) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-13T15:44:17.7257141Z Received 16316483 of 16316483 (100.0%), 29.6 MBs/sec
+2026-11-13T15:44:17.7257504Z Cache Size: ~16 MB (16316483 B)
+2026-11-13T15:44:17.7345267Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d13df6c3-4642-40e7-ab58-a041ef514c2e/cache.tzst -P -C /home/runner/work/HIA-2026/HIA-2026 --use-compress-program unzstd
+2026-11-13T15:44:17.7896919Z Cache restored successfully
+2026-11-13T15:44:17.7908040Z Cache restored from key: node-cache-Linux-x64-npm-c05288afd4242ed95072208e8956f5eccff055339ab4a1421a7df3dd0c623685
+2026-11-13T15:44:17.8113367Z ##[group]Run npm ci --no-audit --no-fund
+2026-11-13T15:44:17.8113650Z [36;1mnpm ci --no-audit --no-fund[0m
+2026-11-13T15:44:17.8134465Z shell: /usr/bin/bash -e {0}
+2026-11-13T15:44:17.8134634Z ##[endgroup]
+2026-11-13T15:44:18.9210871Z npm warn deprecated eslint@9.39.5: This version is no longer supported. Please see https://eslint.org/version-support for other options.
+2026-11-13T15:44:19.1995421Z 
+2026-11-13T15:44:19.1996414Z added 266 packages in 1s
+2026-11-13T15:44:19.2195751Z ##[group]Run npm run lint
+2026-11-13T15:44:19.2195932Z [36;1mnpm run lint[0m
+2026-11-13T15:44:19.2213460Z shell: /usr/bin/bash -e {0}
+2026-11-13T15:44:19.2213618Z ##[endgroup]
+2026-11-13T15:44:19.2988277Z 
+2026-11-13T15:44:19.2989046Z > practica-frontend@0.1.0 lint
+2026-11-13T15:44:19.2989846Z > eslint src
+2026-11-13T15:44:19.2989940Z 
+2026-11-13T15:44:19.6601583Z 
+2026-11-13T15:44:19.6602628Z /home/runner/work/HIA-2026/HIA-2026/app/frontend/src/main.jsx
+2026-11-13T15:44:19.6603210Z   15:14  error  Parsing error: Unexpected token ;
+2026-11-13T15:44:19.6603423Z 
+2026-11-13T15:44:19.6603886Z ✖ 1 problem (1 error, 0 warnings)
+2026-11-13T15:44:19.6604051Z 
+2026-11-13T15:44:19.6888108Z ##[error]Process completed with exit code 1.
+2026-11-13T15:44:19.7017798Z Post job cleanup.
+2026-11-13T15:44:19.7684388Z [command]/usr/bin/git version
+2026-11-13T15:44:19.7717958Z git version 2.56.1
+2026-11-13T15:44:19.7744911Z Temporarily overriding HOME='/home/runner/work/_temp/8d93b154-fc84-4204-9308-5b017d4f32c4' before making global git config changes
+2026-11-13T15:44:19.7745749Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-13T15:44:19.7748236Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/HIA-2026/HIA-2026
+2026-11-13T15:44:19.7787353Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-13T15:44:19.7820511Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-13T15:44:19.8064603Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-13T15:44:19.8106819Z http.https://github.com/.extraheader
+2026-11-13T15:44:19.8118498Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-13T15:44:19.8164563Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-13T15:44:19.8395081Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-13T15:44:19.8437431Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-13T15:44:19.8787621Z Cleaning up orphan processes
+2026-11-13T15:44:19.9044092Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-node@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+
