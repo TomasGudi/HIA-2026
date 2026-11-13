@@ -1,0 +1,62 @@
+# ============================================================
+# Prometheus (§10) — recolección y evaluación de reglas
+#
+# Un solo nodo de monitoreo: no hay HA del propio monitoreo.
+# Es una limitación declarada en docs/informe/11-monitoreo.md.
+# ============================================================
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: pi-local
+
+rule_files:
+  - /etc/prometheus/rules.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  # el propio Prometheus: sirve para saber si la evaluación de reglas se atrasa
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # métricas del anfitrión (CPU, memoria, disco, red)
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+
+  # métricas por contenedor: cAdvisor queda fuera de alcance en Docker
+  # Desktop (ver compose.yaml y docs/informe/11-monitoreo.md §6). El
+  # estado de cada servicio se cubre con `up` y con los sondeos HTTP.
+
+  # métricas del motor: primaria
+  - job_name: postgres
+    static_configs:
+      - targets: ["postgres-exporter:9187"]
+
+  # métricas del motor: standby (lag de replay visto desde la réplica)
+  - job_name: postgres-replica
+    static_configs:
+      - targets: ["postgres-exporter-replica:9187"]
+
+  # disponibilidad HTTP real (no solo "el contenedor está arriba")
+  - job_name: blackbox
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - http://frontend/
+          - http://backend:3000/health
+          - http://mantis/
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox-exporter:9115

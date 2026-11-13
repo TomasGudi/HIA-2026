@@ -177,3 +177,42 @@ comunitarias (`xlrl/`, `vimagick/`) no fijan versión ni tienen mantenimiento ve
 - PostgreSQL figura como soportado en la guía de administración, aunque la ruta mejor testeada
   del proyecto es MySQL/MariaDB. **Riesgo declarado**: si aparece un problema de esquema, el plan
   B es un contenedor MariaDB solo para Mantis.
+
+## D-22 — cAdvisor descartado: métricas por contenedor fuera de alcance
+**Contexto**: §10 pide métricas del sistema. cAdvisor es la herramienta habitual para métricas por
+contenedor, pero en Docker Desktop con el snapshotter de containerd falla al enumerar:
+`failed to identify the read-write layer ID ... /var/lib/docker/image/overlayfs/layerdb`.
+**Decisión**: se retira cAdvisor. Los paneles 4 y 5 del dashboard pasan a carga del sistema y red
+del anfitrión (node-exporter). El estado de cada servicio se cubre con `up` y con los sondeos HTTP
+de blackbox-exporter.
+**Consecuencias**:
+- Se probó también `--containerd=/run/containerd/containerd.sock --containerd-namespace=moby`: el
+  factory registra, pero no enumera los contenedores de Docker Desktop y cae al handler `raw`
+  (series sin label `name`). No es un problema de configuración, es del entorno.
+- Se evita dejar un contenedor **privilegiado** que no aporta datos: menos superficie de ataque.
+- En un host Linux con Docker sobre overlayfs, cAdvisor se puede volver a habilitar sin cambiar
+  nada más.
+
+## D-23 — La prueba de carga no puede tener límite de cgroup
+**Contexto**: para verificar `CPUAlta` se corrió `stress-ng` dentro de un contenedor. Con
+`docker run --cpus 6` la CPU se estabilizó en 77,7% y la alerta (85%) nunca disparó: el cgroup
+limitaba el contenedor a 6 de 8 vCPU. Con `--cpus 8` la lectura tampoco subía, porque el
+contenedor seguía topado por su cuota.
+**Decisión**: la prueba se corre **sin `--cpus`** y con sobre-suscripción (`stress-ng --cpu 16`).
+Así la CPU llega a 100% y la regla de 85% dispara. El umbral queda en 85%, el valor estándar.
+**Consecuencia**: al medir capacidad con un generador de carga limitado se mide el límite, no el
+anfitrión. La primera medición (79%) era un artefacto de la ventana de 1m y del límite de cgroup;
+quedó descartada y el procedimiento correcto está en el informe §6.
+
+## D-24 — Alertmanager apunta a un receptor de evidencia hasta §13
+**Contexto**: §10 exige probar que la alerta dispara, y §13 exige que esa alerta cree una
+incidencia en Mantis vía n8n. n8n todavía no está montado.
+**Decisión**: el receptor `webhook` apunta a `alert-sink`, un contenedor mínimo que registra el
+payload en `evidence/10/alertmanager-payloads.jsonl`. El webhook de n8n queda escrito y comentado
+en `monitoring/alertmanager/alertmanager.yml`.
+**Consecuencias**:
+- §10 se verifica sin depender de §13: se ve el payload real con `status`, `alerts`, labels y
+  anotaciones.
+- Si el webhook de n8n se dejara activo sin el servicio, Alertmanager reintentaría 11 veces y
+  llenaría el log de errores: ruido que oculta problemas reales.
+- En §13 solo hay que descomentar dos líneas y reiniciar Alertmanager.

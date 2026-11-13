@@ -116,15 +116,18 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 | ☐ | Firewall y HTTPS | `nmap` externo: solo 443 abierto; candado TLS |
 | ☐ | Análisis de riesgos | tabla de riesgos del túnel + plan B |
 
-## §10 Monitoreo — R3
+## §10 Monitoreo - R3
 
-| ☐ | Entregable | Evidencia esperada |
+| ☑ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | Config Prometheus | `monitoring/prometheus.yml` + `rules.yml` |
-| ☐ | Dashboard Grafana | JSON versionado en `monitoring/dashboards/` |
-| ☐ | Métricas reales | screenshots con timestamps + queries |
-| ☐ | Alertas | 6 reglas con umbral justificado |
-| ☐ | Prueba de anomalía | `stress-ng` → alerta firing → issue creado por n8n |
+| ☑ | Config Prometheus | `monitoring/prometheus/prometheus.yml` + `rules.yml` |
+| ☑ | Dashboard Grafana | `monitoring/dashboards/pi-overview.json` (8 paneles) |
+| ☑ | Métricas reales | `evidence/10/prometheus-targets.json`, `evidence/10/grafana-dashboard.json` |
+| ☑ | Alertas | 6 reglas con umbral justificado (`rules.yml`) |
+| ☐ | Prueba de anomalía | `stress-ng` → alerta firing → issue creado por n8n (§13) |
+
+> cAdvisor no enumera contenedores en Docker Desktop (snapshotter de containerd):
+> se retiró y se documentó en `docs/informe/11-monitoreo.md` §6.
 
 ## §11 Incidencias — R3
 
