@@ -130,23 +130,17 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 > cAdvisor no enumera contenedores en Docker Desktop (snapshotter de containerd):
 > se retiró y se documentó en `docs/informe/11-monitoreo.md` §6.
 
-## §11 Incidencias — R3
+## §11 Incidencias - R3
 
-| ☐ | Entregable | Evidencia esperada |
+| ☑ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | Mantis funcionando | URL + usuario de prueba |
-| ☐ | ≥10 incidencias | export CSV o screenshot del listado |
-| ☐ | Asignación y seguimiento | historial de estados |
-| ☐ | Resolución | ≥5 con commit/PR asociado y verificación |
+| ☑ | Mantis funcionando | `http://127.0.0.1:8081` (admin) y usuarios `dev.tomas` / `qa.analista` |
+| ☑ | =10 incidencias | 14 en `HIA-2026` (`scripts/mantis-seed.py`) |
+| ☑ | Asignación y seguimiento | 70 filas en `mantis_bug_history_table` |
+| ☑ | Resolución | 13 resueltas + 1 cerrada, con `commit_sha` y `pr_url` |
 
-Requisito: **1 de rendimiento** (ej. listado por tag sin índice) y **1 de seguridad**
-(ej. header de n8n sin validar, o `/api` filtrando emails).
+> Requisito: 1 de rendimiento (#1, #2, #10, #13) y 1 de seguridad (#3, #4, #11, #14).
 
-> §11 no lo cubre Jira: el enunciado exige Mantis/GLPI como herramienta propia y §13 flujo 1
-> escribe ahí. El vínculo con código se resuelve con campo `commit_sha`/`pr_url` en Mantis
-> + `refs #N` en el commit (ver D-06).
-> No olvidar: borrar/bloquear `mantis/admin/` después de instalar, y desactivar el mail de Mantis
-> (las notificaciones las maneja n8n).
 
 ## §12 Nextcloud — R4
 
@@ -156,16 +150,20 @@ Requisito: **1 de rendimiento** (ej. listado por tag sin índice) y **1 de segur
 | ☐ | Matriz de permisos | tabla usuario/grupo/carpeta/permiso |
 | ☐ | Informes centralizados | ≥6 archivos versionados + prueba con segundo usuario |
 
-## §13 n8n — R4
+## §13 n8n - R4
 
-| ☐ | Entregable | Evidencia esperada |
+| ☑ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | Configuración | servicio en compose + volumen + Postgres propio |
-| ☐ | Diagramas | `docs/02-arquitectura.md` §5 + JSON exportado de cada flujo |
-| ☐ | Evidencias de ejecución | execuciones exitosas con timestamp |
-| ☐ | Registro de errores | 1 ejecución fallida forzada + su manejo |
-| ☐ | Pruebas de integración | payload inválido rechazado, webhook sin token rechazado |
-| ☐ | Análisis de riesgos | qué pasa si el flujo se dispara en loop, si Mantis está caído, etc. |
+| ☑ | Configuración | `compose.yaml` (perfil `ops`) + volumen + base `n8n` propia |
+| ☑ | Diagramas | `docs/02-arquitectura.md` §5 + JSON en `automation/n8n/workflows/` |
+| ☑ | Evidencias de ejecución | `evidence/13/flujo-1.log` (ejecuciones 14, 21, 22) |
+| ☑ | Registro de errores | ejecución 21 en `error` con Mantis caído |
+| ☑ | Pruebas de integración | 401 sin token, 400 payload inválido, 200 con incidencia |
+| ☑ | Análisis de riesgos | `docs/informe/13-automatizacion.md` §5 |
+
+> Flujos 2 y 3 **no implementados**: el 2 necesita imagen de n8n con `postgresql-client`;
+> el 3 depende de Nextcloud (§12). Declarado en el informe.
+
 
 ## §14 Seguridad — R5
 
