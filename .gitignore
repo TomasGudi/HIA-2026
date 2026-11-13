@@ -1,0 +1,43 @@
+# --- secretos y entorno ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# --- datos y respaldos (NUNCA al repo) ---
+db/data/
+backups/
+*.dump
+*.sql.gz
+*.tar.gz
+
+# --- evidencias grandes ---
+evidence/**/*.mp4
+evidence/**/*.zip
+
+# --- node ---
+node_modules/
+dist/
+build/
+coverage/
+.nx/
+*.log
+npm-debug.log*
+
+# --- python ---
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# --- sistema ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- editores ---
+.vscode/
+.idea/
+*.swp

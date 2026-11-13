@@ -1,0 +1,101 @@
+# ============================================================
+# Práctica Integradora Final — stack de servicios
+# Sprint 1: base de datos + cliente de administración
+# Sprint 2+: backend, frontend, monitoreo y ops (se agregan abajo)
+#
+# Reglas de diseño (ver docs/05-decisiones.md):
+#  - La base de datos NUNCA se publica fuera de loopback.
+#  - Las redes dbnet/appnet son internas: sin salida a Internet.
+#  - Credenciales solo por variables de entorno.
+# ============================================================
+name: practica-integradora
+
+services:
+  db:
+    image: postgres:16.4-alpine
+    container_name: pi-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      # parámetros del motor (§5): se ajustan y se miden, no se copian de un blog
+      POSTGRES_INITDB_ARGS: "--data-checksums"
+    command:
+      - postgres
+      - -c
+      - max_connections=200
+      - -c
+      - shared_buffers=1GB
+      - -c
+      - effective_cache_size=3GB
+      - -c
+      - maintenance_work_mem=512MB
+      - -c
+      - work_mem=16MB
+      - -c
+      - wal_level=replica
+      - -c
+      - max_wal_senders=10
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      - -c
+      - pg_stat_statements.track=all
+      - -c
+      - log_min_duration_statement=200
+      - -c
+      - log_checkpoints=on
+      - -c
+      - log_connections=off
+    ports:
+      # loopback únicamente: accesible desde la máquina anfitriona, no desde la red
+      - "127.0.0.1:${DB_PORT}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # se ejecuta solo cuando el volumen está vacío (primer arranque)
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+      - ./db:/db:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    networks:
+      - dbnet
+    shm_size: 1gb
+
+  pgadmin:
+    image: dpage/pgadmin4:8
+    container_name: pi-pgadmin
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      # consola de administración: solo loopback. En producción se llega por túnel/VPN.
+      - "127.0.0.1:8080:80"
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    networks:
+      - dbnet
+
+volumes:
+  pgdata:
+    name: pi-pgdata
+  pgadmin:
+    name: pi-pgadmin
+
+networks:
+  dbnet:
+    name: pi-dbnet
+    driver: bridge
+    # NOTA: no usar internal: true — Docker no publica puertos de contenedores
+    # conectados solo a una red interna (el binding se descarta sin error).
+    # El aislamiento se logra así: la DB solo se publica en 127.0.0.1 y en
+    # producción no se publica ningún puerto de db/pgadmin (se llega por túnel).
