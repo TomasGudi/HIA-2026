@@ -124,7 +124,8 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 | ☑ | Dashboard Grafana | `monitoring/dashboards/pi-overview.json` (8 paneles) |
 | ☑ | Métricas reales | `evidence/10/prometheus-targets.json`, `evidence/10/grafana-dashboard.json` |
 | ☑ | Alertas | 6 reglas con umbral justificado (`rules.yml`) |
-| ☐ | Prueba de anomalía | `stress-ng` → alerta firing → issue creado por n8n (§13) |
+| ☑ | Prueba de anomalía | `stress-ng` → `CPUAlta` firing a los 564 s → payload recibido (`evidence/10/alerta-stress.log`) |
+| ☐ | Alerta → incidencia | n8n crea el issue en Mantis (§13) |
 
 > cAdvisor no enumera contenedores en Docker Desktop (snapshotter de containerd):
 > se retiró y se documentó en `docs/informe/11-monitoreo.md` §6.
