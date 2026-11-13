@@ -71,8 +71,15 @@ docker compose ps
 
 | Sección | Estado |
 |---|---|
-| §1 Diagnóstico | pendiente |
-| §2 Scrum | tablero y sprints cargados |
-| §3 Repositorio | en curso |
-| §4 DB contenerizada + dataset | en curso |
-| §5–§15 | planificados (ver `docs/00-plan-proyecto.md`) |
+| §1 Diagnóstico | ✅ descripción, inventario y 12 hallazgos |
+| §2 Scrum | ✅ tablero, 5 sprints; Sprint 1 cerrado |
+| §3 Repositorio | ✅ público, ramas, PRs, `main` protegida con CI |
+| §4 DB contenerizada + dataset | ✅ 24,2M filas, backups y restauración |
+| §5 Optimización SQL | ✅ 8 consultas medidas (7,9 s → 0,19 s el listado) |
+| §6 Replicación | ⬜ Sprint 3 |
+| §7 App contenerizada | ✅ backend + frontend + E2E |
+| §8 CI/CD | ◐ CI y protección listos; falta registry y deploy |
+| §9 Publicación | ⬜ Sprint 3 |
+| §10–§15 | ⬜ planificados (ver `docs/00-plan-proyecto.md`) |
+
+Detalle y evidencia de cada sección: [`docs/informe/`](docs/informe/).
