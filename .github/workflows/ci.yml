@@ -1,0 +1,92 @@
+name: CI
+
+# El pipeline es la puerta de entrada a main (§8): si algo falla, el merge se bloquea.
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+# Si se pushea dos veces seguidas, cancela la corrida vieja.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+# Permisos mínimos: el workflow solo lee el repositorio.
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: backend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: app/backend/package-lock.json
+      - name: Instalar dependencias (lockfile)
+        run: npm ci --no-audit --no-fund
+      - name: Compilar
+        run: npm run build
+
+  frontend:
+    name: frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: app/frontend/package-lock.json
+      - name: Instalar dependencias (lockfile)
+        run: npm ci --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Guardar artefacto del build
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: app/frontend/dist
+          retention-days: 7
+
+  secrets:
+    name: secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # historial completo: un secreto puede estar en un commit viejo
+      - name: gitleaks
+        run: |
+          docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest \
+            detect --source=/repo --config=/repo/.gitleaks.toml --redact --verbose
+
+  compose:
+    name: compose
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validar compose.yaml
+        run: |
+          cp .env.example .env
+          docker compose config --quiet
+          echo "compose válido"
+      - name: Verificar que no se versionó .env
+        run: |
+          if git ls-files --error-unmatch .env >/dev/null 2>&1; then
+            echo "ERROR: .env está versionado"
+            exit 1
+          fi
+          echo ".env no está versionado"
