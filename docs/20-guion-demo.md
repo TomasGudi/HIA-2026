@@ -169,7 +169,7 @@ Por eso la prueba de carga dura 13 minutos. La alerta en vivo usa `ServicioCaido
 5. Prueba negativa del webhook:
 
 ```powershell
-curl.exe -s -o NUL -w "sin token -> %{http_code}`n" -X POST http://127.0.0.1:5678/webhook/alerta -H "Content-Type: application/json" -d "{}"
+curl.exe -s -o NUL -w "sin token -> %{http_code}`n" -X POST http://127.0.0.1:5678/webhook/alertmanager -H "Content-Type: application/json" -d "{}"
 ```
 
 Debe dar **401**.
