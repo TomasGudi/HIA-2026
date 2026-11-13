@@ -1,0 +1,21 @@
+{
+  "name": "pi-mcp",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Servidor MCP de la Practica Integradora: expone la app Conduit como herramientas para agentes",
+  "type": "module",
+  "main": "src/server.mjs",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/server.mjs",
+    "smoke": "node test/smoke.mjs"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "express": "4.21.2",
+    "pg": "8.13.1",
+    "zod": "3.24.1"
+  }
+}

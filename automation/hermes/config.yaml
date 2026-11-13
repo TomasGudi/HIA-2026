@@ -1,0 +1,33 @@
+# Configuración del agente Hermes para la Práctica Integradora.
+#
+# Modelo vía API compatible OpenAI (opencode-go) y una única conexión MCP:
+# el servidor que expone la propia aplicación.
+#
+# Este archivo se versiona: no contiene secretos. La API key y el token MCP
+# llegan por variables de entorno desde el .env local.
+
+model:
+  provider: "opencode-go"
+  default: "deepseek-v4.1-flash"
+
+mcp_servers:
+  # El servidor MCP es parte de la aplicación (app/mcp).
+  # El token se resuelve desde el entorno; nunca se escribe acá.
+  practica:
+    url: "http://mcp:8080/mcp"
+    enabled: true
+    headers:
+      Authorization: "Bearer ${MCP_TOKEN}"
+    connect_timeout: 30
+    timeout: 60
+    # Las herramientas de escritura las habilita el servidor con
+    # MCP_ALLOW_WRITE=true; acá no se filtra nada para que el agente vea
+    # exactamente lo que el servidor expone.
+    tools:
+      resources: false
+      prompts: false
+
+# No encadenar decenas de llamadas: el agente responde con una o dos tools.
+tool_loop_guardrails:
+  non_interactive_hard_stop_enabled: true
+_config_version: 53
