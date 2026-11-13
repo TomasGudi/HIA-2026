@@ -35,7 +35,7 @@ docker compose up -d db pgadmin
 docker compose ps
 # pgAdmin: http://127.0.0.1:8080
 
-# 4. cargar el dataset de prueba (18M de filas; tarda varios minutos)
+# 4. cargar el dataset de prueba (24,2M de filas; tarda ~13 minutos)
 ./scripts/db.ps1 seed
 
 # 5. crear índices DESPUÉS de la carga
@@ -76,10 +76,17 @@ docker compose ps
 | §3 Repositorio | ✅ público, ramas, PRs, `main` protegida con CI |
 | §4 DB contenerizada + dataset | ✅ 24,2M filas, backups y restauración |
 | §5 Optimización SQL | ✅ 8 consultas medidas (7,9 s → 0,19 s el listado) |
-| §6 Replicación | ⬜ Sprint 3 |
+| §6 Replicación | ✅ streaming + failover manual (RTO 8,6 s) |
 | §7 App contenerizada | ✅ backend + frontend + E2E |
-| §8 CI/CD | ◐ CI y protección listos; falta registry y deploy |
-| §9 Publicación | ⬜ Sprint 3 |
-| §10–§15 | ⬜ planificados (ver `docs/00-plan-proyecto.md`) |
+| §8 CI/CD | ✅ CI, GHCR, deploy con rollback automático |
+| §9 Publicación | ✅ Cloudflare Tunnel + borde con auth |
+| §10 Monitoreo | ✅ 8 paneles, 6 reglas, alerta real |
+| §11 Incidencias | ✅ Mantis con 14 incidencias |
+| §13 Automatización | ✅ flujo 1 alerta → incidencia |
+| §14 Seguridad | ✅ STRIDE, escaneos y correcciones |
+| §15 Documentación | ✅ 16 documentos, PDF y guion de demo |
+| §12 Nextcloud | ⚠️ no desplegado (declarado en `16-limitaciones.md`) |
 
 Detalle y evidencia de cada sección: [`docs/informe/`](docs/informe/).
+Informe consolidado: [`docs/HIA-2026-informe-final.pdf`](docs/HIA-2026-informe-final.pdf).
+Guion de la defensa: [`docs/20-guion-demo.md`](docs/20-guion-demo.md).

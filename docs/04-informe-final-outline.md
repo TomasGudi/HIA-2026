@@ -18,7 +18,7 @@ del enunciado. Los documentos de gestión (plan, backlog, arquitectura, decision
 | 10 | Procedimiento de publicación | `docs/informe/10-publicacion.md` | §9 | R5 |
 | 11 | Manual de monitoreo | `docs/informe/11-monitoreo.md` | §10 | R3 |
 | 12 | Gestión de incidencias | `docs/informe/12-incidencias.md` | §11 | R3 |
-| 13 | Flujos de n8n | `docs/informe/13-flujos-n8n.md` | §13 | R4 |
+| 13 | Flujos de n8n | `docs/informe/13-automatizacion.md` | §13 | R4 |
 | 14 | Informe de seguridad | `docs/informe/14-seguridad.md` | §14 | R5 |
 | 15 | Backup y restauración | `docs/informe/15-backup.md` | §4/§13 | R1 |
 | 16 | Limitaciones y mejoras futuras | `docs/informe/16-limitaciones.md` | todas | R5 |

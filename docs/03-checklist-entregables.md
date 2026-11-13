@@ -183,11 +183,14 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 
 ## §15 Documentación y defensa — R5
 
-| ☐ | Entregable | Evidencia esperada |
+| ✔ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | 16 documentos obligatorios | `docs/` completo, ver `04-informe-final-outline.md` |
-| ☐ | Informe consolidado | PDF único con índice |
-| ☐ | Demo de 20 min | `docs/20-guion-demo.md` con tiempos |
+| ☑ | 16 documentos obligatorios | `docs/informe/01..16` completos, mapa en `04-informe-final-outline.md` |
+| ☑ | Informe consolidado | `docs/HIA-2026-informe-final.pdf` (59 páginas, portada e índice) |
+| ☑ | Generación reproducible | `python scripts/informe.py` (HTML + PDF, diagramas Mermaid) |
+| ☑ | Demo de 20 min | `docs/20-guion-demo.md` con tiempos, comandos y contingencias |
+| ☑ | Checklist completo | este archivo, §1 a §15 |
+| ☑ | Versión congelada | tag `v1.0.0` sobre `main` |
 
 ---
 
