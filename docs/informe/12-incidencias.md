@@ -75,13 +75,78 @@ Esto se declara como **procedimiento manual** en el informe: no se afirma integr
 | Requisito de §11 | Estado |
 |---|---|
 | Herramienta funcionando | ✅ 32 tablas, login operativo, `/admin` bloqueado |
-| Categorías, prioridades y responsables | ◐ categorías definidas; falta cargarlas en la instancia |
-| ≥10 incidencias registradas (1 de rendimiento, 1 de seguridad) | ⬜ (hay 5 candidatas ya identificadas: M1–M5, H1 de JWT y el incidente de FK) |
-| Pasos de reproducción | ⬜ |
-| Vínculo con tareas y commits | ◐ procedimiento definido (campo + `refs`) |
-| Solución registrada y cierre con evidencia | ⬜ |
+| Categorías, prioridades y responsables | ✅ 5 categorías, 3 usuarios con roles distintos |
+| ≥10 incidencias (1 de rendimiento, 1 de seguridad) | ✅ 14 incidencias |
+| Pasos de reproducción | ✅ en la descripción de cada una |
+| ≥5 resueltas con commit/PR | ✅ 13 resueltas + 1 cerrada, con nota de verificación |
 
-## 7. Evidencia
+## 7. Configuración
+
+| Elemento | Valor |
+|---|---|
+| Proyecto | `HIA-2026` (id 1) |
+| Categorías | Infraestructura, Base de Datos, Seguridad, Rendimiento, Aplicacion |
+| Usuarios | `administrator` (90), `dev.tomas` (55, developer), `qa.analista` (25, reporter) |
+| Token de API | 32 caracteres, guardado como `sha256` en `mantis_api_token_table` |
+| Correo | desactivado: las notificaciones las maneja n8n (§13) |
+
+> Detalle que costó tiempo: Mantis exige que el token mida exactamente `API_TOKEN_LENGTH` = **32**
+> caracteres. Un token de 48 devolvía 401 sin explicación; la validación es
+> `mb_strlen($token) != 32` antes de tocar la base.
+
+## 8. Las incidencias registradas
+
+14 incidencias del proyecto, todas con categoría, severidad, prioridad, responsable e historial.
+Además hay 8 incidencias generadas por las pruebas del flujo 1, cerradas como "no es un defecto".
+
+| # | Categoría | Tipo | Estado | Resumen |
+|---|---|---|---|---|
+| 1 | Rendimiento | major / urgent | resuelto | `GET /api/articles` tarda 7,9 s con 6M de filas |
+| 2 | Rendimiento | major / high | resuelto | Filtro por tag sin índice GIN: 3,5 s |
+| 3 | Seguridad | major / high | resuelto | Login permite enumerar usuarios por mensaje de error |
+| 4 | Seguridad | crash / urgent | resuelto | Webhook de n8n acepta cualquier POST sin token |
+| 5 | Infraestructura | major / high | resuelto | La réplica no acepta lecturas (`hot_standby` apagado) |
+| 6 | Infraestructura | minor / normal | resuelto | El contenedor de réplica vuelve a clonar en cada reinicio |
+| 7 | Base de Datos | major / high | resuelto | La carga inicial generó 38 GB de WAL |
+| 8 | Base de Datos | crash / urgent | resuelto | Backups sin verificación de restauración |
+| 9 | Aplicacion | crash / urgent | resuelto | Frontend no compila en Node 20 (CRA 1.1.1 de 2018) |
+| 10 | Aplicacion | major / high | resuelto | Contador de artículos hace `COUNT(*)` sobre 6M de filas |
+| 11 | Seguridad | major / high | resuelto | Panel `/admin` de Mantis accesible sin restricción |
+| 12 | Infraestructura | crash / urgent | cerrado | Puertos del stack publicados en `0.0.0.0` |
+| 13 | Rendimiento | minor / normal | resuelto | Alerta de CPU no dispara con `stress-ng` al 79% |
+| 14 | Seguridad | crash / urgent | resuelto | Falta de auth en las rutas administrativas publicadas |
+
+Requisito del enunciado: hay **1 de rendimiento** (#1, #2, #10, #13) y **1 de seguridad** (#3, #4,
+#11, #14).
+
+## 9. Proceso de gestión
+
+```
+nuevo ──▶ asignado ──▶ resuelto ──▶ cerrado
+  │                        │
+  └── feedback ◀───────────┘
+```
+
+1. **Alta**: categoría, severidad, prioridad y descripción reproducible (qué, cómo, resultado
+   esperado y obtenido).
+2. **Asignación**: `handler_id` a `dev.tomas`. Mantis registra la transición en
+   `mantis_bug_history_table` (70 entradas para 14 incidencias).
+3. **Resolución**: estado `resolved` + resolución `fixed`, con una nota que incluye el commit o PR
+   y la medición que verifica el arreglo.
+4. **Cierre**: `closed` cuando la verificación está en la evidencia del informe.
+
+## 10. Campos personalizados
+
+Dos campos a nivel proyecto, para no depender de que el commit esté escrito en la nota:
+
+| Campo | Tipo | Uso |
+|---|---|---|
+| `commit_sha` | string (40) | SHA del merge que corrigió la incidencia |
+| `pr_url` | string (200) | URL del PR con la discusión y el diff |
+
+Se guardan en `mantis_custom_field_string_table` y se ven en el detalle de cada incidencia.
+
+## 11. Evidencia
 
 | Evidencia | Dónde |
 |---|---|
@@ -90,3 +155,8 @@ Esto se declara como **procedimiento manual** en el informe: no se afirma integr
 | Creación de base y rol | `db/init/04-mantis-db.sh` |
 | Instalación del esquema | 32 tablas en `mantis` + usuario `administrator` |
 | `/admin` bloqueado | `403` verificado con `curl` |
+
+| Incidencias cargadas | 14 en `HIA-2026` (script `scripts/mantis-seed.py`) |
+| Historial de estados | 70 filas en `mantis_bug_history_table` |
+| Campos `commit_sha` / `pr_url` | `scripts/mantis-campos.sql` |
+| Prueba de la cadena alerta → incidencia | `evidence/13/flujo-1.log` |
