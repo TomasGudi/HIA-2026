@@ -31,7 +31,13 @@ app.get('/', (req: express.Request, res: express.Response) => {
 app.get('/health', async (req: express.Request, res: express.Response) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
-    res.json({ status: 'ok', db: 'up', uptime: process.uptime() });
+    res.json({
+      status: 'ok',
+      db: 'up',
+      uptime: process.uptime(),
+      // §8: permite verificar qué imagen está desplegada sin entrar al contenedor
+      version: process.env.APP_VERSION ?? 'dev',
+    });
   } catch (error) {
     res.status(503).json({ status: 'degraded', db: 'down' });
   }

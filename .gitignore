@@ -46,6 +46,9 @@ desktop.ini
 pr.json
 pr-resp.json
 
+# estado del despliegue (§8): cambia en cada deploy, no se versiona
+.deploy/
+
 # la evidencia en texto SI se versiona (los logs de runtime no)
 !evidence/**/*.log
 api.json

@@ -183,7 +183,9 @@ services:
   backend:
     build:
       context: ./app/backend
-    image: pi-backend:dev
+    # §8: el deploy cambia esta variable por la imagen publicada en el registro.
+    # Sin ella, el desarrollo local sigue construyendo `pi-backend:dev`.
+    image: ${BACKEND_IMAGE:-pi-backend:dev}
     container_name: pi-backend
     restart: unless-stopped
     depends_on:
@@ -192,6 +194,8 @@ services:
     environment:
       NODE_ENV: production
       PORT: 3000
+      # §8: queda visible en GET /health para saber qué imagen corre
+      APP_VERSION: ${APP_VERSION:-dev}
       # dentro de la red Docker el puerto de la DB es 5432 (no el 5433 del host)
       # DATABASE_HOST permite el failover manual (Â§6): cambiar a db-replica
       # y reiniciar el backend es todo el procedimiento del lado de la app.
@@ -212,7 +216,7 @@ services:
   frontend:
     build:
       context: ./app/frontend
-    image: pi-frontend:dev
+    image: ${FRONTEND_IMAGE:-pi-frontend:dev}
     container_name: pi-frontend
     restart: unless-stopped
     depends_on:
@@ -366,6 +370,27 @@ services:
     networks:
       - monnet
 
+  # ---------------------------------------------------------------
+  # Registro de imágenes local (§8). CI publica en GHCR; este registro
+  # es el destino de despliegue del host local, que no tiene salida a
+  # Internet y donde el paquete de GHCR queda privado.
+  #   docker push 127.0.0.1:5000/hia-2026-backend:<tag>
+  # ---------------------------------------------------------------
+  registry:
+    image: registry:2
+    container_name: pi-registry
+    restart: unless-stopped
+    profiles: ["ops"]
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      # permite borrar tags viejos sin recrear el contenedor
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    volumes:
+      - registry_data:/var/lib/registry
+    networks:
+      - appnet
+
 volumes:
   pgdata:
     name: pi-pgdata
@@ -381,6 +406,8 @@ volumes:
     name: pi-alertmanager-data
   grafana_data:
     name: pi-grafana-data
+  registry_data:
+    name: pi-registry-data
 
 networks:
   appnet:
