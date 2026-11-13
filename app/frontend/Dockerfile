@@ -3,9 +3,10 @@
 FROM node:20-alpine AS build
 WORKDIR /app
 
-# dependencias primero: aprovecha la caché de capas
-COPY package.json package-lock.json* ./
-RUN npm install --no-audit --no-fund
+# dependencias primero: aprovecha la caché de capas.
+# `npm ci` (no `npm install`) exige el lockfile y garantiza build reproducible (§8).
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 
 COPY . .
 RUN npm run build
