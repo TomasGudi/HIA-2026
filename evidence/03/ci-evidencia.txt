@@ -1,0 +1,15 @@
+﻿CI run #43424320086
+URL: https://github.com/TomasGudi/HIA-2026/actions/runs/43424320086
+SHA: 6cf759c
+
+frontend   completed  success
+secrets    completed  success
+backend    completed  success
+compose    completed  success
+
+Branch protection en main:
+  enforce_admins = true
+  required PR = si (0 aprobaciones por ahora)
+  status checks = backend, frontend, secrets, compose (strict)
+  force push = no
+  borrado = no
