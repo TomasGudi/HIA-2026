@@ -1,0 +1,107 @@
+# ============================================================
+# Reglas de alerta (§10) — 6 reglas, cada umbral justificado
+#
+# Criterio general: una alerta tiene que ser ACCIONABLE. Si nadie
+# sabe qué hacer cuando suena, es ruido. Por eso cada regla apunta
+# a un recurso con una acción concreta documentada en
+# docs/informe/11-monitoreo.md §4.
+# ============================================================
+groups:
+  - name: disponibilidad
+    rules:
+      # R1 — cualquier target de Prometheus caído, o un sondeo HTTP fallando.
+      # `up == 0` detecta que el exporter no responde; `probe_success == 0`
+      # detecta que el exporter responde pero el servicio detrás no.
+      # 2m: evita disparar por un reinicio normal de contenedor.
+      - alert: ServicioCaido
+        expr: (up{job!="prometheus"} == 0) or (probe_success == 0)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Servicio caído: {{ $labels.instance }} (job {{ $labels.job }})"
+          description: >-
+            El target {{ $labels.instance }} lleva más de 2 minutos sin responder.
+            Acción: `docker compose ps` y `docker compose logs <servicio>`.
+
+  - name: recursos
+    rules:
+      # R2 — CPU del anfitrión por encima del 85% durante 5m.
+      # 85% y no 100%: deja 15% de margen para reaccionar antes de que el
+      # sistema sature y la latencia se degrade. 5m descarta picos de build.
+      # Verificado con stress-ng: 16 workers sobre 8 vCPU llevan la CPU a
+      # 100%, así que el umbral es alcanzable en este anfitrión.
+      - alert: CPUAlta
+        expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU del anfitrión al {{ printf \"%.1f\" $value }}%"
+          description: >-
+            CPU sostenida por encima del 85% durante 5 minutos.
+            Acción: revisar qué proceso consume CPU (`docker stats`) y limitar o escalar.
+
+      # R3 — memoria disponible por debajo del 10%.
+      # El OOM killer de Linux entra en juego cuando no queda memoria; llegar
+      # al 90% usado deja margen para reaccionar antes de perder un contenedor.
+      - alert: MemoriaAlta
+        expr: 100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memoria del anfitrión al {{ printf \"%.1f\" $value }}%"
+          description: >-
+            Más del 90% de la memoria usada durante 5 minutos.
+            Acción: revisar el panel 5 y el uso de shared_buffers de PostgreSQL.
+
+      # R4 — disco raíz por encima del 85%.
+      # Un disco lleno rompe PostgreSQL de forma no recuperable sin intervención
+      # (no puede escribir WAL). 85% deja tiempo para purgar backups o WAL.
+      - alert: DiscoCasiLleno
+        expr: >-
+          100 - (
+            node_filesystem_avail_bytes{fstype!~"tmpfs|ramfs|overlay",mountpoint="/"}
+            / node_filesystem_size_bytes{fstype!~"tmpfs|ramfs|overlay",mountpoint="/"} * 100
+          ) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disco raíz al {{ printf \"%.1f\" $value }}%"
+          description: >-
+            Menos del 15% de espacio libre en el disco raíz.
+            Acción: `docker system df`, purgar imágenes y revisar la retención de backups.
+
+  - name: base-de-datos
+    rules:
+      # R5 — el exporter no puede hablar con PostgreSQL.
+      # 1m y no 2m: la base es el componente sin el cual la app no sirve nada.
+      - alert: PostgresCaido
+        expr: pg_up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL no responde ({{ $labels.instance }})"
+          description: >-
+            postgres_exporter no puede conectarse a la base.
+            Acción: `docker compose ps db` y revisar `docker compose logs db`.
+
+      # R6 — la réplica dejó de replicar o se atrasó demasiado.
+      # 100 MB de WAL: con este volumen de escritura son pocos segundos de
+      # atraso, pero ya implica un RPO que conviene mirar. `absent()` cubre el
+      # caso peor: el exporter de la primaria no ve NINGUNA réplica conectada.
+      - alert: ReplicacionAtrasada
+        expr: >-
+          (max(pg_stat_replication_pg_wal_lsn_diff) > 100 * 1024 * 1024)
+          or absent(pg_stat_replication_pg_wal_lsn_diff)
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Replicación atrasada o cortada"
+          description: >-
+            El lag de WAL supera 100 MB o no hay ninguna réplica conectada.
+            Acción: `./scripts/replica.ps1 status` y revisar `docker compose logs db-replica`.

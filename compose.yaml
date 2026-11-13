@@ -1,9 +1,9 @@
-# ============================================================
-# Práctica Integradora Final — stack de servicios
-# Sprint 1: base de datos + cliente de administración
+﻿# ============================================================
+# PrÃ¡ctica Integradora Final â€” stack de servicios
+# Sprint 1: base de datos + cliente de administraciÃ³n
 # Sprint 2+: backend, frontend, monitoreo y ops (se agregan abajo)
 #
-# Reglas de diseño (ver docs/05-decisiones.md):
+# Reglas de diseÃ±o (ver docs/05-decisiones.md):
 #  - La base de datos NUNCA se publica fuera de loopback.
 #  - Las redes dbnet/appnet son internas: sin salida a Internet.
 #  - Credenciales solo por variables de entorno.
@@ -19,16 +19,19 @@ services:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      # parámetros del motor (§5): se ajustan y se miden, no se copian de un blog
+      # parÃ¡metros del motor (Â§5): se ajustan y se miden, no se copian de un blog
       POSTGRES_INITDB_ARGS: "--data-checksums"
-      # necesarias para que db/init/04-mantis-db.sh cree la base de §11
+      # necesarias para que db/init/04-mantis-db.sh cree la base de Â§11
       MANTIS_DB_NAME: ${MANTIS_DB_NAME:-mantis}
       MANTIS_DB_USER: ${MANTIS_DB_USER:-mantis}
       MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
-      # necesarias para db/init/05-replicacion.sh (§6)
+      # necesarias para db/init/05-replicacion.sh (Â§6)
       REPL_USER: ${REPL_USER:-replicador}
       REPL_PASSWORD: ${REPL_PASSWORD}
       REPL_SUBNET: ${REPL_SUBNET:-172.16.0.0/12}
+      # necesarias para db/init/06-monitoreo.sh (Â§10)
+      MONITOR_DB_USER: ${MONITOR_DB_USER:-monitor}
+      MONITOR_DB_PASSWORD: ${MONITOR_DB_PASSWORD}
     command:
       - postgres
       - -c
@@ -56,14 +59,14 @@ services:
       - -c
       - log_connections=off
     ports:
-      # loopback únicamente: accesible desde la máquina anfitriona, no desde la red
+      # loopback Ãºnicamente: accesible desde la mÃ¡quina anfitriona, no desde la red
       - "127.0.0.1:${DB_PORT}:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      # se ejecuta solo cuando el volumen está vacío (primer arranque)
+      # se ejecuta solo cuando el volumen estÃ¡ vacÃ­o (primer arranque)
       - ./db/init:/docker-entrypoint-initdb.d:ro
       - ./db:/db:ro
-      # destino de los backups (§4). Fuera del repo por .gitignore.
+      # destino de los backups (Â§4). Fuera del repo por .gitignore.
       - ./backups:/backups
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
@@ -76,7 +79,7 @@ services:
     shm_size: 1gb
 
   # ---------------------------------------------------------------
-  # Réplica streaming (§6). Clona la primaria con pg_basebackup -R en el
+  # RÃ©plica streaming (Â§6). Clona la primaria con pg_basebackup -R en el
   # primer arranque y luego solo se mantiene en caliente.
   # Sin puerto publicado: se llega desde dbnet.
   # ---------------------------------------------------------------
@@ -133,7 +136,7 @@ services:
       PGADMIN_CONFIG_SERVER_MODE: "False"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
     ports:
-      # consola de administración: solo loopback. En producción se llega por túnel/VPN.
+      # consola de administraciÃ³n: solo loopback. En producciÃ³n se llega por tÃºnel/VPN.
       - "127.0.0.1:8080:80"
     volumes:
       - pgadmin:/var/lib/pgadmin
@@ -141,7 +144,7 @@ services:
       - dbnet
 
   # ---------------------------------------------------------------
-  # Mantis Bug Tracker (§11). Perfil "ops": no arranca con el stack
+  # Mantis Bug Tracker (Â§11). Perfil "ops": no arranca con el stack
   # principal, para no competir por recursos durante la demo de la app.
   #   docker compose --profile ops up -d mantis
   # ---------------------------------------------------------------
@@ -164,18 +167,18 @@ services:
       MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
       MANTIS_CRYPTO_SALT: ${MANTIS_CRYPTO_SALT}
     ports:
-      # solo loopback: en producción se llega por túnel con auth (§9)
+      # solo loopback: en producciÃ³n se llega por tÃºnel con auth (Â§9)
       - "127.0.0.1:8081:80"
     volumes:
-      # adjuntos de las incidencias: sin volumen, un `down` borra la evidencia de §11
+      # adjuntos de las incidencias: sin volumen, un `down` borra la evidencia de Â§11
       - mantis_files:/var/www/html/files
     networks:
       - dbnet
 
   # ---------------------------------------------------------------
-  # Aplicación (§7): backend y frontend en contenedores separados,
+  # AplicaciÃ³n (Â§7): backend y frontend en contenedores separados,
   # comunicados por la red interna appnet. Solo el frontend publica
-  # puerto, y en loopback: en producción se llega por túnel (§9).
+  # puerto, y en loopback: en producciÃ³n se llega por tÃºnel (Â§9).
   # ---------------------------------------------------------------
   backend:
     build:
@@ -190,7 +193,7 @@ services:
       NODE_ENV: production
       PORT: 3000
       # dentro de la red Docker el puerto de la DB es 5432 (no el 5433 del host)
-      # DATABASE_HOST permite el failover manual (§6): cambiar a db-replica
+      # DATABASE_HOST permite el failover manual (Â§6): cambiar a db-replica
       # y reiniciar el backend es todo el procedimiento del lado de la app.
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_HOST:-db}:5432/${POSTGRES_DB}?schema=public&connection_limit=10
       JWT_SECRET: ${JWT_SECRET}
@@ -216,10 +219,152 @@ services:
       backend:
         condition: service_healthy
     ports:
-      # solo loopback; la publicación real es por túnel (§9)
+      # solo loopback; la publicaciÃ³n real es por tÃºnel (Â§9)
       - "127.0.0.1:8090:80"
     networks:
       - appnet
+
+  # ---------------------------------------------------------------
+  # Monitoreo (Â§10). Perfil "ops": no compite por recursos con la
+  # demo de la app si no se levanta explÃ­citamente.
+  #   docker compose --profile ops up -d
+  # Puertos solo en loopback: el acceso remoto va por el tÃºnel (Â§9).
+  # ---------------------------------------------------------------
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: pi-prometheus
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      - alertmanager
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+      - --web.enable-lifecycle
+    ports:
+      - "127.0.0.1:9090:9090"
+    volumes:
+      - ./monitoring/prometheus:/etc/prometheus:ro
+      - prometheus_data:/prometheus
+    networks:
+      - monnet
+      - appnet
+      - dbnet
+
+  alertmanager:
+    image: prom/alertmanager:v0.27.0
+    container_name: pi-alertmanager
+    restart: unless-stopped
+    profiles: ["ops"]
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    ports:
+      - "127.0.0.1:9093:9093"
+    volumes:
+      - ./monitoring/alertmanager:/etc/alertmanager:ro
+      - alertmanager_data:/alertmanager
+    networks:
+      - monnet
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: pi-grafana
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      - prometheus
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      # lectura anÃ³nima SOLO en loopback, para la demo; el admin conserva clave
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+      GF_SERVER_ROOT_URL: ${GRAFANA_ROOT_URL:-http://127.0.0.1:3001}
+    ports:
+      - "127.0.0.1:3001:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana_data:/var/lib/grafana
+    networks:
+      - monnet
+
+  node-exporter:
+    image: prom/node-exporter:v1.8.2
+    container_name: pi-node-exporter
+    restart: unless-stopped
+    profiles: ["ops"]
+    command:
+      - --path.rootfs=/host
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)
+    pid: host
+    volumes:
+      - /:/host:ro
+    networks:
+      - monnet
+
+  # ---------------------------------------------------------------
+  # cAdvisor: NO se usa. En Docker Desktop con el snapshotter de
+  # containerd, el handler de Docker busca /var/lib/docker/image/overlayfs
+  # y no existe ("failed to identify the read-write layer ID"), así que no
+  # enumera contenedores. Se documenta en docs/informe/11-monitoreo.md §6.
+  # ---------------------------------------------------------------
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: pi-postgres-exporter
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATA_SOURCE_NAME: postgresql://${MONITOR_DB_USER:-monitor}:${MONITOR_DB_PASSWORD}@db:5432/${POSTGRES_DB}?sslmode=disable
+    networks:
+      - monnet
+      - dbnet
+
+  postgres-exporter-replica:
+    image: prometheuscommunity/postgres-exporter:v0.15.0
+    container_name: pi-postgres-exporter-replica
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      db-replica:
+        condition: service_healthy
+    environment:
+      DATA_SOURCE_NAME: postgresql://${MONITOR_DB_USER:-monitor}:${MONITOR_DB_PASSWORD}@db-replica:5432/${POSTGRES_DB}?sslmode=disable
+    networks:
+      - monnet
+      - dbnet
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.25.0
+    container_name: pi-blackbox
+    restart: unless-stopped
+    profiles: ["ops"]
+    networks:
+      # necesita alcanzar los servicios que sondea, no solo a Prometheus
+      - monnet
+      - appnet
+      - dbnet
+
+  # receptor de evidencia del webhook de Alertmanager (Â§10)
+  alert-sink:
+    image: python:3.12-alpine
+    container_name: pi-alert-sink
+    restart: unless-stopped
+    profiles: ["ops"]
+    command: ["python", "-u", "/sink.py"]
+    volumes:
+      - ./monitoring/sink/sink.py:/sink.py:ro
+      - ./evidence/10:/evidence
+    networks:
+      - monnet
 
 volumes:
   pgdata:
@@ -230,15 +375,25 @@ volumes:
     name: pi-pgadmin
   mantis_files:
     name: pi-mantis-files
+  prometheus_data:
+    name: pi-prometheus-data
+  alertmanager_data:
+    name: pi-alertmanager-data
+  grafana_data:
+    name: pi-grafana-data
 
 networks:
   appnet:
     name: pi-appnet
     driver: bridge
+  # red exclusiva del monitoreo: Prometheus, exporters y Grafana
+  monnet:
+    name: pi-monnet
+    driver: bridge
   dbnet:
     name: pi-dbnet
     driver: bridge
-    # NOTA: no usar internal: true — Docker no publica puertos de contenedores
+    # NOTA: no usar internal: true â€” Docker no publica puertos de contenedores
     # conectados solo a una red interna (el binding se descarta sin error).
-    # El aislamiento se logra así: la DB solo se publica en 127.0.0.1 y en
-    # producción no se publica ningún puerto de db/pgadmin (se llega por túnel).
+    # El aislamiento se logra asÃ­: la DB solo se publica en 127.0.0.1 y en
+    # producciÃ³n no se publica ningÃºn puerto de db/pgadmin (se llega por tÃºnel).

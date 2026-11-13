@@ -1,0 +1,28 @@
+# ============================================================
+# Alertmanager (§10)
+#
+# Un único receptor `webhook`. Hoy apunta a `alert-sink`, que solo
+# registra el payload: así se prueba que la notificación SALE con los
+# datos correctos. En §13 se descomenta el webhook de n8n, que crea
+# la incidencia en Mantis.
+# ============================================================
+route:
+  receiver: webhook
+  group_by: [alertname, severity]
+  group_wait: 10s          # demo: no esperar 30s a agrupar
+  group_interval: 1m
+  repeat_interval: 4h      # una alerta sostenida no spamea cada minuto
+
+receivers:
+  - name: webhook
+    webhook_configs:
+      # §13: n8n recibe el webhook y crea la incidencia en Mantis.
+      # Se deja comentado hasta montar n8n: si el host no existe, Alertmanager
+      # reintenta 11 veces y llena el log de errores. En §13 se descomenta.
+      # - url: http://n8n:5678/webhook/alertmanager
+      #   send_resolved: true
+      #   max_alerts: 0
+      # §10: receptor de evidencia, sin lógica (ver monitoring/sink/sink.py)
+      - url: http://alert-sink:8080/alertmanager
+        send_resolved: true
+        max_alerts: 0
