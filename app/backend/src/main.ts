@@ -3,6 +3,7 @@ import cors from 'cors';
 import * as bodyParser from 'body-parser';
 import routes from './app/routes/routes';
 import HttpException from './app/models/http-exception.model';
+import prisma from './prisma/prisma-client';
 
 const app = express();
 
@@ -20,6 +21,20 @@ app.use(express.static(__dirname + '/assets'));
 
 app.get('/', (req: express.Request, res: express.Response) => {
   res.json({ status: 'API is running on /api' });
+});
+
+/**
+ * Healthcheck para Docker y para blackbox_exporter (§10).
+ * Verifica la base de datos además del proceso: un contenedor "up" con la DB
+ * caída no es un servicio sano.
+ */
+app.get('/health', async (req: express.Request, res: express.Response) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: 'ok', db: 'up', uptime: process.uptime() });
+  } catch (error) {
+    res.status(503).json({ status: 'degraded', db: 'down' });
+  }
 });
 
 /* eslint-disable */

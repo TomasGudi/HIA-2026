@@ -1,0 +1,6 @@
+﻿gitleaks detect --source=. --config=.gitleaks.toml (imagen zricethezav/gitleaks:latest)
+Fecha: 2026-11-13
+Commits escaneados: 5
+Bytes escaneados: ~675 KB
+Resultado: NO LEAKS FOUND
+Reporte JSON: evidence/03/gitleaks-report.json (arreglo vacio)

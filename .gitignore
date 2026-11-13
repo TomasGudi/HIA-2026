@@ -41,3 +41,11 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# artefactos temporales de API
+pr.json
+pr-resp.json
+
+# la evidencia en texto SI se versiona (los logs de runtime no)
+!evidence/**/*.log
+api.json
