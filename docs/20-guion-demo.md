@@ -41,6 +41,7 @@ curl.exe -s http://127.0.0.1:8090/health
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8081/
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:3001/login
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:5678/
+curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8082/login
 
 # 5. targets de Prometheus en UP
 Start-Process http://127.0.0.1:9090/targets
@@ -156,12 +157,16 @@ Por eso la prueba de carga dura 13 minutos. La alerta en vivo usa `ServicioCaido
 
 **Si no dispara**: abrir `evidence/10/` y mostrar el `firing` de la corrida real y la incidencia #18.
 
-### 14:00–16:00 · R4 — Automatización (2 min)
+### 14:00–16:00 · R4 — Automatización y gestión documental (2 min)
 
 1. n8n: abrir el flujo `01-alerta-a-mantis`, mostrar los 3 nodos y el token como **credencial**, no
    en el JSON.
 2. Ejecuciones: la #18 (éxito) y la #21 (error con Mantis caído).
-3. Prueba negativa:
+3. Mostrar los flujos **02** (verificación de backup) y **03** (informe a Nextcloud) en el editor, y
+   el archivo `informe-semanal-2026-11-13.md` dentro de Nextcloud.
+4. Nextcloud: abrir `HIA-2026`, mostrar las 17 carpetas y el PDF. Entrar como `auditor` e intentar
+   subir: **403**. Entrar como `invitado`: no ve la carpeta.
+5. Prueba negativa del webhook:
 
 ```powershell
 curl.exe -s -o NUL -w "sin token -> %{http_code}`n" -X POST http://127.0.0.1:5678/webhook/alerta -H "Content-Type: application/json" -d "{}"
@@ -170,7 +175,8 @@ curl.exe -s -o NUL -w "sin token -> %{http_code}`n" -X POST http://127.0.0.1:567
 Debe dar **401**.
 
 **Qué decir**: "Si Mantis está caído, la ejecución queda en error y no se pierde: Alertmanager
-reintenta. El flujo 2 y el 3 están declarados como pendientes en el doc 13 y en limitaciones."
+reintenta. El flujo 2 verifica el backup y crea incidencia si está viejo; el 3 sube el informe
+semanal a Nextcloud por WebDAV."
 
 ### 16:00–18:00 · R5 — Publicación y seguridad (2 min)
 
@@ -212,6 +218,7 @@ Cerrar con la URL pública en pantalla y el repo:
 | El celular no navega | usar la notebook | "el punto es el HTTPS, no el dispositivo" |
 | La alerta no dispara en 2 min | abrir `evidence/10/` | "el `for` es 2 min; mostramos la corrida real" |
 | n8n no crea la incidencia | mostrar ejecución #18 | "el flujo funciona; ahora Mantis no responde" |
+| Nextcloud no abre | mostrar la carpeta local `docs/informe/` | "el repo es la fuente de verdad" |
 | El deploy falla | `./scripts/deploy.ps1 -Rollback` | "esto es exactamente el rollback" |
 | Se cae la base | `docker compose up -d db` | "el volumen persiste; probado en §4" |
 | Pregunta que no sabemos | "no lo medimos, lo anotamos" | nunca inventar un número |
@@ -229,6 +236,7 @@ Cerrar con la URL pública en pantalla y el repo:
 | ¿Mantis o Jira? | Jira para Scrum, Mantis para incidencias: son propósitos distintos | 12 |
 | ¿Qué pasa si n8n está caído? | Alertmanager reintenta; la ejecución queda en error | 13 |
 | ¿La app es segura? | no se afirma: se midió. ZAP 0 fallos, 2 CVE declaradas | 14 |
+| ¿Dónde está la documentación? | Nextcloud con 17 carpetas y permisos por grupo; el repo es la fuente | 12 |
 | ¿Restauraron un backup? | sí, 12,5 min, conteos idénticos | 15 |
 
 ## 6. Lo que no se hace en la demo

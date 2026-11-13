@@ -14,6 +14,7 @@ flowchart TB
     subgraph CF[Cloudflare]
         T1[Túnel app]
         T2[Túnel administración]
+        T3[Túnel Nextcloud]
     end
 
     subgraph HOST[Host Windows + Docker Desktop]
@@ -31,6 +32,7 @@ flowchart TB
             MAN[Mantis :80]
             EDGE["edge<br/>Basic auth :8080-8082"]
             PGE[postgres-exporter]
+            NC["Nextcloud :80"]
         end
 
         subgraph MONNET[monnet]
@@ -44,6 +46,7 @@ flowchart TB
 
     U -->|HTTPS 443| T1 --> FE
     U -->|HTTPS 443| T2 --> EDGE
+    U -->|HTTPS 443| T3 --> NC
     EDGE --> PGA
     EDGE --> MAN
     FE -->|"/api/*"| BE
@@ -55,9 +58,9 @@ flowchart TB
     GRAF --> PROM
 ```
 
-Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y siete de
-operación (`mantis`, `prometheus`, `alertmanager`, `grafana`, `n8n`, `edge`, `registry`), más cuatro
-exporters. Todos los puertos publicados están en `127.0.0.1`.
+Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y ocho de
+operación (`mantis`, `nextcloud`, `prometheus`, `alertmanager`, `grafana`, `n8n`, `edge`, `registry`),
+más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
 
 ## 2. Componentes y responsabilidades
 
@@ -69,6 +72,7 @@ exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `db-replica` | Réplica de solo lectura por streaming asíncrono | PostgreSQL 16.4 | ninguno |
 | `pgadmin` | Administración de la base | pgAdmin 8 | `127.0.0.1:8080` |
 | `mantis` | Gestión de incidencias (§11) | MantisBT 2.28.4 sobre PostgreSQL | `127.0.0.1:8081` |
+| `nextcloud` | Gestión documental con permisos por grupo (§12) | Nextcloud 30 sobre PostgreSQL | `127.0.0.1:8082` |
 | `prometheus` | Recolección y evaluación de reglas | Prometheus 2.54 | `127.0.0.1:9090` |
 | `alertmanager` | Agrupación, silencios y envío a n8n | Alertmanager 0.27 | `127.0.0.1:9093` |
 | `grafana` | 8 paneles de observabilidad | Grafana 11 | `127.0.0.1:3001` |
@@ -86,6 +90,7 @@ exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `db-replica` | `dbnet` | **ninguno** | solo lectura, sin exposición |
 | `pgadmin` | `dbnet` | `127.0.0.1:8080` | administración, jamás expuesta a Internet |
 | `mantis` | `dbnet` | `127.0.0.1:8081` | perfil `ops`; acceso por el borde |
+| `nextcloud` | `dbnet` | `127.0.0.1:8082` | perfil `ops`; túnel directo (login propio) |
 | `prometheus` | `monnet`, `appnet`, `dbnet` | `127.0.0.1:9090` | necesita scrapear exporters de las tres redes |
 | `n8n` | `appnet`, `dbnet`, `monnet` | `127.0.0.1:5678` | recibe webhooks y escribe en Mantis y en su base |
 
@@ -219,8 +224,8 @@ administrativas quedan detrás de HTTP Basic en `edge`, y además tienen su prop
 
 ## 10. Estado actual
 
-Todo lo planificado para §6, §7, §9, §10 y §13 está desplegado y verificado. Lo que no está:
+Todo lo planificado para §6, §7, §9, §10, §12 y §13 está desplegado y verificado. Lo que no está:
 
-- **§12 Nextcloud**: no desplegado (declarado en `16-limitaciones.md`, G1).
-- **Flujos 2 y 3 de n8n**: dependen de una imagen con `postgresql-client` y de Nextcloud.
+- **Flujos 2 y 3 de n8n**: el 2 necesita una imagen con `postgresql-client`; el 3 está implementado
+  pero no programado (ver `13-automatizacion.md`).
 - **Failover automático**: fuera de alcance por diseño (D-04).

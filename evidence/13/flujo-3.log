@@ -1,0 +1,28 @@
+=== flujo 3: informe semanal a Nextcloud (2026-11-13) ===
+
+Workflow: "03 - Informe semanal a Nextcloud" (id tMnB1kUVSTJMBbpi)
+Disparador: Cron semanal (lunes 07:00) + ejecucion manual para la prueba.
+
+Cadena:
+  Cron -> GET http://prometheus:9090/api/v1/query (CPU)
+       -> GET http://prometheus:9090/api/v1/query (memoria)
+       -> Code: arma el markdown
+       -> PUT http://nextcloud/remote.php/dav/files/admin/HIA-2026/00-informe-consolidado/informe-semanal-YYYY-MM-DD.md
+
+Resultado de la ejecucion:
+  "executionStatus": "success"
+  "lastNodeExecuted": "Subir a Nextcloud"
+
+Archivo creado en Nextcloud:
+  -rw-r--r-- 1 www-data www-data 263 Nov 13 18:33 informe-semanal-2026-11-13.md
+
+Contenido:
+  # Informe semanal - HIA-2026
+  Generado: 2026-11-13T18:33:xxZ
+  | Metrica | Valor |
+  | CPU del host | 28.3 % |
+  | Memoria usada | 26.1 % |
+  Fuente: Prometheus (http://prometheus:9090), ultimo valor disponible.
+
+Credenciales: el workflow versionado tiene __NC_USER__ y __NC_BASIC__; el entrypoint los
+reemplaza por el usuario admin y el header Basic en base64. El repo no contiene la contrasena.
