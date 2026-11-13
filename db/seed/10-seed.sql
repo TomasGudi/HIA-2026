@@ -54,6 +54,9 @@ SET session_replication_role = replica;
 TRUNCATE "_UserFollows", "_UserFavorites", "_ArticleToTag", "Comment", "Article", "Tag", "User" RESTART IDENTITY CASCADE;
 
 \echo '>>> 2/6 usuarios'
+-- demo = true: el API filtra el listado público por `author.demo = true`
+-- (article.service.ts, buildFindAllQuery). Con demo = false los 6M de artículos
+-- existen pero no aparecen en GET /api/articles. No es un dato cosmético.
 INSERT INTO "User" (id, email, username, password, bio, demo)
 SELECT g,
        'user' || g || '@example.com',
@@ -61,7 +64,7 @@ SELECT g,
        -- hash ficticio con formato bcrypt: NO es una credencial válida
        '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
        CASE WHEN g % 7 = 0 THEN 'Bio del usuario ' || g ELSE NULL END,
-       false
+       true
 FROM generate_series(1, :users) AS g;
 SELECT setval(pg_get_serial_sequence('"User"', 'id'), :users);
 

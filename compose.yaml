@@ -121,6 +121,53 @@ services:
     networks:
       - dbnet
 
+  # ---------------------------------------------------------------
+  # Aplicación (§7): backend y frontend en contenedores separados,
+  # comunicados por la red interna appnet. Solo el frontend publica
+  # puerto, y en loopback: en producción se llega por túnel (§9).
+  # ---------------------------------------------------------------
+  backend:
+    build:
+      context: ./app/backend
+    image: pi-backend:dev
+    container_name: pi-backend
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      # dentro de la red Docker el puerto de la DB es 5432 (no el 5433 del host)
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public&connection_limit=10
+      JWT_SECRET: ${JWT_SECRET}
+    expose:
+      - "3000"
+    networks:
+      - appnet
+      - dbnet
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))\""]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+  frontend:
+    build:
+      context: ./app/frontend
+    image: pi-frontend:dev
+    container_name: pi-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      # solo loopback; la publicación real es por túnel (§9)
+      - "127.0.0.1:8090:80"
+    networks:
+      - appnet
+
 volumes:
   pgdata:
     name: pi-pgdata
@@ -130,6 +177,9 @@ volumes:
     name: pi-mantis-files
 
 networks:
+  appnet:
+    name: pi-appnet
+    driver: bridge
   dbnet:
     name: pi-dbnet
     driver: bridge

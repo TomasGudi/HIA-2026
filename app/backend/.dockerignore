@@ -1,0 +1,7 @@
+node_modules
+dist
+tmp
+.nx
+.env
+*.log
+e2e
