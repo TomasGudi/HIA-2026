@@ -34,13 +34,16 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Compilar
         run: npm run build
-      # Los tests heredados usan un mock de Prisma: no necesitan base de datos.
-      # NX_DAEMON=false evita el daemon de Nx en el runner.
+      # Los tests heredados usan un mock de Prisma: no necesitan base de datos,
+      # pero PrismaClient exige DATABASE_URL para construirse. Se pasa una
+      # URL ficticia (no se conecta) y un JWT_SECRET de prueba.
       - name: Tests
         run: npm test
         env:
           NX_DAEMON: 'false'
           CI: 'true'
+          DATABASE_URL: postgresql://test:test@127.0.0.1:5432/test?schema=public
+          JWT_SECRET: test-only-secret
 
   frontend:
     name: frontend
