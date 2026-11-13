@@ -165,17 +165,21 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 > el 3 depende de Nextcloud (§12). Declarado en el informe.
 
 
-## §14 Seguridad — R5
+## §14 Seguridad - R5
 
-| ☐ | Entregable | Evidencia esperada |
+| ☑ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | Matriz de amenazas | STRIDE × 7 componentes, con control y evidencia |
-| ☐ | Informe de vulnerabilidades | Trivy + npm audit + Semgrep/Bandit |
-| ☐ | Escaneo y corrección | antes/después de CVEs críticas |
-| ☐ | Pruebas controladas | SQLi mitigada, puerto DB cerrado, ZAP baseline |
-| ☐ | Controles | headers, rate limit, auth, secretos, non-root en contenedores |
-| ☐ | Respuesta a incidentes | runbook 5 fases |
-| ☐ | Flujo de incidentes con n8n | issue creado automáticamente + evidencia |
+| ☑ | Matriz de amenazas | STRIDE × 7 componentes en `docs/informe/14-seguridad.md` §2 |
+| ☑ | Informe de vulnerabilidades | Trivy, npm audit, Semgrep, Bandit y gitleaks en `evidence/14/` |
+| ☑ | Escaneo y corrección | críticas del backend 9 → 2 (`trivy-backend-despues.txt`) |
+| ☑ | Pruebas controladas | SQLi (3 payloads), nmap y rate limit |
+| ☑ | Controles | headers, rate limit, non-root, rol mínimo de base |
+| ☑ | Respuesta a incidentes | runbook de 5 fases en `14-seguridad.md` §6 |
+| ☑ | Flujo de incidentes con n8n | alerta → incidencia #18 (`evidence/13/flujo-1.log`) |
+
+> Limitaciones declaradas: Mantis corre como root, Prometheus/Grafana sin auth propia,
+> `tar` y `zlib` con CVE crítica sin fix compatible.
+
 
 ## §15 Documentación y defensa — R5
 

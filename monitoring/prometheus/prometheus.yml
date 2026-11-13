@@ -50,7 +50,7 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-          - http://frontend/
+          - http://frontend:8080/
           - http://backend:3000/health
           - http://mantis/
     relabel_configs:

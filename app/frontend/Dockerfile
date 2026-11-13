@@ -11,14 +11,13 @@ RUN npm ci --no-audit --no-fund
 COPY . .
 RUN npm run build
 
-FROM nginx:1.27-alpine
-RUN addgroup -S app && adduser -S app -G app \
- && rm -rf /usr/share/nginx/html/*
+# §14: imagen "unprivileged" de nginx. Corre como uid 101 (no root) y
+# escucha en 8080, que es un puerto no privilegiado.
+FROM nginxinc/nginx-unprivileged:1.27-alpine
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY security-headers.conf /etc/nginx/snippets/security-headers.conf
 
-# nginx oficial corre como root para abrir :80; lo dejamos documentado como
-# decisión pendiente: en §14 se evalúa mover a :8080 sin privilegios.
-EXPOSE 80
+EXPOSE 8080
 HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
-  CMD wget -qO- http://127.0.0.1/healthz || exit 1
+  CMD wget -qO- http://127.0.0.1:8080/healthz || exit 1
