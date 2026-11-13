@@ -1,0 +1,5208 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Práctica Integradora Final 2026 — Informe técnico consolidado</title>
+<style>
+@page { size: A4; margin: 18mm 16mm 18mm 16mm; }
+* { box-sizing: border-box; }
+body {
+  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  font-size: 10.5pt; line-height: 1.5; color: #1a1a1a; margin: 0;
+}
+h1, h2, h3, h4 { font-family: "Segoe UI Semibold", "Segoe UI", Arial, sans-serif;
+  color: #0f2b46; line-height: 1.25; }
+h1 { font-size: 20pt; margin: 0 0 6pt; padding-bottom: 6pt;
+     border-bottom: 2px solid #0f2b46; page-break-before: always; }
+h2 { font-size: 14pt; margin: 16pt 0 5pt; color: #14456b; }
+h3 { font-size: 11.5pt; margin: 12pt 0 4pt; color: #1c5a86; }
+h2, h3, h4 { page-break-after: avoid; }
+p { margin: 0 0 6pt; text-align: justify; }
+ul, ol { margin: 0 0 7pt; padding-left: 16pt; }
+li { margin-bottom: 2pt; }
+table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt;
+        font-size: 8.6pt; page-break-inside: auto; }
+th { background: #0f2b46; color: #fff; text-align: left; padding: 4pt 5pt;
+     font-weight: 600; }
+td { border: 0.5pt solid #c9d4de; padding: 3.5pt 5pt; vertical-align: top; }
+tr:nth-child(even) td { background: #f4f7fa; }
+tr { page-break-inside: avoid; }
+code { font-family: "Cascadia Mono", Consolas, monospace; font-size: 8.6pt;
+       background: #eef2f6; padding: 0.5pt 3pt; border-radius: 2pt; }
+pre { background: #f6f8fa; border: 0.5pt solid #d7dee5; border-left: 3pt solid #1c5a86;
+      padding: 6pt 8pt; margin: 6pt 0 9pt; overflow-x: auto; page-break-inside: avoid;
+      white-space: pre-wrap; word-break: break-word; }
+pre code { background: none; padding: 0; font-size: 8.2pt; }
+blockquote { margin: 6pt 0; padding: 4pt 10pt; border-left: 3pt solid #b8c6d2;
+             background: #f7f9fb; color: #33475b; }
+a { color: #14456b; text-decoration: none; }
+hr { border: none; border-top: 0.5pt solid #c9d4de; margin: 12pt 0; }
+.portada { height: 245mm; display: flex; flex-direction: column;
+           justify-content: space-between; page-break-after: always; }
+.portada .marca { font-size: 9pt; letter-spacing: 2pt; text-transform: uppercase;
+                  color: #1c5a86; }
+.portada h1 { border: none; page-break-before: avoid; font-size: 30pt;
+              margin: 12pt 0 4pt; padding: 0; }
+.portada .sub { font-size: 14pt; color: #33475b; margin-bottom: 18pt; }
+.portada .meta { font-size: 9.5pt; color: #4a5b6b; }
+.portada table { font-size: 9pt; }
+.toc { page-break-after: always; }
+.toc h1 { page-break-before: avoid; }
+.toc ul { list-style: none; padding-left: 0; }
+.toc li { margin: 3pt 0; font-size: 10pt; }
+.toc .n1 { font-weight: 600; margin-top: 7pt; }
+.toc .n2 { padding-left: 14pt; color: #33475b; font-size: 9.2pt; }
+.aviso { font-size: 8.6pt; color: #4a5b6b; }
+.diagrama { margin: 6pt 0 10pt; text-align: center; page-break-inside: avoid; }
+.diagrama svg { max-width: 100%; height: auto; }
+</style>
+</head><body>
+
+<section class="portada">
+  <div>
+    <div class="marca">Práctica Integradora Final · 2026</div>
+    <h1>Práctica Integradora Final 2026</h1>
+    <div class="sub">Informe técnico consolidado</div>
+    <div class="meta">
+      Aplicación Conduit/RealWorld contenerizada con PostgreSQL 16, réplica streaming,
+      CI/CD, monitoreo, automatización con n8n y gestión de incidencias con Mantis.
+    </div>
+  </div>
+  <div>
+    <table>
+      <thead><tr><th>Rol</th><th>Responsabilidad</th><th>Secciones</th></tr></thead>
+      <tbody><tr><td><strong>R1</strong></td><td>Infraestructura y base de datos</td><td>§4, §5, §6</td></tr>
+<tr><td><strong>R2</strong></td><td>Aplicación y CI/CD</td><td>§1, §3, §7, §8</td></tr>
+<tr><td><strong>R3</strong></td><td>Observabilidad e incidencias</td><td>§10, §11</td></tr>
+<tr><td><strong>R4</strong></td><td>Automatización</td><td>§12, §13</td></tr>
+<tr><td><strong>R5</strong></td><td>Seguridad y documentación</td><td>§9, §14, §15</td></tr></tbody>
+    </table>
+    <p class="aviso">
+      Repositorio: https://github.com/TomasGudi/HIA-2026<br>
+      Backlog: Jira HIA-Scrum-2026 · Tablero HS2<br>
+      Fecha: 17 de noviembre de 2026
+    </p>
+  </div>
+</section>
+
+<section class="toc"><h1>Índice</h1><ul><li class="n1"><a href="#01-descripci-n-de-la-aplicaci-n">01 — Descripción de la aplicación</a></li><li class="n2"><a href="#1-qu-es">1. Qué es</a></li><li class="n2"><a href="#2-usuarios-y-permisos">2. Usuarios y permisos</a></li><li class="n2"><a href="#3-funcionalidades">3. Funcionalidades</a></li><li class="n2"><a href="#4-alcance-del-integrador">4. Alcance del integrador</a></li><li class="n2"><a href="#5-diagn-stico-t-cnico-inicial-y-plan-de-mejoras">5. Diagnóstico técnico inicial y plan de mejoras</a></li><li class="n2"><a href="#6-evidencia">6. Evidencia</a></li><li class="n1"><a href="#02-arquitectura-general">02 — Arquitectura general</a></li><li class="n2"><a href="#1-vista-de-despliegue">1. Vista de despliegue</a></li><li class="n2"><a href="#2-componentes-y-responsabilidades">2. Componentes y responsabilidades</a></li><li class="n2"><a href="#3-redes-y-exposici-n">3. Redes y exposición</a></li><li class="n2"><a href="#4-flujo-de-una-petici-n">4. Flujo de una petición</a></li><li class="n2"><a href="#5-replicaci-n">5. Replicación</a></li><li class="n2"><a href="#6-ci-cd">6. CI/CD</a></li><li class="n2"><a href="#7-monitoreo-y-alertas">7. Monitoreo y alertas</a></li><li class="n2"><a href="#8-publicaci-n-en-internet">8. Publicación en Internet</a></li><li class="n2"><a href="#9-decisiones-estructurales">9. Decisiones estructurales</a></li><li class="n2"><a href="#10-estado-actual">10. Estado actual</a></li><li class="n1"><a href="#03-inventario-tecnol-gico">03 — Inventario tecnológico</a></li><li class="n2"><a href="#backend">Backend</a></li><li class="n2"><a href="#frontend-reescrito-d-18">Frontend (reescrito, D-18)</a></li><li class="n2"><a href="#base-de-datos">Base de datos</a></li><li class="n2"><a href="#infraestructura">Infraestructura</a></li><li class="n2"><a href="#servicios-previstos-10-11-12-13">Servicios previstos (§10, §11, §12, §13)</a></li><li class="n2"><a href="#eventos-de-ciberseguridad-considerados-al-elegir-el-stack">Eventos de ciberseguridad considerados al elegir el stack</a></li><li class="n2"><a href="#evidencia">Evidencia</a></li><li class="n1"><a href="#04-manual-de-instalaci-n">04 — Manual de instalación</a></li><li class="n2"><a href="#1-objetivo">1. Objetivo</a></li><li class="n2"><a href="#2-requisitos">2. Requisitos</a></li><li class="n2"><a href="#3-instalaci-n-paso-a-paso">3. Instalación paso a paso</a></li><li class="n2"><a href="#4-verificaci-n">4. Verificación</a></li><li class="n2"><a href="#5-puertos-publicados">5. Puertos publicados</a></li><li class="n2"><a href="#6-problemas-frecuentes">6. Problemas frecuentes</a></li><li class="n2"><a href="#7-tiempos-medidos">7. Tiempos medidos</a></li><li class="n2"><a href="#8-decisiones">8. Decisiones</a></li><li class="n2"><a href="#9-limitaciones">9. Limitaciones</a></li><li class="n2"><a href="#10-preguntas-frecuentes">10. Preguntas frecuentes</a></li><li class="n1"><a href="#05-configuraci-n-docker">05 — Configuración Docker</a></li><li class="n2"><a href="#1-servicios">1. Servicios</a></li><li class="n2"><a href="#2-redes">2. Redes</a></li><li class="n2"><a href="#3-vol-menes">3. Volúmenes</a></li><li class="n2"><a href="#4-im-genes">4. Imágenes</a></li><li class="n2"><a href="#5-variables-de-entorno">5. Variables de entorno</a></li><li class="n2"><a href="#6-verificaci-n-evidencia">6. Verificación (evidencia)</a></li><li class="n2"><a href="#7-limitaciones">7. Limitaciones</a></li><li class="n1"><a href="#06-migraci-n-y-carga-de-datos">06 — Migración y carga de datos</a></li><li class="n2"><a href="#1-objetivo-2">1. Objetivo</a></li><li class="n2"><a href="#2-m-todo">2. Método</a></li><li class="n2"><a href="#3-tiempos-medidos">3. Tiempos medidos</a></li><li class="n2"><a href="#4-tama-o-final">4. Tamaño final</a></li><li class="n2"><a href="#5-incidente-de-carga-y-su-resoluci-n-d-19">5. Incidente de carga y su resolución (D-19)</a></li><li class="n2"><a href="#6-verificaci-n-de-integridad-evidencia">6. Verificación de integridad (evidencia)</a></li><li class="n2"><a href="#7-par-metros-ajustados-para-la-carga-d-20">7. Parámetros ajustados para la carga (D-20)</a></li><li class="n2"><a href="#8-reproducci-n">8. Reproducción</a></li><li class="n2"><a href="#9-limitaciones-2">9. Limitaciones</a></li><li class="n1"><a href="#07-informe-de-optimizaci-n-sql">07 — Informe de optimización SQL</a></li><li class="n2"><a href="#1-m-todo">1. Método</a></li><li class="n2"><a href="#2-resultado-general">2. Resultado general</a></li><li class="n2"><a href="#3-an-lisis-consulta-por-consulta">3. Análisis consulta por consulta</a></li><li class="n2"><a href="#4-ndices-y-objetos-creados-justificaci-n-y-costo">4. Índices y objetos creados: justificación y costo</a></li><li class="n2"><a href="#5-par-metros-del-motor">5. Parámetros del motor</a></li><li class="n2"><a href="#6-limitaciones">6. Limitaciones</a></li><li class="n2"><a href="#7-evidencia">7. Evidencia</a></li><li class="n1"><a href="#08-configuraci-n-y-pruebas-de-replicaci-n">08 — Configuración y pruebas de replicación</a></li><li class="n2"><a href="#1-arquitectura-implementada">1. Arquitectura implementada</a></li><li class="n2"><a href="#2-configuraci-n">2. Configuración</a></li><li class="n2"><a href="#3-verificaci-n-de-replicaci-n">3. Verificación de replicación</a></li><li class="n2"><a href="#4-pruebas-de-fallo">4. Pruebas de fallo</a></li><li class="n2"><a href="#5-failover-procedimiento-manual-no-autom-tico">5. Failover: procedimiento manual (no automático)</a></li><li class="n2"><a href="#6-divergencia-detectada-lo-m-s-importante-de-la-prueba">6. Divergencia detectada (lo más importante de la prueba)</a></li><li class="n2"><a href="#7-limitaciones-2">7. Limitaciones</a></li><li class="n2"><a href="#8-evidencia">8. Evidencia</a></li><li class="n1"><a href="#09-integraci-n-y-despliegue-continuos">09 — Integración y despliegue continuos</a></li><li class="n2"><a href="#1-objetivo-3">1. Objetivo</a></li><li class="n2"><a href="#2-herramienta">2. Herramienta</a></li><li class="n2"><a href="#3-integraci-n-continua-github-workflows-ci-yml">3. Integración continua (.github/workflows/ci.yml)</a></li><li class="n2"><a href="#4-protecci-n-de-main">4. Protección de main</a></li><li class="n2"><a href="#5-publicaci-n-de-im-genes-github-workflows-release-yml">5. Publicación de imágenes (.github/workflows/release.yml)</a></li><li class="n2"><a href="#6-registro">6. Registro</a></li><li class="n2"><a href="#7-despliegue-pull-based-scripts-deploy-ps1">7. Despliegue pull-based (scripts/deploy.ps1)</a></li><li class="n2"><a href="#8-rollback-probado">8. Rollback probado</a></li><li class="n2"><a href="#9-flujo-completo">9. Flujo completo</a></li><li class="n2"><a href="#10-estado">10. Estado</a></li><li class="n2"><a href="#11-evidencia">11. Evidencia</a></li><li class="n1"><a href="#10-publicaci-n-en-internet">10 — Publicación en Internet</a></li><li class="n2"><a href="#1-objetivo-4">1. Objetivo</a></li><li class="n2"><a href="#2-arquitectura-de-publicaci-n">2. Arquitectura de publicación</a></li><li class="n2"><a href="#3-endpoints-publicados">3. Endpoints publicados</a></li><li class="n2"><a href="#4-autenticaci-n-en-rutas-administrativas">4. Autenticación en rutas administrativas</a></li><li class="n2"><a href="#5-verificaci-n-de-superficie-con-nmap">5. Verificación de superficie con nmap</a></li><li class="n2"><a href="#6-riesgos-y-limitaciones">6. Riesgos y limitaciones</a></li><li class="n2"><a href="#7-plan-b-tailscale-funnel">7. Plan B: Tailscale Funnel</a></li><li class="n2"><a href="#8-evidencia-2">8. Evidencia</a></li><li class="n1"><a href="#11-monitoreo">11 — Monitoreo</a></li><li class="n2"><a href="#1-objetivo-y-alcance">1. Objetivo y alcance</a></li><li class="n2"><a href="#2-arquitectura">2. Arquitectura</a></li><li class="n2"><a href="#3-targets-y-qu-mide-cada-uno">3. Targets y qué mide cada uno</a></li><li class="n2"><a href="#4-las-6-reglas-y-su-umbral">4. Las 6 reglas y su umbral</a></li><li class="n2"><a href="#5-dashboard-monitoring-dashboards-pi-overview-json">5. Dashboard (monitoring/dashboards/pi-overview.json)</a></li><li class="n2"><a href="#6-limitaciones-encontradas-y-qu-se-hizo">6. Limitaciones encontradas (y qué se hizo)</a></li><li class="n2"><a href="#7-fuera-de-alcance">7. Fuera de alcance</a></li><li class="n2"><a href="#8-operaci-n">8. Operación</a></li><li class="n2"><a href="#9-evidencia">9. Evidencia</a></li><li class="n1"><a href="#12-gesti-n-de-incidencias-mantis">12 — Gestión de incidencias (Mantis)</a></li><li class="n2"><a href="#1-objetivo-5">1. Objetivo</a></li><li class="n2"><a href="#2-herramienta-y-despliegue">2. Herramienta y despliegue</a></li><li class="n2"><a href="#3-incidentes-del-despliegue-reales-encontrados-durante-la-puesta-en-marcha">3. Incidentes del despliegue (reales, encontrados durante la puesta en marcha)</a></li><li class="n2"><a href="#4-configuraci-n-de-categor-as-y-prioridades">4. Configuración de categorías y prioridades</a></li><li class="n2"><a href="#5-vinculaci-n-con-el-c-digo">5. Vinculación con el código</a></li><li class="n2"><a href="#6-estado">6. Estado</a></li><li class="n2"><a href="#7-configuraci-n">7. Configuración</a></li><li class="n2"><a href="#8-las-incidencias-registradas">8. Las incidencias registradas</a></li><li class="n1"><a href="#11-14">11, #14).</a></li><li class="n2"><a href="#9-proceso-de-gesti-n">9. Proceso de gestión</a></li><li class="n2"><a href="#10-campos-personalizados">10. Campos personalizados</a></li><li class="n2"><a href="#11-evidencia-2">11. Evidencia</a></li><li class="n1"><a href="#13-automatizaci-n-con-n8n">13 — Automatización con n8n</a></li><li class="n2"><a href="#1-objetivo-6">1. Objetivo</a></li><li class="n2"><a href="#2-despliegue">2. Despliegue</a></li><li class="n2"><a href="#3-flujo-1-alerta-de-prometheus-a-incidencia-en-mantis">3. Flujo 1 — Alerta de Prometheus a incidencia en Mantis</a></li><li class="n2"><a href="#4-pruebas-de-integraci-n">4. Pruebas de integración</a></li><li class="n2"><a href="#5-riesgos-de-las-automatizaciones">5. Riesgos de las automatizaciones</a></li><li class="n2"><a href="#6-flujos-2-y-3-no-implementados">6. Flujos 2 y 3 — no implementados</a></li><li class="n2"><a href="#7-evidencia-2">7. Evidencia</a></li><li class="n1"><a href="#14-seguridad-inform-tica">14 — Seguridad informática</a></li><li class="n2"><a href="#1-objetivo-y-alcance-2">1. Objetivo y alcance</a></li><li class="n2"><a href="#2-matriz-stride">2. Matriz STRIDE</a></li><li class="n2"><a href="#3-informe-de-vulnerabilidades">3. Informe de vulnerabilidades</a></li><li class="n2"><a href="#4-controles-aplicados">4. Controles aplicados</a></li><li class="n2"><a href="#5-pruebas-controladas">5. Pruebas controladas</a></li><li class="n2"><a href="#6-runbook-de-respuesta-a-incidentes">6. Runbook de respuesta a incidentes</a></li><li class="n2"><a href="#7-limitaciones-declaradas">7. Limitaciones declaradas</a></li><li class="n2"><a href="#8-flujo-de-incidentes-con-n8n">8. Flujo de incidentes con n8n</a></li><li class="n2"><a href="#9-evidencia-2">9. Evidencia</a></li><li class="n1"><a href="#15-backup-y-restauraci-n">15 — Backup y restauración</a></li><li class="n2"><a href="#1-pol-tica">1. Política</a></li><li class="n2"><a href="#2-ejecuci-n-y-resultados-medidos">2. Ejecución y resultados medidos</a></li><li class="n2"><a href="#3-prueba-de-restauraci-n">3. Prueba de restauración</a></li><li class="n2"><a href="#4-persistencia-de-datos-vol-menes">4. Persistencia de datos (volúmenes)</a></li><li class="n2"><a href="#5-limitaciones">5. Limitaciones</a></li><li class="n2"><a href="#6-evidencia-2">6. Evidencia</a></li><li class="n1"><a href="#16-limitaciones-y-mejoras-futuras">16 — Limitaciones y mejoras futuras</a></li><li class="n2"><a href="#1-objetivo-7">1. Objetivo</a></li><li class="n2"><a href="#2-limitaciones-de-arquitectura">2. Limitaciones de arquitectura</a></li><li class="n2"><a href="#3-limitaciones-de-datos">3. Limitaciones de datos</a></li><li class="n2"><a href="#4-limitaciones-de-seguridad">4. Limitaciones de seguridad</a></li><li class="n2"><a href="#5-limitaciones-de-automatizaci-n">5. Limitaciones de automatización</a></li><li class="n2"><a href="#6-limitaciones-de-gesti-n">6. Limitaciones de gestión</a></li><li class="n2"><a href="#7-limitaciones-de-publicaci-n">7. Limitaciones de publicación</a></li><li class="n2"><a href="#8-lo-que-s-est-resuelto">8. Lo que sí está resuelto</a></li><li class="n2"><a href="#9-mejoras-priorizadas">9. Mejoras priorizadas</a></li><li class="n2"><a href="#10-preguntas-frecuentes-2">10. Preguntas frecuentes</a></li></ul></section>
+<section class="doc" data-fuente="01-descripcion-app.md"><h1 id="01-descripci-n-de-la-aplicaci-n">01 — Descripción de la aplicación</h1>
+<h2 id="1-qu-es">1. Qué es</h2>
+<p><strong>Conduit</strong> es una aplicación web de publicación de artículos (blog social tipo Medium) que
+implementa el contrato de API <strong>RealWorld</strong>: usuarios, artículos, etiquetas, comentarios,
+favoritos y seguimiento entre usuarios. Es el caso de estudio que la comunidad RealWorld usa
+para comparar implementaciones de stacks completos.</p>
+<p>El proyecto del integrador <strong>reutiliza el backend</strong> de referencia
+(<code>node-express-realworld-example-app</code>, MIT) y <strong>reescribe la capa de presentación</strong> con Vite +
+React 18 (ver <code>docs/05-decisiones.md</code> D-18). El dominio, el esquema relacional y el contrato de
+API son los de la aplicación existente.</p>
+<h2 id="2-usuarios-y-permisos">2. Usuarios y permisos</h2>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Puede</th>
+<th>No puede</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Visitante</strong> (sin sesión)</td>
+<td>Ver listado de artículos, filtrar por etiqueta, leer un artículo y sus comentarios</td>
+<td>Publicar, comentar, favoritear</td>
+</tr>
+<tr>
+<td><strong>Usuario registrado</strong></td>
+<td>Todo lo anterior + publicar artículos, comentar, marcar favoritos, editar su perfil</td>
+<td>Editar o borrar artículos de otros</td>
+</tr>
+<tr>
+<td><strong>Administrador de infraestructura</strong></td>
+<td>Acceder a pgAdmin, Grafana, n8n y Mantis <strong>por túnel</strong></td>
+<td>Acceder desde Internet sin autenticación</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-funcionalidades">3. Funcionalidades</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Funcionalidad</th>
+<th>Origen</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>F1</td>
+<td>Registro e inicio de sesión con JWT</td>
+<td>heredada (backend)</td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F2</td>
+<td>Listado paginado de artículos</td>
+<td>heredada</td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F3</td>
+<td>Filtro por etiqueta</td>
+<td>heredada</td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F4</td>
+<td>Detalle de artículo con comentarios</td>
+<td>heredada</td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F5</td>
+<td>Publicación de artículos con etiquetas</td>
+<td>heredada</td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F6</td>
+<td>Comentarios sobre artículos</td>
+<td>heredada</td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F7</td>
+<td>Favoritos por usuario</td>
+<td>heredada (API)</td>
+<td>API operativa; botón en UI: pendiente</td>
+</tr>
+<tr>
+<td>F8</td>
+<td>Perfil de usuario y seguimiento</td>
+<td>heredada (API)</td>
+<td>API operativa; pantalla: pendiente</td>
+</tr>
+<tr>
+<td>F9</td>
+<td>Feed de autores seguidos</td>
+<td>heredada (API)</td>
+<td>API operativa; pantalla: pendiente</td>
+</tr>
+<tr>
+<td>F10</td>
+<td>Interfaz SPA con rutas y proxy <code>/api</code></td>
+<td><strong>reescrita</strong></td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F11</td>
+<td>Endpoint <code>/healthz</code> para monitoreo</td>
+<td><strong>agregada</strong></td>
+<td>operativa</td>
+</tr>
+<tr>
+<td>F12</td>
+<td>Dataset sintético de 6M por tabla de volumen</td>
+<td><strong>agregada</strong></td>
+<td>operativa</td>
+</tr>
+</tbody>
+</table>
+<p>Las funcionalidades F7–F9 existen en la API y son parte del contrato, pero la interfaz de
+demostración prioriza los flujos que se muestran en la defensa. Se declaran como alcance parcial
+en <code>docs/informe/16-limitaciones.md</code> en lugar de figurar como terminadas.</p>
+<h2 id="4-alcance-del-integrador">4. Alcance del integrador</h2>
+<table>
+<thead>
+<tr>
+<th>Se modifica</th>
+<th>Se agrega</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conexión a PostgreSQL por variables de entorno</td>
+<td>Contenerización completa (DB, backend, frontend)</td>
+</tr>
+<tr>
+<td>Validación obligatoria de <code>JWT_SECRET</code></td>
+<td>Réplica streaming + failover manual</td>
+</tr>
+<tr>
+<td>Capa de presentación (reescrita)</td>
+<td>Dataset masivo + 8 consultas optimizadas</td>
+</tr>
+<tr>
+<td>—</td>
+<td>CI/CD, monitoreo, backups, incidencias, n8n, seguridad</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-diagn-stico-t-cnico-inicial-y-plan-de-mejoras">5. Diagnóstico técnico inicial y plan de mejoras</h2>
+<p>Hallazgos sobre el estado recibido (antes de intervenir), con su tratamiento.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Hallazgo</th>
+<th>Categoría</th>
+<th>Impacto</th>
+<th>Mejora aplicada</th>
+<th>Sección</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td><code>JWT_SECRET</code> con fallback <code>'superSecret'</code>: si la variable falta, la API firma tokens con una clave pública conocida</td>
+<td>Seguridad</td>
+<td><strong>Crítico</strong></td>
+<td><code>getJwtSecret()</code> con fail-fast; sin fallback</td>
+<td>§14</td>
+</tr>
+<tr>
+<td>H2</td>
+<td>El frontend hardcodea <code>https://conduit.productionready.io/api</code></td>
+<td>Configuración</td>
+<td>Alto</td>
+<td>URL por variable de entorno + proxy de nginx</td>
+<td>§7</td>
+</tr>
+<tr>
+<td>H3</td>
+<td>Frontend con <code>react-scripts 1.1.1</code> (2018), sin lockfile: build no reproducible</td>
+<td>Mantenibilidad</td>
+<td>Alto</td>
+<td>Reescritura con Vite 5 + lockfile</td>
+<td>§7/§8</td>
+</tr>
+<tr>
+<td>H4</td>
+<td>El upstream no trae Dockerfile ni compose utilizable</td>
+<td>Despliegue</td>
+<td>Alto</td>
+<td>Imágenes multi-stage + compose</td>
+<td>§4/§7</td>
+</tr>
+<tr>
+<td>H5</td>
+<td>Sin réplica, sin backups, sin procedimiento de recuperación</td>
+<td>Disponibilidad</td>
+<td>Alto</td>
+<td>Réplica streaming + backup verificado</td>
+<td>§6/§15</td>
+</tr>
+<tr>
+<td>H6</td>
+<td>Sin observabilidad: no hay <code>/metrics</code> ni logs estructurados</td>
+<td>Operación</td>
+<td>Alto</td>
+<td>Prometheus + exporters + dashboards</td>
+<td>§10</td>
+</tr>
+<tr>
+<td>H7</td>
+<td>Índices solo los implícitos del ORM; ninguna estrategia de consultas</td>
+<td>Rendimiento</td>
+<td>Medio</td>
+<td>8 consultas medidas antes/después</td>
+<td>§5</td>
+</tr>
+<tr>
+<td>H8</td>
+<td>Esquema sin migraciones versionadas (depende de <code>db push</code>)</td>
+<td>Mantenibilidad</td>
+<td>Medio</td>
+<td><code>db/init/*.sql</code> versionado en el repo</td>
+<td>§4</td>
+</tr>
+<tr>
+<td>H9</td>
+<td>Sin tests de integración contra una base real</td>
+<td>Calidad</td>
+<td>Medio</td>
+<td>Suite de humo + CI con DB de servicio</td>
+<td>§8</td>
+</tr>
+<tr>
+<td>H10</td>
+<td>Credenciales en variables de entorno sin rotación documentada</td>
+<td>Seguridad</td>
+<td>Medio</td>
+<td><code>.env</code> fuera del repo + rotación + gitleaks</td>
+<td>§3/§14</td>
+</tr>
+<tr>
+<td>H11</td>
+<td>Sin límites de recursos ni healthchecks en contenedores</td>
+<td>Operación</td>
+<td>Bajo</td>
+<td><code>healthcheck</code> y límites por servicio</td>
+<td>§4/§10</td>
+</tr>
+<tr>
+<td>H12</td>
+<td><code>log_connections=off</code>: sin rastro de accesos a la base</td>
+<td>Auditoría</td>
+<td>Bajo</td>
+<td>Se documenta como decisión consciente de rendimiento</td>
+<td>§14</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-evidencia">6. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Procedencia y commit del código heredado</td>
+<td><code>app/UPSTREAM.txt</code></td>
+</tr>
+<tr>
+<td>Inventario de versiones</td>
+<td><code>docs/informe/03-inventario-tecnologico.md</code></td>
+</tr>
+<tr>
+<td>Diagrama de arquitectura</td>
+<td><code>docs/02-arquitectura.md</code></td>
+</tr>
+<tr>
+<td>Decisiones sobre el frontend</td>
+<td><code>docs/05-decisiones.md</code> D-18</td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="02-arquitectura.md"><h1 id="02-arquitectura-general">02 — Arquitectura general</h1>
+<p>Este documento describe <strong>lo que está desplegado hoy</strong>, no la arquitectura ideal. Cada componente
+de los diagramas existe en <code>compose.yaml</code> y se puede verificar con <code>docker compose ps</code>.</p>
+<h2 id="1-vista-de-despliegue">1. Vista de despliegue</h2>
+<pre class="mermaid">flowchart TB
+    subgraph INET[Internet]
+        U[Usuario / Docente]
+    end
+
+    subgraph CF[Cloudflare]
+        T1[Túnel app]
+        T2[Túnel administración]
+    end
+
+    subgraph HOST[Host Windows + Docker Desktop]
+
+        subgraph APPNET[appnet]
+            FE["frontend<br/>nginx unprivileged :8080"]
+            BE["backend<br/>Node 20 :3000"]
+            REG[registry local :5000]
+        end
+
+        subgraph DBNET[dbnet]
+            PG[("PostgreSQL 16.4<br/>primaria :5432")]
+            PGR[("réplica<br/>streaming async")]
+            PGA[pgAdmin :80]
+            MAN[Mantis :80]
+            EDGE["edge<br/>Basic auth :8080-8082"]
+            PGE[postgres-exporter]
+        end
+
+        subgraph MONNET[monnet]
+            PROM[Prometheus :9090]
+            AM[Alertmanager :9093]
+            GRAF[Grafana :3000]
+            N8N[n8n :5678]
+            SINK[alert-sink]
+        end
+    end
+
+    U -->|HTTPS 443| T1 --> FE
+    U -->|HTTPS 443| T2 --> EDGE
+    EDGE --> PGA
+    EDGE --> MAN
+    FE -->|"/api/*"| BE
+    BE --> PG
+    PG -->|"WAL streaming"| PGR
+    PROM --> PGE
+    PROM --> AM --> N8N
+    N8N --> MAN
+    GRAF --> PROM
+</pre>
+<p>Cinco contenedores de aplicación (<code>frontend</code>, <code>backend</code>, <code>db</code>, <code>db-replica</code>, <code>pgadmin</code>) y siete de
+operación (<code>mantis</code>, <code>prometheus</code>, <code>alertmanager</code>, <code>grafana</code>, <code>n8n</code>, <code>edge</code>, <code>registry</code>), más cuatro
+exporters. Todos los puertos publicados están en <code>127.0.0.1</code>.</p>
+<h2 id="2-componentes-y-responsabilidades">2. Componentes y responsabilidades</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Responsabilidad</th>
+<th>Tecnología</th>
+<th>Puerto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>frontend</code></td>
+<td>SPA; sirve estático y proxea <code>/api</code> al backend</td>
+<td>Vite 5 + React 18 → nginx 1.27 unprivileged</td>
+<td><code>127.0.0.1:8090</code></td>
+</tr>
+<tr>
+<td><code>backend</code></td>
+<td>API REST del dominio; JWT; healthcheck con ping a la base</td>
+<td>Node 20 + Express 4 + Prisma 4</td>
+<td>ninguno (<code>expose 3000</code>)</td>
+</tr>
+<tr>
+<td><code>db</code></td>
+<td>Persistencia y origen de la replicación</td>
+<td>PostgreSQL 16.4</td>
+<td><code>127.0.0.1:5433</code></td>
+</tr>
+<tr>
+<td><code>db-replica</code></td>
+<td>Réplica de solo lectura por streaming asíncrono</td>
+<td>PostgreSQL 16.4</td>
+<td>ninguno</td>
+</tr>
+<tr>
+<td><code>pgadmin</code></td>
+<td>Administración de la base</td>
+<td>pgAdmin 8</td>
+<td><code>127.0.0.1:8080</code></td>
+</tr>
+<tr>
+<td><code>mantis</code></td>
+<td>Gestión de incidencias (§11)</td>
+<td>MantisBT 2.28.4 sobre PostgreSQL</td>
+<td><code>127.0.0.1:8081</code></td>
+</tr>
+<tr>
+<td><code>prometheus</code></td>
+<td>Recolección y evaluación de reglas</td>
+<td>Prometheus 2.54</td>
+<td><code>127.0.0.1:9090</code></td>
+</tr>
+<tr>
+<td><code>alertmanager</code></td>
+<td>Agrupación, silencios y envío a n8n</td>
+<td>Alertmanager 0.27</td>
+<td><code>127.0.0.1:9093</code></td>
+</tr>
+<tr>
+<td><code>grafana</code></td>
+<td>8 paneles de observabilidad</td>
+<td>Grafana 11</td>
+<td><code>127.0.0.1:3001</code></td>
+</tr>
+<tr>
+<td><code>n8n</code></td>
+<td>Automatización: alerta → incidencia</td>
+<td>n8n 1.68</td>
+<td><code>127.0.0.1:5678</code></td>
+</tr>
+<tr>
+<td><code>edge</code></td>
+<td>Borde con Basic auth para las herramientas administrativas</td>
+<td>nginx 1.27</td>
+<td><code>127.0.0.1:8088-8091</code></td>
+</tr>
+<tr>
+<td><code>registry</code></td>
+<td>Plan B de imágenes (si GHCR no está disponible)</td>
+<td>registry 2</td>
+<td><code>127.0.0.1:5000</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-redes-y-exposici-n">3. Redes y exposición</h2>
+<table>
+<thead>
+<tr>
+<th>Servicio</th>
+<th>Redes</th>
+<th>Puerto publicado</th>
+<th>Justificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>frontend</code></td>
+<td><code>appnet</code></td>
+<td><code>127.0.0.1:8090</code></td>
+<td>único punto de entrada de la app</td>
+</tr>
+<tr>
+<td><code>backend</code></td>
+<td><code>appnet</code>, <code>dbnet</code></td>
+<td><strong>ninguno</strong> (<code>expose 3000</code>)</td>
+<td>solo alcanzable desde el frontend</td>
+</tr>
+<tr>
+<td><code>db</code></td>
+<td><code>dbnet</code></td>
+<td><code>127.0.0.1:5433</code></td>
+<td>acceso local para desarrollo; en prod no se publica</td>
+</tr>
+<tr>
+<td><code>db-replica</code></td>
+<td><code>dbnet</code></td>
+<td><strong>ninguno</strong></td>
+<td>solo lectura, sin exposición</td>
+</tr>
+<tr>
+<td><code>pgadmin</code></td>
+<td><code>dbnet</code></td>
+<td><code>127.0.0.1:8080</code></td>
+<td>administración, jamás expuesta a Internet</td>
+</tr>
+<tr>
+<td><code>mantis</code></td>
+<td><code>dbnet</code></td>
+<td><code>127.0.0.1:8081</code></td>
+<td>perfil <code>ops</code>; acceso por el borde</td>
+</tr>
+<tr>
+<td><code>prometheus</code></td>
+<td><code>monnet</code>, <code>appnet</code>, <code>dbnet</code></td>
+<td><code>127.0.0.1:9090</code></td>
+<td>necesita scrapear exporters de las tres redes</td>
+</tr>
+<tr>
+<td><code>n8n</code></td>
+<td><code>appnet</code>, <code>dbnet</code>, <code>monnet</code></td>
+<td><code>127.0.0.1:5678</code></td>
+<td>recibe webhooks y escribe en Mantis y en su base</td>
+</tr>
+</tbody>
+</table>
+<p>Las tres redes están aisladas entre sí: <code>appnet</code> no ve la base, <code>monnet</code> solo se cruza con las otras
+para scrapear. <code>dbnet</code> <strong>no</strong> tiene <code>internal: true</code> porque el contenedor necesita resolver el DNS
+de Docker y salir a Internet para <code>apt</code>/<code>npm</code> durante el build (decisión D-15).</p>
+<p>Todas las publicaciones son en <strong>loopback</strong>: no hay un solo puerto escuchando en <code>0.0.0.0</code>.</p>
+<h2 id="4-flujo-de-una-petici-n">4. Flujo de una petición</h2>
+<pre class="mermaid">sequenceDiagram
+    participant N as Navegador
+    participant F as frontend (nginx)
+    participant B as backend (Express)
+    participant P as Prisma
+    participant D as PostgreSQL
+
+    N->>F: GET /  (HTTPS por el túnel)
+    F-->>N: index.html + assets
+    N->>F: GET /api/articles
+    F->>B: proxy_pass :3000
+    B->>P: findMany()
+    P->>D: SELECT parametrizado
+    D-->>P: filas
+    P-->>B: objetos
+    B-->>F: JSON
+    F-->>N: JSON
+</pre>
+<p>Un solo origen ⇒ <strong>no hace falta CORS</strong> (el <code>cors()</code> del backend queda como red de seguridad para
+clientes externos, no como solución de arquitectura). El frontend agrega las cabeceras de seguridad
+y el rate limit de <code>/api/</code> antes de llegar al backend.</p>
+<h2 id="5-replicaci-n">5. Replicación</h2>
+<pre class="mermaid">flowchart LR
+    subgraph P[Primaria]
+        W[escrituras] --> WAL[(WAL)]
+    end
+    subgraph R[Réplica]
+        WALR[(WAL recibido)] --> RO[lecturas]
+    end
+    WAL -->|"pg_basebackup -R<br/>streaming asíncrono"| WALR
+    PGE[postgres-exporter] -.->|"pg_stat_replication"| P
+    PGE -.-> R
+</pre>
+<ul>
+<li>Método: <strong>streaming replication asíncrona</strong> con <code>pg_basebackup -R</code>.</li>
+<li><code>synchronous_commit=on</code> en la primaria: se prioriza integridad sobre latencia.</li>
+<li><strong>No hay failover automático.</strong> Sin Patroni/repmgr nada se promueve solo. La promoción es manual,
+  documentada y medida: <strong>RTO 8,6 s</strong> (§8).</li>
+<li>Métricas: <code>pg_stat_replication</code> (lag en bytes) y <code>pg_last_wal_replay_lsn()</code>.</li>
+</ul>
+<h2 id="6-ci-cd">6. CI/CD</h2>
+<pre class="mermaid">flowchart TB
+    DEV[commit en feature/*] --> PR[Pull Request]
+    PR --> CI{CI: 4 checks}
+    CI --> B1[backend: 26 tests]
+    CI --> B2[frontend: build Vite]
+    CI --> B3[compose: config válido]
+    CI --> B4[secrets: gitleaks]
+    B1 & B2 & B3 & B4 -->|verde| MERGE[merge a main]
+    MERGE --> PUB["Release: push a GHCR<br/>tag sha-XXXXXXX"]
+    PUB --> DEP["deploy.ps1: pull + up -d"]
+    DEP --> HC{/health en 90 s}
+    HC -->|falla| RB[rollback al tag anterior]
+    HC -->|ok| DONE[desplegado]
+</pre>
+<p><code>main</code> está protegida con los 4 checks en modo estricto y <code>enforce_admins</code>. El deploy es
+<strong>pull-based</strong>: el host baja la imagen de GHCR y verifica <code>/health</code>; si no responde, vuelve sola al
+tag anterior (<code>.deploy/state.json</code> guarda el historial).</p>
+<h2 id="7-monitoreo-y-alertas">7. Monitoreo y alertas</h2>
+<pre class="mermaid">flowchart LR
+    NODE[node-exporter] --> PROM
+    PGE[postgres-exporter] --> PROM
+    PGER[postgres-exporter réplica] --> PROM
+    BB[blackbox-exporter] --> PROM
+    PROM --> GRAF[Grafana<br/>8 paneles]
+    PROM -->|reglas| AM[Alertmanager]
+    AM -->|"webhook + Bearer"| N8N[n8n flujo 1]
+    AM --> SINK[alert-sink<br/>evidencia local]
+    N8N --> MANTIS[Mantis: incidencia]
+</pre>
+<p>Reglas activas: <code>ServicioCaido</code> (2 min), <code>CPUAlta</code> (85%, 5 min), <code>MemoriaAlta</code> (90%, 5 min),
+<code>DiscoCasiLleno</code>, <code>PostgresCaido</code> (1 min) y <code>ReplicacionAtrasada</code> (2 min). El flujo 1 está probado
+de punta a punta: alerta real → incidencia #18 en Mantis.</p>
+<h2 id="8-publicaci-n-en-internet">8. Publicación en Internet</h2>
+<pre class="mermaid">flowchart LR
+    U[Internet] -->|HTTPS 443| CF[Cloudflare]
+    CF -->|"túnel saliente QUIC"| CL[cloudflared]
+    CL --> FE["frontend:8080"]
+    CL --> EDGE["edge:8080/8081"]
+    EDGE --> PGA[pgAdmin]
+    EDGE --> MAN[Mantis]
+</pre>
+<p>El host <strong>no abre puertos</strong>: el túnel es saliente. El TLS lo termina Cloudflare. Las herramientas
+administrativas quedan detrás de HTTP Basic en <code>edge</code>, y además tienen su propio login.</p>
+<table>
+<thead>
+<tr>
+<th>Servicio</th>
+<th>Ruta pública</th>
+<th>Autenticación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aplicación</td>
+<td><code>https://&lt;random&gt;.trycloudflare.com</code></td>
+<td>login propio (JWT)</td>
+</tr>
+<tr>
+<td>pgAdmin</td>
+<td><code>https://&lt;random&gt;.trycloudflare.com</code></td>
+<td>Basic auth + login de pgAdmin</td>
+</tr>
+<tr>
+<td>Mantis</td>
+<td><code>https://&lt;random&gt;.trycloudflare.com</code></td>
+<td>Basic auth + login de Mantis</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-decisiones-estructurales">9. Decisiones estructurales</h2>
+<table>
+<thead>
+<tr>
+<th>Decisión</th>
+<th>Motivo</th>
+<th>Registro</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backend sin puerto publicado</td>
+<td>reduce superficie; el frontend es el único borde</td>
+<td>D-08</td>
+</tr>
+<tr>
+<td>Redes separadas <code>appnet</code> / <code>dbnet</code> / <code>monnet</code></td>
+<td>el frontend no debe hablar con la base</td>
+<td>§7</td>
+</tr>
+<tr>
+<td>Healthcheck con <code>SELECT 1</code></td>
+<td>un contenedor "up" con la base caída no es un servicio sano</td>
+<td>§7</td>
+</tr>
+<tr>
+<td>Imágenes multi-stage</td>
+<td>la imagen final no lleva toolchain ni devDependencies</td>
+<td>§14</td>
+</tr>
+<tr>
+<td>Frontend unprivileged (uid 101, :8080)</td>
+<td>un proceso comprometido no corre como root</td>
+<td>§14</td>
+</tr>
+<tr>
+<td>Mantis en perfil <code>ops</code></td>
+<td>no compite por recursos con la demo principal</td>
+<td>D-21</td>
+</tr>
+<tr>
+<td>Un solo motor (PostgreSQL)</td>
+<td>menos superficie y menos servicios que mantener</td>
+<td>D-03/D-21</td>
+</tr>
+<tr>
+<td>Failover manual</td>
+<td>Patroni exige 3 nodos; se declara y se mide</td>
+<td>D-04</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10-estado-actual">10. Estado actual</h2>
+<p>Todo lo planificado para §6, §7, §9, §10 y §13 está desplegado y verificado. Lo que no está:</p>
+<ul>
+<li><strong>§12 Nextcloud</strong>: no desplegado (declarado en <code>16-limitaciones.md</code>, G1).</li>
+<li><strong>Flujos 2 y 3 de n8n</strong>: dependen de una imagen con <code>postgresql-client</code> y de Nextcloud.</li>
+<li><strong>Failover automático</strong>: fuera de alcance por diseño (D-04).</li>
+</ul></section><section class="doc" data-fuente="03-inventario-tecnologico.md"><h1 id="03-inventario-tecnol-gico">03 — Inventario tecnológico</h1>
+<p>Versiones efectivamente usadas (no "la última que había"). Las de runtime están fijadas en los
+Dockerfile o en el compose; las de dependencias, en <code>package-lock.json</code>.</p>
+<h2 id="backend">Backend</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versión</th>
+<th>Rol</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Node.js</td>
+<td>20 (imagen <code>node:20-alpine</code>)</td>
+<td>runtime</td>
+<td>LTS; el host tiene Node 26, que no se usa para el build</td>
+</tr>
+<tr>
+<td>Express</td>
+<td>~4.18.1</td>
+<td>framework HTTP</td>
+<td></td>
+</tr>
+<tr>
+<td>Prisma Client</td>
+<td>^4.16.1</td>
+<td>ORM</td>
+<td><code>provider = postgresql</code></td>
+</tr>
+<tr>
+<td>jsonwebtoken</td>
+<td>^9.0.2</td>
+<td>firma de JWT</td>
+<td><code>HS256</code>, expiración 60 días</td>
+</tr>
+<tr>
+<td>express-jwt</td>
+<td>^8.4.1</td>
+<td>middleware de auth</td>
+<td></td>
+</tr>
+<tr>
+<td>bcryptjs</td>
+<td>^2.4.3</td>
+<td>hash de contraseñas</td>
+<td></td>
+</tr>
+<tr>
+<td>slugify</td>
+<td>^1.6.0</td>
+<td>slugs de artículos</td>
+<td></td>
+</tr>
+<tr>
+<td>Nx</td>
+<td>17.2.6</td>
+<td>build del monorepo</td>
+<td>build reproducible vía <code>package-lock.json</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="frontend-reescrito-d-18">Frontend (reescrito, D-18)</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versión</th>
+<th>Rol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>React / React DOM</td>
+<td>^18.3.1</td>
+<td>UI</td>
+</tr>
+<tr>
+<td>Vite</td>
+<td>^5.4.8</td>
+<td>build y dev server</td>
+</tr>
+<tr>
+<td>react-router-dom</td>
+<td>^6.26.2</td>
+<td>ruteo SPA</td>
+</tr>
+<tr>
+<td>nginx</td>
+<td>1.27-alpine</td>
+<td>servidor estático + proxy <code>/api</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="base-de-datos">Base de datos</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versión</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PostgreSQL</td>
+<td>16.4-alpine</td>
+<td>primaria; réplica en §6</td>
+</tr>
+<tr>
+<td>pg_stat_statements</td>
+<td>extensión incluida</td>
+<td>requiere <code>shared_preload_libraries</code></td>
+</tr>
+<tr>
+<td>pg_buffercache</td>
+<td>extensión incluida</td>
+<td>inspección de caché</td>
+</tr>
+<tr>
+<td>pgAdmin</td>
+<td>8 (<code>dpage/pgadmin4:8</code>)</td>
+<td>administración, solo loopback</td>
+</tr>
+<tr>
+<td>pgBadger</td>
+<td>a definir en §4</td>
+<td>análisis de logs</td>
+</tr>
+</tbody>
+</table>
+<h2 id="infraestructura">Infraestructura</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versión</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Docker Engine</td>
+<td>29.9.3</td>
+<td>Docker Desktop sobre WSL2</td>
+</tr>
+<tr>
+<td>Docker Compose</td>
+<td>v5.7.0</td>
+<td><code>compose.yaml</code></td>
+</tr>
+<tr>
+<td>Windows</td>
+<td>11</td>
+<td>host de desarrollo</td>
+</tr>
+<tr>
+<td>WSL2 / Ubuntu</td>
+<td>2</td>
+<td>backend de Docker</td>
+</tr>
+</tbody>
+</table>
+<h2 id="servicios-previstos-10-11-12-13">Servicios previstos (§10, §11, §12, §13)</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Imagen prevista</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prometheus</td>
+<td><code>prom/prometheus</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td><code>grafana/grafana</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>node-exporter</td>
+<td><code>prom/node-exporter</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>cAdvisor</td>
+<td><code>gcr.io/cadvisor/cadvisor</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>postgres-exporter</td>
+<td><code>prometheuscommunity/postgres-exporter</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>blackbox-exporter</td>
+<td><code>prom/blackbox-exporter</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>Alertmanager</td>
+<td><code>prom/alertmanager</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>n8n</td>
+<td><code>n8nio/n8n</code></td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>Mantis</td>
+<td>a definir (soporte PostgreSQL a verificar)</td>
+<td>pendiente</td>
+</tr>
+<tr>
+<td>Nextcloud</td>
+<td><code>nextcloud</code></td>
+<td>pendiente</td>
+</tr>
+</tbody>
+</table>
+<h2 id="eventos-de-ciberseguridad-considerados-al-elegir-el-stack">Eventos de ciberseguridad considerados al elegir el stack</h2>
+<p>El enunciado pide explícitamente tener en cuenta los últimos eventos al inventariar el stack.</p>
+<table>
+<thead>
+<tr>
+<th>Evento</th>
+<th>Qué fue</th>
+<th>Impacto en nuestras decisiones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>CVE-2024-4577</strong> (PHP-CGI, Windows)</td>
+<td>inyección de argumentos explotada masivamente para ransomware</td>
+<td>descarta stacks PHP para los servicios propios; Mantis (PHP) queda aislado y sin exposición pública</td>
+</tr>
+<tr>
+<td><strong>GhostAction</strong> (sep. 2025)</td>
+<td>robo de secretos desde workflows de GitHub Actions en ~327 repos</td>
+<td>secretos solo en GitHub Secrets + <code>gitleaks</code> en pre-commit y CI (§3/§8)</td>
+</tr>
+<tr>
+<td><strong>xz-utils / backdoor en cadena de suministro</strong> (2024)</td>
+<td>puerta trasera en una dependencia de compresión</td>
+<td>imágenes con tag fijo, sin <code>latest</code>; escaneo con Trivy (§14)</td>
+</tr>
+<tr>
+<td><strong>Compromisos de paquetes npm/PyPI</strong> (recurrentes)</td>
+<td>malware en dependencias publicadas</td>
+<td>lockfile obligatorio y <code>npm audit</code> en el pipeline</td>
+</tr>
+<tr>
+<td><strong>EOL de Node 8/16 y <code>react-scripts</code> antiguo</strong></td>
+<td>runtimes sin parches</td>
+<td>se fija Node 20 y se reescribe el frontend (D-18)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Verificar con la cátedra cuál evento espera ver citado en el inventario; el informe final debe
+nombrar el mismo en §1 y en §14 para no contradecirse.</p>
+</blockquote>
+<h2 id="evidencia">Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Versiones de runtime</td>
+<td><code>compose.yaml</code>, <code>app/*/Dockerfile</code></td>
+</tr>
+<tr>
+<td>Versiones de dependencias</td>
+<td><code>app/backend/package-lock.json</code>, <code>app/frontend/package.json</code></td>
+</tr>
+<tr>
+<td>Versión del motor</td>
+<td><code>docker compose exec db psql -c 'select version();'</code> → <code>evidence/04/version-motor.txt</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="04-manual-instalacion.md"><h1 id="04-manual-de-instalaci-n">04 — Manual de instalación</h1>
+<h2 id="1-objetivo">1. Objetivo</h2>
+<p>Levantar el stack completo desde cero en una máquina Windows con Docker Desktop, sin pasos
+implícitos. Todo lo que sigue está probado en el equipo de la práctica; los tiempos son los
+medidos, no estimaciones.</p>
+<h2 id="2-requisitos">2. Requisitos</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Versión mínima</th>
+<th>Verificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Windows</td>
+<td>11 (probado)</td>
+<td><code>winver</code></td>
+</tr>
+<tr>
+<td>Docker Desktop</td>
+<td>4.30+ con WSL 2</td>
+<td><code>docker version</code></td>
+</tr>
+<tr>
+<td>PowerShell</td>
+<td>5.1 (probado) o 7.x</td>
+<td><code>$PSVersionTable</code></td>
+</tr>
+<tr>
+<td>Git</td>
+<td>cualquiera reciente</td>
+<td><code>git --version</code></td>
+</tr>
+<tr>
+<td>Espacio en disco</td>
+<td><strong>40 GB libres</strong></td>
+<td>8,5 GB de base + imágenes + backups</td>
+</tr>
+<tr>
+<td>RAM</td>
+<td>8 GB (16 GB recomendado)</td>
+<td>Docker Desktop → Resources</td>
+</tr>
+<tr>
+<td>Python</td>
+<td>3.11+ (solo scripts auxiliares)</td>
+<td><code>python --version</code></td>
+</tr>
+</tbody>
+</table>
+<p>Recursos asignados a Docker Desktop usados en las pruebas: <strong>6 CPU, 8 GB de RAM, 60 GB de disco</strong>.
+Con menos de 4 GB de RAM la carga del dataset puede quedar sin memoria.</p>
+<h2 id="3-instalaci-n-paso-a-paso">3. Instalación paso a paso</h2>
+<h3>Paso 1 — Clonar y entrar al repositorio</h3>
+<pre><code class="language-powershell">git clone https://github.com/TomasGudi/HIA-2026.git
+cd HIA-2026
+git checkout main
+</code></pre>
+<h3>Paso 2 — Crear el <code>.env</code></h3>
+<pre><code class="language-powershell">Copy-Item .env.example .env
+</code></pre>
+<p>Editar <code>.env</code> y <strong>cambiar todas</strong> las contraseñas. Las que no son opcionales:</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Para qué</th>
+<th>Regla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POSTGRES_PASSWORD</code></td>
+<td>usuario administrador de la base</td>
+<td>≥ 16 caracteres</td>
+</tr>
+<tr>
+<td><code>APP_DB_PASSWORD</code></td>
+<td>rol <code>app</code> de la aplicación (solo DML)</td>
+<td>≥ 16 caracteres</td>
+</tr>
+<tr>
+<td><code>REPL_PASSWORD</code></td>
+<td>replicación</td>
+<td>≥ 16 caracteres</td>
+</tr>
+<tr>
+<td><code>JWT_SECRET</code></td>
+<td>firma de sesiones</td>
+<td><strong>≥ 32 caracteres</strong></td>
+</tr>
+<tr>
+<td><code>MANTIS_CRYPTO_SALT</code></td>
+<td>cifrado interno de Mantis</td>
+<td>≥ 32 caracteres</td>
+</tr>
+<tr>
+<td><code>MANTIS_API_TOKEN</code></td>
+<td>token de la API de Mantis</td>
+<td><strong>exactamente 32 caracteres</strong></td>
+</tr>
+<tr>
+<td><code>N8N_WEBHOOK_TOKEN</code></td>
+<td>autenticación del webhook</td>
+<td>≥ 32 caracteres</td>
+</tr>
+<tr>
+<td><code>EDGE_ADMIN_PASSWORD</code></td>
+<td>Basic auth del borde administrativo</td>
+<td>≥ 16 caracteres</td>
+</tr>
+</tbody>
+</table>
+<p>Generar valores aleatorios:</p>
+<pre><code class="language-powershell">python -c &quot;import secrets; print(secrets.token_urlsafe(24))&quot;
+</code></pre>
+<blockquote>
+<p><code>MANTIS_API_TOKEN</code> es la única con longitud fija: Mantis rechaza tokens que no tengan 32
+caracteres. Si se cambia, hay que regenerarlo también en la UI de Mantis.</p>
+</blockquote>
+<h3>Paso 3 — Base de datos</h3>
+<pre><code class="language-powershell">docker compose up -d db pgadmin
+docker compose ps
+</code></pre>
+<p>Esperar a que <code>db</code> esté <code>healthy</code> (healthcheck con <code>pg_isready</code>). El primer arranque ejecuta
+<code>db/init/</code> en orden: esquema, extensiones, usuario de monitoreo, usuario de replicación y rol
+<code>app</code> con privilegios mínimos.</p>
+<h3>Paso 4 — Cargar el dataset</h3>
+<pre><code class="language-powershell">./scripts/db.ps1 seed       # ~13 min: 24,2 M de filas
+./scripts/db.ps1 indexes    # DESPUÉS de la carga, no antes
+./scripts/db.ps1 stats
+</code></pre>
+<p>Los índices se crean <strong>después</strong> de la carga a propósito: crearlos antes multiplica el tiempo de
+inserción sin mejorar nada. <code>stats</code> debe mostrar las tablas de volumen con 6.000.001 filas.</p>
+<h3>Paso 5 — Aplicación</h3>
+<pre><code class="language-powershell">docker compose up -d backend frontend
+curl.exe http://127.0.0.1:8090/health
+</code></pre>
+<p>Respuesta esperada: <code>{"status":"ok","db":"up","version":"dev"}</code>.</p>
+<h3>Paso 6 — Réplica (opcional para desarrollo, obligatoria para §6)</h3>
+<pre><code class="language-powershell">docker compose up -d db-replica
+./scripts/replica.ps1 status    # debe mostrar state=streaming
+./scripts/replica.ps1 test      # escritura en primaria + lectura en réplica
+</code></pre>
+<h3>Paso 7 — Servicios de operación</h3>
+<pre><code class="language-powershell">docker compose --profile ops up -d
+</code></pre>
+<p>Levanta Mantis, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
+registro local. Sin <code>--profile ops</code> el stack queda en modo mínimo (solo app + base).</p>
+<h3>Paso 8 — Verificación integral</h3>
+<pre><code class="language-powershell">./scripts/monitoreo.ps1 status
+./scripts/publicar.ps1 up
+</code></pre>
+<p><code>publicar.ps1</code> imprime las URLs de los túneles. Son <strong>efímeras</strong>: cambian en cada arranque.</p>
+<h2 id="4-verificaci-n">4. Verificación</h2>
+<table>
+<thead>
+<tr>
+<th>Qué</th>
+<th>Comando</th>
+<th>Resultado esperado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Contenedores</td>
+<td><code>docker compose ps</code></td>
+<td>todos <code>healthy</code> o <code>running</code></td>
+</tr>
+<tr>
+<td>Salud de la app</td>
+<td><code>curl.exe http://127.0.0.1:8090/health</code></td>
+<td><code>status=ok</code>, <code>db=up</code></td>
+</tr>
+<tr>
+<td>Datos</td>
+<td><code>./scripts/db.ps1 stats</code></td>
+<td>6.000.001 filas en tablas de volumen</td>
+</tr>
+<tr>
+<td>Réplica</td>
+<td><code>./scripts/replica.ps1 status</code></td>
+<td><code>streaming</code>, lag &lt; 1 s</td>
+</tr>
+<tr>
+<td>Monitoreo</td>
+<td><code>http://127.0.0.1:9090/targets</code></td>
+<td>todos los targets <code>UP</code></td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td><code>http://127.0.0.1:3001</code></td>
+<td>8 paneles con datos</td>
+</tr>
+<tr>
+<td>Mantis</td>
+<td><code>http://127.0.0.1:8081</code></td>
+<td>login y proyecto <code>HIA-2026</code></td>
+</tr>
+<tr>
+<td>n8n</td>
+<td><code>http://127.0.0.1:5678</code></td>
+<td>flujo <code>01-alerta-a-mantis</code> activo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-puertos-publicados">5. Puertos publicados</h2>
+<p>Todos en <code>127.0.0.1</code>: nada se expone a la LAN.</p>
+<table>
+<thead>
+<tr>
+<th>Puerto</th>
+<th>Servicio</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>5433</td>
+<td>PostgreSQL primaria</td>
+<td>5432 queda libre para una instalación local</td>
+</tr>
+<tr>
+<td>8080</td>
+<td>pgAdmin</td>
+<td></td>
+</tr>
+<tr>
+<td>8081</td>
+<td>Mantis</td>
+<td></td>
+</tr>
+<tr>
+<td>8090</td>
+<td>Frontend</td>
+<td>proxy a <code>/api/</code> del backend</td>
+</tr>
+<tr>
+<td>3001</td>
+<td>Grafana</td>
+<td></td>
+</tr>
+<tr>
+<td>5000</td>
+<td>Registro local de imágenes</td>
+<td>plan B de GHCR</td>
+</tr>
+<tr>
+<td>5678</td>
+<td>n8n</td>
+<td></td>
+</tr>
+<tr>
+<td>8088 / 8089 / 8091</td>
+<td>Borde administrativo</td>
+<td>pgAdmin / Mantis / n8n con Basic auth</td>
+</tr>
+<tr>
+<td>9090 / 9093</td>
+<td>Prometheus / Alertmanager</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-problemas-frecuentes">6. Problemas frecuentes</h2>
+<table>
+<thead>
+<tr>
+<th>Síntoma</th>
+<th>Causa</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db</code> reinicia en bucle</td>
+<td>contraseña con <code>$</code> o <code>#</code> sin escapar en <code>.env</code></td>
+<td>usar <code>secrets.token_urlsafe</code> (sin esos caracteres)</td>
+</tr>
+<tr>
+<td><code>frontend</code> unhealthy</td>
+<td>el contenedor escucha en 8080, no en 80</td>
+<td>verificar <code>docker port pi-frontend</code> → <code>8080/tcp</code></td>
+</tr>
+<tr>
+<td><code>seed</code> termina sin filas</td>
+<td>volumen ya inicializado con otro esquema</td>
+<td><code>./scripts/db.ps1 reset</code> (borra datos)</td>
+</tr>
+<tr>
+<td>Réplica no arranca</td>
+<td><code>pg_basebackup</code> falló por contraseña</td>
+<td><code>./scripts/replica.ps1 reinit</code></td>
+</tr>
+<tr>
+<td>Mantis da 500</td>
+<td><code>MANTIS_CRYPTO_SALT</code> cambió después de inicializar</td>
+<td>restaurar el valor original o recrear el volumen</td>
+</tr>
+<tr>
+<td>n8n no importa el flujo</td>
+<td>la base <code>n8n</code> ya tenía workflows</td>
+<td>el entrypoint solo importa si la tabla está vacía</td>
+</tr>
+<tr>
+<td><code>deploy.ps1</code> falla al bajar la imagen</td>
+<td>GHCR privado o sin login</td>
+<td>usar <code>-Registry 127.0.0.1:5000</code> con el registro local</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-tiempos-medidos">7. Tiempos medidos</h2>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Tiempo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker compose up -d db pgadmin</code> (primer arranque)</td>
+<td>~40 s</td>
+</tr>
+<tr>
+<td><code>db.ps1 seed</code> (24,2 M de filas)</td>
+<td>~13 min</td>
+</tr>
+<tr>
+<td><code>db.ps1 indexes</code></td>
+<td>~2 min</td>
+</tr>
+<tr>
+<td><code>docker compose --profile ops up -d</code></td>
+<td>~90 s</td>
+</tr>
+<tr>
+<td>Stack completo desde cero</td>
+<td><strong>~18 min</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-decisiones">8. Decisiones</h2>
+<ul>
+<li><strong>Un solo <code>compose.yaml</code> con perfiles</strong> en vez de varios archivos: <code>ops</code> separa lo que es
+  operación de lo que es la aplicación. Ver <code>docs/05-decisiones.md</code> (D-03, D-16).</li>
+<li><strong>Sin <code>docker-compose.override.yml</code></strong>: lo que se prueba es lo que se despliega.</li>
+<li><strong>Secretos solo en <code>.env</code></strong>: el repo tiene <code>.env.example</code> con placeholders y gitleaks en CI.</li>
+</ul>
+<h2 id="9-limitaciones">9. Limitaciones</h2>
+<ul>
+<li>El manual asume Windows + Docker Desktop. En Linux los comandos son los mismos salvo
+  <code>curl.exe</code> → <code>curl</code> y las rutas de los scripts.</li>
+<li>No se cubre un clúster real: la réplica es un contenedor en el mismo host, no otra máquina.</li>
+<li>La publicación usa túneles rápidos de Cloudflare (URL efímera), no un dominio propio.</li>
+</ul>
+<h2 id="10-preguntas-frecuentes">10. Preguntas frecuentes</h2>
+<p><strong>¿Por qué la base no publica el 5432?</strong>
+Porque el 5432 suele estar ocupado por un PostgreSQL local y porque publicar el puerto estándar
+invita a escaneos. Se usa 5433 y solo en loopback.</p>
+<p><strong>¿Qué pasa si corro <code>docker compose down -v</code>?</strong>
+Se borra el volumen <code>pi-pgdata</code>: hay que repetir el paso 4 (~15 min). Sin <code>-v</code>, los datos
+sobreviven; está probado en <code>evidence/04/persistencia.txt</code>.</p>
+<p><strong>¿Se puede levantar sin la réplica ni el monitoreo?</strong>
+Sí. <code>docker compose up -d</code> levanta solo app y base. La réplica y <code>--profile ops</code> son necesarios
+para §6 y §10, no para que la aplicación funcione.</p></section><section class="doc" data-fuente="05-configuracion-docker.md"><h1 id="05-configuraci-n-docker">05 — Configuración Docker</h1>
+<h2 id="1-servicios">1. Servicios</h2>
+<table>
+<thead>
+<tr>
+<th>Servicio</th>
+<th>Imagen</th>
+<th>Puertos publicados</th>
+<th>Redes</th>
+<th>Perfil</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>db</code></td>
+<td><code>postgres:16.4-alpine</code></td>
+<td><code>127.0.0.1:5433</code></td>
+<td><code>dbnet</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>pgadmin</code></td>
+<td><code>dpage/pgadmin4:8</code></td>
+<td><code>127.0.0.1:8080</code></td>
+<td><code>dbnet</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>backend</code></td>
+<td>build <code>./app/backend</code></td>
+<td>— (solo <code>expose 3000</code>)</td>
+<td><code>appnet</code>, <code>dbnet</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>frontend</code></td>
+<td>build <code>./app/frontend</code></td>
+<td><code>127.0.0.1:8090</code></td>
+<td><code>appnet</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>mantis</code></td>
+<td>build <code>./app/mantis</code></td>
+<td><code>127.0.0.1:8081</code></td>
+<td><code>dbnet</code></td>
+<td><code>ops</code></td>
+</tr>
+</tbody>
+</table>
+<p>Regla transversal: <strong>ningún puerto se publica fuera de <code>127.0.0.1</code></strong>. La publicación a Internet
+es por túnel (§9), no abriendo puertos.</p>
+<h2 id="2-redes">2. Redes</h2>
+<table>
+<thead>
+<tr>
+<th>Red</th>
+<th>Para qué</th>
+<th>Quién está</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pi-appnet</code></td>
+<td>tráfico de la aplicación</td>
+<td><code>frontend</code> ↔ <code>backend</code></td>
+</tr>
+<tr>
+<td><code>pi-dbnet</code></td>
+<td>tráfico de datos</td>
+<td><code>backend</code>, <code>db</code>, <code>pgadmin</code>, <code>mantis</code></td>
+</tr>
+</tbody>
+</table>
+<p>El frontend <strong>no</strong> está en <code>dbnet</code>: no tiene por qué hablar con la base. Es segmentación real, no
+un dibujo.</p>
+<blockquote>
+<p><strong>Aprendizaje (D-15)</strong>: la primera versión declaraba <code>dbnet</code> como <code>internal: true</code>. Docker
+entonces <strong>descarta silenciosamente</strong> la publicación de puertos: <code>docker compose up</code> sale en
+verde, los contenedores están sanos, y <code>docker port</code> no muestra nada. Se detectó probando con un
+<code>nginx</code> aislado sobre la misma red.</p>
+</blockquote>
+<h2 id="3-vol-menes">3. Volúmenes</h2>
+<table>
+<thead>
+<tr>
+<th>Volumen</th>
+<th>Contenido</th>
+<th>Consecuencia de perderlo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pi-pgdata</code></td>
+<td>datos de PostgreSQL</td>
+<td>se regenera con <code>scripts/db.ps1 seed</code> (~13 min)</td>
+</tr>
+<tr>
+<td><code>pi-pgadmin</code></td>
+<td>configuración de pgAdmin</td>
+<td>se reconfigura</td>
+</tr>
+<tr>
+<td><code>pi-mantis-files</code></td>
+<td>adjuntos de las incidencias</td>
+<td><strong>se pierde la evidencia de §11</strong></td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-im-genes">4. Imágenes</h2>
+<h3>Backend (<code>app/backend/Dockerfile</code>)</h3>
+<ul>
+<li>Etapa <code>build</code>: <code>node:20</code> + <code>npm ci</code> + <code>prisma generate</code> + <code>nx build</code>.</li>
+<li>Etapa <code>runtime</code>: <code>node:20-slim</code> + OpenSSL (lo necesita Prisma) + <strong>solo dependencias de
+  producción</strong> (<code>npm ci --omit=dev</code> sobre el <code>package.json</code> que genera Nx).</li>
+<li>Corre como usuario <code>node</code> (no root).</li>
+<li>Healthcheck propio contra <code>/health</code>, que hace un <code>SELECT 1</code> a la base: un contenedor "up" con la
+  base caída no es un servicio sano.</li>
+</ul>
+<p>Detalle que costó: el schema de Prisma está en <code>src/prisma/schema.prisma</code>, fuera de la ubicación
+por defecto, así que el <code>postinstall</code> de <code>@prisma/client</code> <strong>no</strong> lo detecta. Hay que ejecutar
+<code>npx prisma generate --schema=...</code> explícito en el build, y copiar <code>node_modules/.prisma</code> y
+<code>node_modules/@prisma</code> a la imagen final.</p>
+<h3>Frontend (<code>app/frontend/Dockerfile</code>)</h3>
+<ul>
+<li>Etapa <code>build</code>: <code>node:20</code> + <code>npm ci</code> + <code>vite build</code>.</li>
+<li>Etapa <code>runtime</code>: <code>nginx:1.27-alpine</code> sirviendo estático (<strong>74 MB</strong>, sin Node adentro).</li>
+<li><code>nginx.conf</code>: SPA fallback, <code>/healthz</code>, proxy <code>/api</code> → <code>http://backend:3000</code> (mismo origen, sin
+  CORS abierto) y caché de assets con hash.</li>
+</ul>
+<h2 id="5-variables-de-entorno">5. Variables de entorno</h2>
+<p>Todo por <code>.env</code> (nunca versionado) y <code>.env.example</code> con placeholders.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POSTGRES_*</code></td>
+<td>base principal</td>
+</tr>
+<tr>
+<td><code>DB_PORT</code></td>
+<td>puerto publicado (5433 por colisión con otro stack local, D-16)</td>
+</tr>
+<tr>
+<td><code>JWT_SECRET</code></td>
+<td>firma de tokens; obligatorio (sin fallback, H1)</td>
+</tr>
+<tr>
+<td><code>MANTIS_*</code></td>
+<td>base, rol, contraseña del admin y <code>crypto_master_salt</code></td>
+</tr>
+<tr>
+<td><code>SEED_*</code></td>
+<td>volumen del dataset</td>
+</tr>
+</tbody>
+</table>
+<p>Dentro de la red Docker la base se resuelve como <code>db:5432</code>; el 5433 es solo el puerto del host.</p>
+<h2 id="6-verificaci-n-evidencia">6. Verificación (evidencia)</h2>
+<table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docker compose config --quiet</code></td>
+<td>válido</td>
+</tr>
+<tr>
+<td><code>docker compose ps</code></td>
+<td>5 servicios, 3 con healthcheck en <code>healthy</code></td>
+</tr>
+<tr>
+<td><code>GET :3000/health</code> desde el contenedor</td>
+<td><code>{"status":"ok","db":"up"}</code></td>
+</tr>
+<tr>
+<td><code>GET :8090/</code></td>
+<td>200 (SPA)</td>
+</tr>
+<tr>
+<td><code>GET :8090/api/articles?limit=3</code></td>
+<td>200, <code>articlesCount = 6.000.000</code></td>
+</tr>
+<tr>
+<td>Escritura completa (registro → alta → comentario)</td>
+<td>201 / 201 / 200</td>
+</tr>
+</tbody>
+</table>
+<p>Detalle en <code>evidence/07/e2e.log</code>.</p>
+<h2 id="7-limitaciones">7. Limitaciones</h2>
+<ul>
+<li>El listado público tarda <strong>10,4 s</strong>: es el objetivo principal de §5 (hoy el <code>count(*)</code> con
+  <code>JOIN</code> sobre 6M de filas domina el tiempo).</li>
+<li>No hay límites de CPU/memoria por servicio (<code>deploy.resources</code>) todavía: se agregan en §10 para
+  que las métricas de cAdvisor sean comparables.</li>
+<li><code>frontend</code> y <code>backend</code> se construyen localmente; la publicación en registry llega en §8.</li>
+</ul></section><section class="doc" data-fuente="06-migracion-carga.md"><h1 id="06-migraci-n-y-carga-de-datos">06 — Migración y carga de datos</h1>
+<h2 id="1-objetivo-2">1. Objetivo</h2>
+<p>Poblar PostgreSQL con un dataset <strong>sintético</strong> que permita medir rendimiento real (§5), probar
+replicación (§6) y ejercitar la aplicación con volumen representativo, sin usar datos personales
+reales.</p>
+<h2 id="2-m-todo">2. Método</h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Decisión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Generación</td>
+<td><code>generate_series</code> + aritmética modular (sin <code>random()</code>) → <strong>determinista y reproducible</strong> (D-17)</td>
+</tr>
+<tr>
+<td>Formato</td>
+<td>SQL puro (<code>db/seed/10-seed.sql</code> para carga completa, <code>11-seed-bulk.sql</code> para recargar solo tablas de relación)</td>
+</tr>
+<tr>
+<td>Integridad</td>
+<td>FKs declaradas; durante la carga se desactivan los triggers (<code>session_replication_role=replica</code>) y se validan después (D-19)</td>
+</tr>
+<tr>
+<td>Índices</td>
+<td><strong>no</strong> existen durante la carga; se crean al final (D-14)</td>
+</tr>
+<tr>
+<td>Restricciones</td>
+<td>PK, UNIQUE (<code>email</code>, <code>username</code>, <code>slug</code>, <code>name</code>), UNIQUE <code>(A,B)</code> en las N:M, CHECK de auto-seguimiento</td>
+</tr>
+<tr>
+<td>Datos personales</td>
+<td>ninguno: emails <code>userN@example.com</code>, contraseñas con hash ficticio, textos Lorem ipsum</td>
+</tr>
+</tbody>
+</table>
+<h3>Volumen por tabla</h3>
+<table>
+<thead>
+<tr>
+<th>Tabla</th>
+<th>Filas</th>
+<th>Rol en el dataset</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Article</code></td>
+<td>6.000.000</td>
+<td>tabla de volumen</td>
+</tr>
+<tr>
+<td><code>Comment</code></td>
+<td>6.000.000</td>
+<td>tabla de volumen</td>
+</tr>
+<tr>
+<td><code>_UserFavorites</code></td>
+<td>6.000.000</td>
+<td>tabla de volumen (N:M)</td>
+</tr>
+<tr>
+<td><code>_ArticleToTag</code></td>
+<td>6.000.000</td>
+<td>relación N:M derivada de los artículos</td>
+</tr>
+<tr>
+<td><code>User</code></td>
+<td>200.000</td>
+<td>catálogo con cardinalidad realista</td>
+</tr>
+<tr>
+<td><code>Tag</code></td>
+<td>5.000</td>
+<td>catálogo</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>24.205.000</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>El enunciado pide "al menos 6.000.000 de registros por tabla de datos que forme parte del
+conjunto de prueba". Se interpreta como <strong>tablas de volumen del dominio</strong> (ver D-05); los
+catálogos se dimensionan con cardinalidad realista porque inflarlos no aporta nada al análisis.</p>
+</blockquote>
+<h2 id="3-tiempos-medidos">3. Tiempos medidos</h2>
+<table>
+<thead>
+<tr>
+<th>Etapa</th>
+<th>Filas</th>
+<th>Tiempo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>User</code></td>
+<td>200.000</td>
+<td>1,9 s</td>
+</tr>
+<tr>
+<td><code>Tag</code></td>
+<td>5.000</td>
+<td>0,02 s</td>
+</tr>
+<tr>
+<td><code>Article</code></td>
+<td>6.000.000</td>
+<td><strong>10 min 43 s</strong></td>
+</tr>
+<tr>
+<td><code>Comment</code> (6 trozos de 1M)</td>
+<td>6.000.000</td>
+<td><strong>26,0 s</strong> (3,8 + 4,3 + 4,4 + 4,9 + 5,0 + 5,1)</td>
+</tr>
+<tr>
+<td><code>_UserFavorites</code></td>
+<td>6.000.000</td>
+<td>24,6 s</td>
+</tr>
+<tr>
+<td><code>_ArticleToTag</code></td>
+<td>6.000.000</td>
+<td>29,9 s</td>
+</tr>
+<tr>
+<td><code>ANALYZE</code></td>
+<td>—</td>
+<td>36,1 s</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td>24,2M</td>
+<td><strong>~13 min</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Evidencia: <code>evidence/04/seed-carga.log</code>, <code>evidence/04/seed-bulk.log</code>.</p>
+<h3>Por qué <code>Article</code> tarda 20× más que <code>Comment</code> con la misma cantidad de filas</h3>
+<p><code>Article</code> tiene dos índices UNIQUE (<code>slug</code>, y la PK), un cuerpo de ~500 bytes por fila
+(<code>repeat(...)</code> ×12) y una FK a <code>User</code>; además se cargó <strong>antes</strong> de ajustar <code>max_wal_size</code>.
+<code>Comment</code> se cargó sin triggers de FK y con el clúster ya ajustado. Es una comparación honesta
+del costo de mantener índices y WAL durante la carga, y se retoma en §5.</p>
+<h2 id="4-tama-o-final">4. Tamaño final</h2>
+<table>
+<thead>
+<tr>
+<th>Tabla</th>
+<th>Datos</th>
+<th>Índices</th>
+<th>Total</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Article</code></td>
+<td>5.210 MB</td>
+<td>722 MB</td>
+<td><strong>5.931 MB</strong></td>
+</tr>
+<tr>
+<td><code>Comment</code></td>
+<td>721 MB</td>
+<td>301 MB</td>
+<td>1.021 MB</td>
+</tr>
+<tr>
+<td><code>_UserFavorites</code></td>
+<td>207 MB</td>
+<td>266 MB</td>
+<td>473 MB</td>
+</tr>
+<tr>
+<td><code>_ArticleToTag</code></td>
+<td>207 MB</td>
+<td>168 MB</td>
+<td>375 MB</td>
+</tr>
+<tr>
+<td><code>User</code></td>
+<td>36 MB</td>
+<td>28 MB</td>
+<td>64 MB</td>
+</tr>
+<tr>
+<td><code>Tag</code></td>
+<td>264 kB</td>
+<td>304 kB</td>
+<td>568 kB</td>
+</tr>
+<tr>
+<td><strong>Base de datos</strong></td>
+<td></td>
+<td></td>
+<td><strong>7.874 MB (7,9 GB)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Los índices ocupan <strong>~1,5 GB (19 % de la base)</strong>. Ese número es el que hay que justificar cada
+vez que se propone un índice nuevo (§5): no es gratis ni en disco ni en escritura.
+Evidencia: <code>evidence/04/volumen.txt</code>.</p>
+<h2 id="5-incidente-de-carga-y-su-resoluci-n-d-19">5. Incidente de carga y su resolución (D-19)</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Síntoma</strong></td>
+<td>La inserción de <code>Comment</code> quedó 30 min con menos de 1.000 filas cargadas</td>
+</tr>
+<tr>
+<td><strong>Causa</strong></td>
+<td>Trigger de FK: <code>SELECT 1 FROM "User" WHERE id = $1 FOR KEY SHARE</code> por fila; 6M comentarios contra 200k usuarios → contención de locks de fila</td>
+</tr>
+<tr>
+<td><strong>Solución</strong></td>
+<td><code>SET session_replication_role = replica</code> durante la carga + validación posterior de huérfanos</td>
+</tr>
+<tr>
+<td><strong>Resultado</strong></td>
+<td>6M de comentarios en 26 s (mejora de más de dos órdenes de magnitud)</td>
+</tr>
+<tr>
+<td><strong>Trade-off</strong></td>
+<td>La integridad deja de estar garantizada por el motor durante la carga; se garantiza por verificación explícita y se documenta</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-verificaci-n-de-integridad-evidencia">6. Verificación de integridad (evidencia)</h2>
+<p>Ejecutada al final de la carga, sobre 24M de filas:</p>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Huérfanos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>comentarios huérfanos (artículo)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>comentarios huérfanos (autor)</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>favoritos huérfanos</td>
+<td><strong>0</strong></td>
+</tr>
+<tr>
+<td>artículo-etiqueta huérfanos</td>
+<td><strong>0</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Evidencia: <code>evidence/04/seed-bulk.log</code> (bloque "VERIFICACION DE INTEGRIDAD").</p>
+<h3>Dato extra que sirve para §5</h3>
+<p>La misma consulta de control de huérfanos tardó <strong>235.324 ms (3 min 55 s) sin índices</strong> y
+<strong>3.570 ms con <code>Comment_articleId_idx</code></strong>: 65× menos. No es una consulta del producto, pero
+demuestra el efecto de un índice sobre un <code>LEFT JOIN</code> de 6M × 6M.</p>
+<h2 id="7-par-metros-ajustados-para-la-carga-d-20">7. Parámetros ajustados para la carga (D-20)</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Antes</th>
+<th>Después</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>max_wal_size</code></td>
+<td>1 GB (default)</td>
+<td>8 GB</td>
+<td>la primera carga generó <strong>38 GB de WAL</strong> por checkpoints frecuentes</td>
+</tr>
+<tr>
+<td><code>checkpoint_timeout</code></td>
+<td>5 min (default)</td>
+<td>15 min</td>
+<td>menos full-page writes</td>
+</tr>
+<tr>
+<td><code>synchronous_commit</code></td>
+<td>on</td>
+<td>off (solo durante la carga)</td>
+<td>durabilidad no crítica en datos regenerables</td>
+</tr>
+<tr>
+<td><code>maintenance_work_mem</code></td>
+<td>64 MB</td>
+<td>1 GB (sesión de carga)</td>
+<td><code>ANALYZE</code> y creación de índices más rápidos</td>
+</tr>
+</tbody>
+</table>
+<p>Los dos primeros se aplicaron con <code>ALTER SYSTEM</code> + <code>pg_reload_conf()</code> (sin reinicio) y quedan en
+<code>postgresql.auto.conf</code>; se revierten o se justifican en el informe de §5.</p>
+<h2 id="8-reproducci-n">8. Reproducción</h2>
+<pre><code class="language-powershell">docker compose up -d db
+./scripts/db.ps1 seed      # carga completa (10-seed.sql)
+./scripts/db.ps1 indexes   # índices después de la carga
+./scripts/db.ps1 stats     # tamaños y conteos
+</code></pre>
+<p>Para recargar solo comentarios/favoritos/relaciones:</p>
+<pre><code class="language-powershell">docker compose exec -T db psql -U practica_app -d practica `
+  -v articles=6000000 -v comments=6000000 -v favorites=6000000 `
+  -f /db/seed/11-seed-bulk.sql
+</code></pre>
+<h2 id="9-limitaciones-2">9. Limitaciones</h2>
+<ul>
+<li><code>Article.body</code> es texto repetido: la distribución de longitudes no es realista, así que las
+  mediciones de <code>LIKE</code>/full-text son optimistas en tamaño pero válidas en forma.</li>
+<li>No hay <code>_UserFollows</code> cargado (0 filas): el feed de seguidos se probará con datos insertados
+  a mano en §5 si hace falta.</li>
+<li>El dataset <strong>no</strong> se versiona en el repo (7,9 GB): se regenera con los scripts.</li>
+</ul></section><section class="doc" data-fuente="07-optimizacion-sql.md"><h1 id="07-informe-de-optimizaci-n-sql">07 — Informe de optimización SQL</h1>
+<h2 id="1-m-todo">1. Método</h2>
+<ol>
+<li>Se identificaron las consultas con <code>pg_stat_statements</code> (top por tiempo total) y se
+   contrastaron con las operaciones reales del backend (Prisma): cada consulta de este informe
+   corresponde a una pantalla del producto, no a un ejemplo inventado.</li>
+<li>Para cada una se capturó <code>EXPLAIN (ANALYZE, BUFFERS)</code> y el tiempo de ejecución con la caché
+   caliente (segunda corrida).</li>
+<li>Se aplicó <strong>un cambio por vez</strong>, midiendo el efecto.</li>
+<li>Se probó también una optimización que <strong>no</strong> funcionó y se descartó con el número en la mano.</li>
+</ol>
+<p>Scripts: <code>db/queries/10-baseline.sql</code> (antes) y <code>db/queries/20-optimizado.sql</code> (después).
+Evidencia cruda: <code>evidence/05/baseline-1.txt</code>, <code>evidence/05/optimizado.txt</code>, <code>evidence/05/control.txt</code>.</p>
+<h2 id="2-resultado-general">2. Resultado general</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Consulta</th>
+<th>Antes</th>
+<th>Después</th>
+<th>Mejora</th>
+<th>Cambio aplicado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td>count del listado público</td>
+<td>656 ms</td>
+<td><strong>5,9 ms</strong></td>
+<td>111×</td>
+<td>conteo acotado (<code>LIMIT</code> interno)</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>listado paginado (offset 0)</td>
+<td>5,3 ms</td>
+<td>5,3 ms</td>
+<td>—</td>
+<td>ya óptimo (índice de <code>createdAt</code>)</td>
+</tr>
+<tr>
+<td>Q2b</td>
+<td>paginación profunda (offset 500.000)</td>
+<td>1.933 ms</td>
+<td><strong>62,6 ms</strong></td>
+<td>31×</td>
+<td>keyset pagination</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>listado filtrado por etiqueta</td>
+<td>134 ms</td>
+<td>134 ms</td>
+<td>—</td>
+<td>ya óptimo (nested loop con índices)</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>etiquetas populares (top 10)</td>
+<td>1.033 ms</td>
+<td><strong>0,69 ms</strong></td>
+<td>1.497×</td>
+<td>vista materializada</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>feed de autores seguidos</td>
+<td>8.331 ms</td>
+<td><strong>1,2 ms</strong></td>
+<td>6.942×</td>
+<td>reescritura <code>IN (subconsulta)</code></td>
+</tr>
+<tr>
+<td>Q6</td>
+<td>detalle + comentarios</td>
+<td>7,5 ms</td>
+<td>7,5 ms</td>
+<td>—</td>
+<td>ya óptimo (índices únicos)</td>
+</tr>
+<tr>
+<td>Q7</td>
+<td>top de artículos por favoritos</td>
+<td>3.565 ms</td>
+<td><strong>1,4 ms</strong></td>
+<td>2.546×</td>
+<td>vista materializada</td>
+</tr>
+<tr>
+<td>Q8</td>
+<td>búsqueda por título (<code>ILIKE '%…%'</code>)</td>
+<td>5.292 ms</td>
+<td><strong>3,5 ms</strong></td>
+<td>1.512×</td>
+<td><code>pg_trgm</code> + índice GIN</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Efecto medido en el producto</strong>: <code>GET /api/articles</code> pasó de <strong>7,9 s a 0,19 s</strong> (41×).</p>
+<h2 id="3-an-lisis-consulta-por-consulta">3. Análisis consulta por consulta</h2>
+<h3>Q1 — count del listado (656 ms → 5,9 ms)</h3>
+<p>Plan inicial: <code>Parallel Hash Join</code> + <code>Parallel Index Only Scan</code> sobre <code>Article_authorId_idx</code>
+(2.000.000 filas × 3 workers). El join no es el problema: <strong>contar 6M de filas es O(n)</strong> y ningún
+índice lo evita.</p>
+<p>Decisión: acotar el conteo a 10.000 (la interfaz solo necesita la cantidad de páginas). El plan
+corta al alcanzar el tope y baja a 5,9 ms.</p>
+<blockquote>
+<p>Hallazgo mayor: la consulta que <strong>genera Prisma</strong> para este mismo caso tarda <strong>17,8 s</strong> de
+promedio (5 llamadas en <code>pg_stat_statements</code>), contra 656 ms del SQL equivalente escrito a mano.
+El ORM arma una subconsulta con <code>IN (SELECT … FROM "User" WHERE demo)</code> que el planificador
+resuelve mal. Se reemplazó por SQL directo en <code>article.service.ts</code> (ver §5 del informe de
+configuración Docker).</p>
+</blockquote>
+<h3>Q2 — listado paginado (5,3 ms, sin cambios)</h3>
+<p>Usa <code>Article_createdAt_idx</code> y corta en 10 filas. <strong>No se tocó</strong>: no hay nada que optimizar y
+agregar un índice acá solo costaría escrituras.</p>
+<h3>Q2b — paginación profunda (1.933 ms → 62,6 ms)</h3>
+<p>Con <code>OFFSET 500000</code> PostgreSQL lee y descarta medio millón de filas. Se reemplazó por
+<strong>keyset pagination</strong>: <code>WHERE (createdAt, id) &lt; (último de la página anterior)</code>.</p>
+<p>Trade-off honesto: keyset no permite "saltar a la página 50" directamente; sirve para scroll
+infinito o "siguiente/anterior", que es el patrón real de un listado.</p>
+<h3>Q3 — filtro por etiqueta (134 ms, sin cambios)</h3>
+<p>El plan ya es bueno: <code>Bitmap Index Scan</code> sobre <code>_ArticleToTag_B_idx</code> → <code>Index Scan</code> sobre
+<code>Article_pkey</code> → <code>Index Scan</code> sobre <code>User_pkey</code>, 1.200 filas y 9,5 ms de ejecución. Los 134 ms
+incluyen planificación y JIT de la primera ejecución. <strong>Se deja como está</strong> y se documenta: es el
+caso que demuestra que no todo se optimiza agregando índices.</p>
+<h3>Q4 — etiquetas populares (1.033 ms → 0,69 ms)</h3>
+<p><code>GROUP BY</code> sobre 6M de filas de <code>_ArticleToTag</code> en cada request. Se materializó el agregado:</p>
+<pre><code class="language-sql">CREATE MATERIALIZED VIEW mv_tag_counts AS
+SELECT t.id, t.name, count(*) AS n
+FROM &quot;_ArticleToTag&quot; at JOIN &quot;Tag&quot; t ON t.id = at.&quot;B&quot;
+GROUP BY t.id, t.name;
+</code></pre>
+<p>Trade-off: el dato puede tener atraso. El refresco se delega a n8n (§13), que es exactamente el
+tipo de tarea operativa que pide el enunciado.</p>
+<h3>Q5 — feed de autores seguidos (8.331 ms → 1,2 ms)</h3>
+<p>El <code>JOIN "_UserFollows"</code> hacía que el planificador estimara mal y terminara escaneando artículos.
+Reescritura:</p>
+<pre><code class="language-sql">SELECT … FROM &quot;Article&quot; a
+WHERE a.&quot;authorId&quot; IN (SELECT &quot;B&quot; FROM &quot;_UserFollows&quot; WHERE &quot;A&quot; = 42)
+ORDER BY a.&quot;createdAt&quot; DESC LIMIT 10;
+</code></pre>
+<p>Plan nuevo: <code>Nested Loop</code> con <code>Index Only Scan</code> sobre <code>_UserFollows_AB_unique</code> y <code>Index Scan</code>
+sobre <code>Article_authorId_idx</code>. <strong>0,109 ms de ejecución.</strong></p>
+<h3>Q6 — detalle + comentarios (7,5 ms, sin cambios)</h3>
+<p><code>slug</code> es UNIQUE (índice), <code>Comment.articleId</code> está indexado y el subquery de conteo usa ese
+índice. Óptimo de entrada.</p>
+<h3>Q7 — top de artículos por favoritos (3.565 ms → 1,4 ms)</h3>
+<p>Mismo patrón que Q4: agregado sobre 6M. Vista materializada <code>mv_article_favorites</code> con índice
+único y otro por <code>favs DESC</code>.</p>
+<h3>Q8 — búsqueda por título (5.292 ms → 3,5 ms)</h3>
+<p><code>ILIKE '%texto%'</code> <strong>no es SARGable</strong>: ningún B-tree puede resolver una subcadena con comodín
+inicial. Control ejecutado con <code>enable_indexscan=off</code>: 5.074 ms (seq scan de 6M).</p>
+<p>Solución: <code>pg_trgm</code> + índice GIN. Plan nuevo: <code>Bitmap Index Scan on Article_title_trgm_idx</code>,
+<strong>0,55 ms de ejecución</strong>.</p>
+<h2 id="4-ndices-y-objetos-creados-justificaci-n-y-costo">4. Índices y objetos creados: justificación y costo</h2>
+<table>
+<thead>
+<tr>
+<th>Objeto</th>
+<th>Consulta que sirve</th>
+<th>Tamaño</th>
+<th>Costo de creación medido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mv_tag_counts</code> (+2 índices)</td>
+<td>Q4</td>
+<td>480 kB + 184 kB</td>
+<td>0,64 s</td>
+</tr>
+<tr>
+<td><code>mv_article_favorites</code> (+2 índices)</td>
+<td>Q7</td>
+<td>422 MB + 169 MB</td>
+<td>5,8 s + 8,2 s</td>
+</tr>
+<tr>
+<td><code>Article_title_trgm_idx</code> (GIN)</td>
+<td>Q8</td>
+<td>198 MB</td>
+<td><strong>28,8 s</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Impacto total</strong>: la base pasó de 7.874 MB a <strong>8.551 MB (+677 MB, +8,6 %)</strong>.</p>
+<p>Ese número es el argumento central contra "crear índices por las dudas": cada índice se paga en
+disco y en tiempo de escritura. La vista de favoritos es la más cara (591 MB con índices) y se
+justifica solo porque el top de favoritos se muestra en la home.</p>
+<h3>Optimización descartada (control negativo)</h3>
+<p>Se probó un índice parcial en <code>User(demo)</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Escenario</th>
+<th>count sin tope</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>con <code>User_demo_partial_idx</code></td>
+<td>478 ms</td>
+</tr>
+<tr>
+<td>sin el índice</td>
+<td>568 ms</td>
+</tr>
+</tbody>
+</table>
+<p>Diferencia dentro del ruido, y el filtro <strong>no es selectivo</strong> (200.000 de 200.000 usuarios tienen
+<code>demo = true</code>). Se <strong>eliminó el índice</strong> y se documenta el intento: un índice que no mejora nada
+es deuda.</p>
+<h2 id="5-par-metros-del-motor">5. Parámetros del motor</h2>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>shared_buffers</code></td>
+<td>1 GB</td>
+<td>base de 8,5 GB: ~12 %, dentro de lo recomendado</td>
+</tr>
+<tr>
+<td><code>effective_cache_size</code></td>
+<td>3 GB</td>
+<td>estimación para el planificador</td>
+</tr>
+<tr>
+<td><code>work_mem</code></td>
+<td>16 MB</td>
+<td>los <code>GROUP BY</code> grandes se materializaron, ya no necesitan más</td>
+</tr>
+<tr>
+<td><code>max_wal_size</code></td>
+<td>8 GB</td>
+<td>la carga masiva generaba 38 GB de WAL con el default (D-20)</td>
+</tr>
+<tr>
+<td><code>checkpoint_timeout</code></td>
+<td>15 min</td>
+<td>ídem</td>
+</tr>
+<tr>
+<td><code>log_min_duration_statement</code></td>
+<td>200 ms</td>
+<td>alimenta pgBadger (§4)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-limitaciones">6. Limitaciones</h2>
+<ul>
+<li><strong>El conteo acotado cambia semántica</strong>: <code>articlesCount</code> tope 10.000 (1.000 páginas de 10). Es una
+  decisión de producto, no un techo técnico; se documenta para que no sorprenda.</li>
+<li>Las vistas materializadas tienen <strong>atraso</strong> hasta el próximo refresco. Se refrescan por cron
+  (n8n) y se documenta el intervalo.</li>
+<li>Las optimizaciones de Q2b, Q4 y Q7 están implementadas en SQL; la API todavía usa <code>OFFSET</code> y
+  consultas directas. La integración de keyset pagination y de las vistas en el backend queda como
+  mejora pendiente (no afecta la demo: el listado ya bajó a 0,19 s por el cambio de Q1).</li>
+<li>Las mediciones son con caché caliente; en frío los números son peores para todas las variantes.</li>
+</ul>
+<h2 id="7-evidencia">7. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Baseline (8 consultas + planes)</td>
+<td><code>evidence/05/baseline-1.txt</code></td>
+</tr>
+<tr>
+<td>Después (optimizaciones + planes)</td>
+<td><code>evidence/05/optimizado.txt</code></td>
+</tr>
+<tr>
+<td>Control negativo (índice descartado, Q8 sin índice)</td>
+<td><code>evidence/05/control.txt</code></td>
+</tr>
+<tr>
+<td>Consultas usadas</td>
+<td><code>db/queries/10-baseline.sql</code>, <code>db/queries/20-optimizado.sql</code></td>
+</tr>
+<tr>
+<td>Consultas más costosas del motor</td>
+<td><code>pg_stat_statements</code> (top 8 por tiempo total)</td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="08-replicacion.md"><h1 id="08-configuraci-n-y-pruebas-de-replicaci-n">08 — Configuración y pruebas de replicación</h1>
+<h2 id="1-arquitectura-implementada">1. Arquitectura implementada</h2>
+<p><strong>Primaria + 1 réplica en streaming asíncrona</strong>, sin failover automático.</p>
+<pre><code>┌─────────────────────────┐        WAL (streaming, async)        ┌──────────────────────────┐
+│  pi-db (primaria)       │ ───────────────────────────────────▶ │  pi-db-replica (standby) │
+│  lectura + escritura    │                                      │  solo lectura            │
+│  wal_level = replica    │ ◀── pg_basebackup -R (clon inicial)  │  hot_standby = on        │
+└─────────────────────────┘                                      └──────────────────────────┘
+        ▲                                                                   ▲
+        └────────────── backend (DATABASE_HOST) ────────────────────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Nodo</th>
+<th>Rol</th>
+<th>Puerto publicado</th>
+<th>Persistencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pi-db</code></td>
+<td>primaria: recibe todas las escrituras</td>
+<td><code>127.0.0.1:5433</code></td>
+<td>volumen <code>pi-pgdata</code></td>
+</tr>
+<tr>
+<td><code>pi-db-replica</code></td>
+<td>standby: replay continuo, solo lectura</td>
+<td><strong>ninguno</strong></td>
+<td>volumen <code>pi-pgdata-replica</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-configuraci-n">2. Configuración</h2>
+<h3>Primaria (<code>compose.yaml</code>, servicio <code>db</code>)</h3>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>wal_level</code></td>
+<td><code>replica</code></td>
+<td>necesario para enviar WAL con información suficiente para consultas en standby</td>
+</tr>
+<tr>
+<td><code>max_wal_senders</code></td>
+<td><code>10</code></td>
+<td>conexiones de envío concurrentes</td>
+</tr>
+<tr>
+<td>rol <code>replicador</code></td>
+<td><code>REPLICATION LOGIN</code> con contraseña desde <code>.env</code></td>
+<td>credencial específica, no la de la aplicación</td>
+</tr>
+<tr>
+<td><code>pg_hba.conf</code></td>
+<td><code>host replication replicador 172.16.0.0/12 scram-sha-256</code></td>
+<td>solo la red interna de Docker puede replicar</td>
+</tr>
+</tbody>
+</table>
+<p>El rol y la regla de <code>pg_hba</code> se crean con <code>db/init/05-replicacion.sh</code> (idempotente: se puede
+volver a ejecutar sin duplicar nada).</p>
+<h3>Réplica (<code>db/replica/entrypoint.sh</code>)</h3>
+<ol>
+<li>Si el volumen está vacío: <code>pg_basebackup -h db -U replicador -D $PGDATA -Fp -Xs -R -P</code>.
+   El <code>-R</code> escribe <code>primary_conninfo</code> y crea <code>standby.signal</code>: eso es todo lo que convierte al
+   nodo en standby.</li>
+<li>Si ya hay datos: arranca directamente (un reinicio no vuelve a clonar).</li>
+</ol>
+<h2 id="3-verificaci-n-de-replicaci-n">3. Verificación de replicación</h2>
+<table>
+<thead>
+<tr>
+<th>Comprobación</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pg_stat_replication</code> en la primaria</td>
+<td><code>state = streaming</code>, <code>sync_state = async</code>, <strong>lag = 0 bytes</strong></td>
+</tr>
+<tr>
+<td><code>pg_is_in_recovery()</code> en la primaria</td>
+<td><code>false</code> (es primaria)</td>
+</tr>
+<tr>
+<td>Réplicas conectadas</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>pg_is_in_recovery()</code> en la réplica</td>
+<td><code>true</code> (es standby)</td>
+</tr>
+<tr>
+<td>Escritura en primaria visible en réplica</td>
+<td><strong>447 ms</strong> (incluye el sondeo cada 200 ms)</td>
+</tr>
+<tr>
+<td>Escritura directa en la réplica</td>
+<td>rechazada: <code>cannot execute INSERT in a read-only transaction</code></td>
+</tr>
+</tbody>
+</table>
+<p>Evidencia: <code>evidence/06/replicacion.log</code>.</p>
+<h2 id="4-pruebas-de-fallo">4. Pruebas de fallo</h2>
+<table>
+<thead>
+<tr>
+<th>Escenario</th>
+<th>Resultado medido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A) Se detiene la réplica</strong></td>
+<td>la app sigue respondiendo <strong>200 en 0,198 s</strong>; sin impacto porque escribe en la primaria</td>
+</tr>
+<tr>
+<td><strong>B) Se detiene la primaria</strong></td>
+<td>primera respuesta no-200 a los <strong>1,4 s</strong>; 20/20 fallos en 10 s (HTTP 500)</td>
+</tr>
+<tr>
+<td><strong>C) Failover manual</strong> (<code>pg_promote</code>)</td>
+<td>promoción en <strong>1,2 s</strong>; nodo fuera de recovery</td>
+</tr>
+<tr>
+<td><strong>C2) Repunte de la app</strong></td>
+<td><code>DATABASE_HOST=db-replica</code> + recrear el backend</td>
+</tr>
+<tr>
+<td><strong>C3) RTO total</strong></td>
+<td><strong>8,6 s</strong> desde el inicio de la promoción hasta que la app vuelve a responder 200</td>
+</tr>
+<tr>
+<td><strong>C4) Escritura en el nodo promovido</strong></td>
+<td><code>POST /api/users</code> → <strong>201</strong>; 200.002 usuarios</td>
+</tr>
+</tbody>
+</table>
+<p>Evidencia: <code>evidence/06/failover.log</code>.</p>
+<h2 id="5-failover-procedimiento-manual-no-autom-tico">5. Failover: procedimiento manual (no automático)</h2>
+<pre><code class="language-powershell"># 1. detectar que la primaria no responde (monitoreo o healthcheck)
+docker compose stop db
+
+# 2. promover la réplica
+./scripts/replica.ps1 promote        # pg_promote()
+
+# 3. repuntar la aplicación
+#    .env -&gt; DATABASE_HOST=db-replica
+docker compose up -d --force-recreate backend
+
+# 4. verificar
+curl http://127.0.0.1:8090/api/articles?limit=3
+</code></pre>
+<p><strong>No hay detección automática de falla ni promoción automática.</strong> No se usa Patroni/repmgr: el
+enunciado advierte que la replicación por sí sola no garantiza alta disponibilidad, y afirma que
+si se declara failover automático hay que demostrarlo. Acá se declara <strong>failover manual</strong>, con el
+procedimiento ejecutado y el RTO medido.</p>
+<h2 id="6-divergencia-detectada-lo-m-s-importante-de-la-prueba">6. Divergencia detectada (lo más importante de la prueba)</h2>
+<p>Al promover la réplica y seguir escribiendo, el nodo promovido quedó con <strong>un usuario que la
+primaria vieja no tiene</strong> (<code>failover_demo</code>). Al restaurar la topología original hubo que
+<strong>descartar el volumen de la réplica promovida y volver a clonar</strong>, perdiendo esa escritura.</p>
+<p>Eso no es un defecto del procedimiento: es la naturaleza de un failover manual sin cuórum. Si la
+primaria "caída" en realidad solo estaba aislada (split-brain), ambas aceptarían escrituras y
+habría que reconciliar. Un sistema con promoción automática necesita un mecanismo de cuórum
+(Patroni + etcd) para evitar exactamente esto.</p>
+<p><strong>Consecuencia documentada</strong>: RPO ≠ 0. En replicación asíncrona se puede perder el WAL que no
+llegó a la réplica. En la prueba el lag era 0 bytes, así que la pérdida fue de la escritura hecha
+<em>después</em> de la promoción, no antes.</p>
+<h2 id="7-limitaciones-2">7. Limitaciones</h2>
+<table>
+<thead>
+<tr>
+<th>Limitación</th>
+<th>Impacto</th>
+<th>Mejora posible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sin failover automático</td>
+<td>RTO depende de una persona (~9 s medidos, más el tiempo de detección)</td>
+<td>Patroni + etcd o repmgr</td>
+</tr>
+<tr>
+<td>Replicación asíncrona</td>
+<td>RPO &gt; 0 ante caída abrupta</td>
+<td><code>synchronous_commit=remote_apply</code> (más latencia)</td>
+</tr>
+<tr>
+<td>La app necesita repunte manual</td>
+<td>un <code>DATABASE_HOST</code> y un reinicio</td>
+<td>proxy (HAProxy/pgBouncer) o driver con failover</td>
+</tr>
+<tr>
+<td>Sin balanceo de lecturas</td>
+<td>la réplica no se usa para consultas</td>
+<td><code>read replica</code> de Prisma no existe en 4.x; requiere segundo cliente o proxy</td>
+</tr>
+<tr>
+<td>Un solo standby</td>
+<td>sin cuórum ni segunda copia</td>
+<td>añadir una segunda réplica</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-evidencia">8. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Estado, lag, escritura→lectura, solo-lectura</td>
+<td><code>evidence/06/replicacion.log</code></td>
+</tr>
+<tr>
+<td>Pruebas de fallo, promoción y RTO</td>
+<td><code>evidence/06/failover.log</code></td>
+</tr>
+<tr>
+<td>Configuración</td>
+<td><code>compose.yaml</code>, <code>db/replica/entrypoint.sh</code>, <code>db/init/05-replicacion.sh</code></td>
+</tr>
+<tr>
+<td>Script de operación</td>
+<td><code>scripts/replica.ps1</code></td>
+</tr>
+<tr>
+<td>Consultas de verificación</td>
+<td><code>db/queries/30-replicacion.sql</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="09-cicd.md"><h1 id="09-integraci-n-y-despliegue-continuos">09 — Integración y despliegue continuos</h1>
+<h2 id="1-objetivo-3">1. Objetivo</h2>
+<p>Que ninguna modificación defectuosa llegue a <code>main</code> ni al entorno publicado, que el despliegue sea
+reproducible, y que si una versión nueva rompe el servicio el sistema vuelva solo a la anterior.</p>
+<h2 id="2-herramienta">2. Herramienta</h2>
+<p><strong>GitHub Actions</strong>, porque el repositorio ya vive en GitHub: no hace falta infraestructura extra ni
+credenciales adicionales, y los <em>status checks</em> se integran nativamente con la protección de rama.</p>
+<h2 id="3-integraci-n-continua-github-workflows-ci-yml">3. Integración continua (<code>.github/workflows/ci.yml</code>)</h2>
+<p>Se dispara en <code>push</code> y <code>pull_request</code> sobre <code>main</code> y <code>develop</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Qué hace</th>
+<th>Por qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend</code></td>
+<td><code>npm ci</code> + <code>npm run build</code> (Nx, Node 20)</td>
+<td>el backend debe compilar antes de construir la imagen</td>
+</tr>
+<tr>
+<td><code>frontend</code></td>
+<td><code>npm ci</code> + <code>eslint</code> + <code>vite build</code> + artefacto <code>frontend-dist</code></td>
+<td>lint y build son la barrera mínima de calidad</td>
+</tr>
+<tr>
+<td><code>secrets</code></td>
+<td><code>gitleaks</code> sobre <strong>todo el historial</strong> con <code>--redact</code></td>
+<td>un secreto puede estar en un commit viejo, no solo en el HEAD</td>
+</tr>
+<tr>
+<td><code>compose</code></td>
+<td><code>docker compose config</code> + control de que <code>.env</code> no está versionado</td>
+<td>un compose inválido rompe el despliegue; un <code>.env</code> versionado filtra credenciales</td>
+</tr>
+</tbody>
+</table>
+<p>Decisiones de diseño:</p>
+<ul>
+<li><strong><code>npm ci</code>, no <code>npm install</code></strong>: exige lockfile y garantiza que el build de CI sea el mismo que el local.</li>
+<li><strong>Node 20 fijo</strong>: el host tiene Node 26, pero CI y Docker usan la misma versión LTS.</li>
+<li><strong><code>permissions: contents: read</code></strong>: el workflow de CI no necesita escribir nada.</li>
+<li><strong><code>concurrency</code> con <code>cancel-in-progress</code></strong>: dos pushes seguidos no encolan dos pipelines completos.</li>
+<li><strong><code>gitleaks</code> por imagen Docker</strong>: no requiere token ni licencia de la action.</li>
+</ul>
+<h2 id="4-protecci-n-de-main">4. Protección de <code>main</code></h2>
+<p>Configurada por API (<code>evidence/03/branch-protection.json</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Regla</th>
+<th>Valor</th>
+<th>Efecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pull request obligatorio</td>
+<td>sí</td>
+<td>no se puede pushear directo</td>
+</tr>
+<tr>
+<td>Status checks requeridos</td>
+<td><code>backend</code>, <code>frontend</code>, <code>secrets</code>, <code>compose</code></td>
+<td>el merge se bloquea si algún job falla</td>
+</tr>
+<tr>
+<td><code>strict</code></td>
+<td>sí</td>
+<td>la rama debe estar actualizada con <code>main</code> antes de mergear</td>
+</tr>
+<tr>
+<td><code>enforce_admins</code></td>
+<td><strong>sí</strong></td>
+<td>la regla también aplica al dueño del repositorio</td>
+</tr>
+<tr>
+<td>Force push</td>
+<td>no</td>
+<td>no se puede reescribir el historial</td>
+</tr>
+<tr>
+<td>Borrado de la rama</td>
+<td>no</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Prueba negativa ejecutada</strong> (<code>evidence/03/branch-protection-test.log</code>):</p>
+<pre><code>remote: error: GH006: Protected branch update failed for refs/heads/main.
+remote: - Changes must be made through a pull request.
+remote: - 4 of 4 required status checks are expected.
+ ! [remote rejected] main -&gt; main (protected branch hook declined)
+</code></pre>
+<p>Ese intento se hizo <strong>con la cuenta dueña del repositorio</strong> y aun así fue rechazado: es la prueba
+de que <code>enforce_admins=true</code> está funcionando y no es una regla decorativa.</p>
+<blockquote>
+<p>Anécdota que vale para la defensa: la primera configuración tenía <code>enforce_admins=false</code> y el push
+directo <strong>pasó</strong>. GitHub lo informó como <em>"Bypassed rule violations"</em>. Se detectó justamente porque
+se probó el caso negativo en lugar de asumir que la configuración estaba bien.</p>
+</blockquote>
+<h2 id="5-publicaci-n-de-im-genes-github-workflows-release-yml">5. Publicación de imágenes (<code>.github/workflows/release.yml</code>)</h2>
+<p>Se dispara <strong>solo con push a <code>main</code></strong> (y <code>workflow_dispatch</code>). No corre en PRs: publicar imágenes
+de código que todavía no se mergeó llena el registro de versiones que nadie va a desplegar.</p>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Decisión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registro</td>
+<td><strong>GHCR</strong> (<code>ghcr.io/tomasgudi/hia-2026-{backend,frontend}</code>)</td>
+</tr>
+<tr>
+<td>Tags</td>
+<td><code>sha-&lt;7&gt;</code> (trazable al commit) + <code>latest</code></td>
+</tr>
+<tr>
+<td>Matriz</td>
+<td>un job por servicio, en paralelo</td>
+</tr>
+<tr>
+<td>Caché</td>
+<td><code>type=gha</code> por servicio: no recompila capas entre corridas</td>
+</tr>
+<tr>
+<td>Permisos</td>
+<td><code>contents: read</code> + <code>packages: write</code> (el único permiso de escritura)</td>
+</tr>
+<tr>
+<td>Labels</td>
+<td><code>org.opencontainers.image.{source,revision,version}</code> vía <code>metadata-action</code></td>
+</tr>
+</tbody>
+</table>
+<p>El tag <code>sha-&lt;7&gt;</code> es el que se usa para desplegar: <code>latest</code> es una comodidad, no una referencia
+estable. Desplegar <code>latest</code> en producción es un error clásico porque no se sabe qué código corre.</p>
+<h2 id="6-registro">6. Registro</h2>
+<p>CI publica en <strong>GHCR</strong> y el despliegue baja de ahí. Verificado: el paquete quedó público
+(repositorio público) y se puede bajar sin credenciales:</p>
+<pre><code>docker pull ghcr.io/tomasgudi/hia-2026-backend:sha-0946375
+Digest: sha256:7c81e91823a992a85bc60660420b213c7d438918663a2f724e56ab1346964bc8
+Status: Downloaded newer image for ghcr.io/tomasgudi/hia-2026-backend:sha-0946375
+</code></pre>
+<pre><code class="language-powershell">./scripts/deploy.ps1 -Tag sha-0946375 -Registry ghcr.io/tomasgudi
+</code></pre>
+<p>Además hay un <strong>registro local</strong> (<code>registry:2</code> en <code>127.0.0.1:5000</code>, perfil <code>ops</code>) con las mismas
+imágenes. No es el camino principal: es el plan B para un host sin salida a Internet o si el paquete
+se vuelve privado. En ese caso <code>deploy.ps1</code> funciona igual cambiando <code>-Registry</code>.</p>
+<p>Si el paquete fuera privado, el host necesitaría <code>docker login ghcr.io</code> con un PAT que tenga
+<code>read:packages</code>. Este entorno no lo tenía, y por eso se probó primero el registro local; después se
+confirmó que el paquete de GHCR era accesible y se desplegó desde ahí.</p>
+<h2 id="7-despliegue-pull-based-scripts-deploy-ps1">7. Despliegue pull-based (<code>scripts/deploy.ps1</code>)</h2>
+<p>No hay <em>push</em> desde GitHub al host: el host <strong>baja</strong> la versión que se le indica. Es el patrón
+correcto cuando el destino no tiene una IP pública ni un runner self-hosted.</p>
+<pre><code class="language-powershell">./scripts/deploy.ps1 -Tag sha-1a2b3c4     # despliegue normal
+./scripts/deploy.ps1 -Rollback            # volver a la versión anterior
+</code></pre>
+<p>Secuencia:</p>
+<ol>
+<li><strong>Baja las dos imágenes antes de tocar nada.</strong> Si el pull falla, el servicio actual sigue
+   corriendo: el despliegue aborta sin dejar el sistema a medias.</li>
+<li>Escribe el tag en <code>BACKEND_IMAGE</code>, <code>FRONTEND_IMAGE</code> y <code>APP_VERSION</code>.</li>
+<li><code>docker compose up -d --no-build --no-deps backend frontend</code> (solo esos dos servicios).</li>
+<li>Espera salud <strong>real</strong>: <code>GET /health</code> a través del frontend <strong>y</strong> <code>docker inspect</code> en <code>healthy</code>.</li>
+<li>Si no queda sano en el timeout, <strong>rollback automático</strong> al tag anterior y vuelve a verificar.</li>
+</ol>
+<p>El estado queda en <code>.deploy/state.json</code> (no versionado): <code>current</code>, <code>previous</code>, <code>history</code>,
+<code>failed_tag</code> si hubo rollback.</p>
+<p><code>GET /health</code> devuelve la versión desplegada:</p>
+<pre><code class="language-json">{&quot;status&quot;:&quot;ok&quot;,&quot;db&quot;:&quot;up&quot;,&quot;uptime&quot;:31.06,&quot;version&quot;:&quot;v1&quot;}
+</code></pre>
+<p>Eso permite responder "¿qué está corriendo?" sin entrar al contenedor.</p>
+<h2 id="8-rollback-probado">8. Rollback probado</h2>
+<table>
+<thead>
+<tr>
+<th>Paso</th>
+<th>Acción</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>deploy.ps1 -Tag v1</code></td>
+<td><code>version: v1</code>, app 200</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>deploy.ps1 -Tag v2</code></td>
+<td><code>version: v2</code>, app 200</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>deploy.ps1 -Tag broken</code></td>
+<td>el contenedor no levanta: <code>dependency failed to start</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>rollback <strong>automático</strong></td>
+<td>vuelve a <code>v2</code> sin intervención; <code>version: v2</code>, app 200</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>deploy.ps1 -Rollback</code></td>
+<td>vuelve a <code>v1</code>; <code>version: v1</code>, app 200</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>deploy.ps1 -Tag sha-0946375 -Registry ghcr.io/tomasgudi</code></td>
+<td>imagen de GHCR desplegada; <code>version: sha-0946375</code></td>
+</tr>
+</tbody>
+</table>
+<p>La imagen <code>broken</code> es un <code>alpine</code> que no escucha en <code>:3000</code>: no es un error simulado en el script,
+es un contenedor que realmente no sirve. El rollback se dispara porque el healthcheck falla, no
+porque el script "sepa" que esa imagen es mala.</p>
+<p>Evidencia: <code>evidence/08/deploy.log</code>, <code>evidence/08/rollback-automatico.log</code>,
+<code>evidence/08/rollback-manual.log</code>, <code>evidence/08/registro-y-despliegue.log</code>.</p>
+<blockquote>
+<p>Nota honesta: <code>v1</code> y <code>v2</code> son el <strong>mismo commit con distinto tag</strong>. Lo que se prueba es el
+mecanismo de despliegue y rollback, no un cambio de código. En un release real el tag <code>sha-&lt;7&gt;</code>
+cambia con el commit.</p>
+</blockquote>
+<h2 id="9-flujo-completo">9. Flujo completo</h2>
+<pre><code>feature/* ──PR──▶ develop ──PR──▶ main ──push──▶ release.yml ──▶ GHCR
+                    │                │                              │
+                    └── CI (4 jobs) ─┘                              │
+                                                                    ▼
+                                                     deploy.ps1 -Tag sha-xxxx
+                                                                    │
+                                                                    ▼
+                                                     pull ─▶ up ─▶ /health
+                                                              │
+                                                              └─ falla ─▶ rollback
+</code></pre>
+<h2 id="10-estado">10. Estado</h2>
+<table>
+<thead>
+<tr>
+<th>Requisito de §8</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Configurar GitHub Actions</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Verificaciones automáticas</td>
+<td>✅ lint, build, secretos, compose</td>
+</tr>
+<tr>
+<td>Construir imágenes Docker</td>
+<td>✅ <code>release.yml</code>, matriz backend/frontend</td>
+</tr>
+<tr>
+<td>Publicar en un registro</td>
+<td>✅ GHCR + registro local para el host</td>
+</tr>
+<tr>
+<td>Despliegue automático</td>
+<td>✅ pull-based con <code>deploy.ps1</code></td>
+</tr>
+<tr>
+<td>Secretos protegidos</td>
+<td>✅ <code>GITHUB_TOKEN</code> con permisos mínimos; gitleaks en todo el historial</td>
+</tr>
+<tr>
+<td>Commit de prueba</td>
+<td>✅ PRs #1–#5 con CI verde</td>
+</tr>
+<tr>
+<td>Rollback documentado y probado</td>
+<td>✅ automático y manual, con evidencia</td>
+</tr>
+</tbody>
+</table>
+<h2 id="11-evidencia">11. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow de CI</td>
+<td><code>.github/workflows/ci.yml</code></td>
+</tr>
+<tr>
+<td>Workflow de release</td>
+<td><code>.github/workflows/release.yml</code></td>
+</tr>
+<tr>
+<td>Corrida exitosa de CI (4/4 jobs)</td>
+<td><code>evidence/03/ci-evidencia.txt</code>, <code>evidence/03/ci-run-43424320086.json</code></td>
+</tr>
+<tr>
+<td>Configuración de protección</td>
+<td><code>evidence/03/branch-protection.json</code></td>
+</tr>
+<tr>
+<td>Prueba negativa de protección</td>
+<td><code>evidence/03/branch-protection-test.log</code></td>
+</tr>
+<tr>
+<td>Escaneo de secretos</td>
+<td><code>evidence/03/gitleaks.log</code></td>
+</tr>
+<tr>
+<td>Despliegue v1 → v2</td>
+<td><code>evidence/08/deploy.log</code></td>
+</tr>
+<tr>
+<td>Rollback automático</td>
+<td><code>evidence/08/rollback-automatico.log</code></td>
+</tr>
+<tr>
+<td>Rollback manual</td>
+<td><code>evidence/08/rollback-manual.log</code></td>
+</tr>
+<tr>
+<td>Registro y digests (local)</td>
+<td><code>evidence/08/registro-y-despliegue.log</code></td>
+</tr>
+<tr>
+<td>Publicación en GHCR</td>
+<td><code>evidence/08/ghcr-release.log</code></td>
+</tr>
+<tr>
+<td>Despliegue desde GHCR por SHA</td>
+<td><code>evidence/08/deploy-desde-ghcr.log</code></td>
+</tr>
+<tr>
+<td>Prueba negativa de CI</td>
+<td><code>evidence/03/ci-negativo.log</code>, <code>evidence/03/ci-negativo-job.log</code>, <code>evidence/03/ci-negativo-checkruns.json</code></td>
+</tr>
+<tr>
+<td>Script de despliegue</td>
+<td><code>scripts/deploy.ps1</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="10-publicacion.md"><h1 id="10-publicaci-n-en-internet">10 — Publicación en Internet</h1>
+<h2 id="1-objetivo-4">1. Objetivo</h2>
+<p>Que la aplicación sea accesible desde Internet <strong>sin abrir un solo puerto</strong> en el host, con HTTPS,
+y que las herramientas de administración queden detrás de autenticación. Además, demostrar con
+<code>nmap</code> que la superficie expuesta es la mínima.</p>
+<h2 id="2-arquitectura-de-publicaci-n">2. Arquitectura de publicación</h2>
+<pre><code>                    Internet
+                       │  HTTPS 443
+                       ▼
+        ┌──────────────────────────────┐
+        │  Cloudflare (borde)          │  TLS, DDoS, IP del origen oculta
+        │  104.16.x.x                  │
+        └──────────────┬───────────────┘
+                       │  túnel saliente (QUIC/HTTP2)
+                       │  el host NO abre puertos entrantes
+                       ▼
+        ┌──────────────────────────────┐
+        │  cloudflared (contenedor)    │
+        └───┬──────────────────┬───────┘
+            │ appnet           │ dbnet
+            ▼                  ▼
+   frontend:80            edge:8080 (pgAdmin)
+      │                   edge:8081 (Mantis)
+      ▼                        │
+   backend:3000 ──▶ db:5432    ├──▶ pgadmin:80
+                               └──▶ mantis:80
+
+   Host: 127.0.0.1:8090 (frontend), 127.0.0.1:8088/8089 (edge),
+         127.0.0.1:9090/9093/3001 (monitoreo), 127.0.0.1:5433 (DB)
+         → nada escucha en la interfaz de LAN.
+</code></pre>
+<p>La clave: <strong>el túnel es una conexión saliente</strong>. <code>cloudflared</code> inicia la conexión hacia Cloudflare y
+mantiene un canal abierto; Cloudflare le reenvía el tráfico. No hay NAT, ni port forwarding, ni IP
+pública, ni certificado que renovar en el origen.</p>
+<h2 id="3-endpoints-publicados">3. Endpoints publicados</h2>
+<table>
+<thead>
+<tr>
+<th>Servicio</th>
+<th>URL pública (túnel rápido)</th>
+<th>Auth</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aplicación</td>
+<td><code>https://macintosh-pension-california-grey.trycloudflare.com</code></td>
+<td>login propio de la app (JWT)</td>
+</tr>
+<tr>
+<td>pgAdmin</td>
+<td><code>https://progress-bulk-trailers-traditions.trycloudflare.com</code></td>
+<td><strong>Basic auth</strong> + login de pgAdmin</td>
+</tr>
+<tr>
+<td>Mantis</td>
+<td><code>https://experts-baseball-simulation-floating.trycloudflare.com</code></td>
+<td><strong>Basic auth</strong> + login de Mantis</td>
+</tr>
+</tbody>
+</table>
+<p>Comando usado (túnel rápido, sin cuenta):</p>
+<pre><code class="language-powershell">docker run -d --name pi-tunnel --network pi-appnet cloudflare/cloudflared:latest \
+  tunnel --no-autoupdate --url http://frontend:80
+</code></pre>
+<blockquote>
+<p><strong>Estas URLs son efímeras</strong>: los túneles rápidos mueren al detener el contenedor y el nombre
+cambia. Para la defensa hay que levantarlos de nuevo y usar la URL que imprima el log. En
+producción se usa un <strong>túnel con nombre</strong> y un dominio propio (ver §7).</p>
+</blockquote>
+<h2 id="4-autenticaci-n-en-rutas-administrativas">4. Autenticación en rutas administrativas</h2>
+<p><code>edge/nginx.conf</code> publica pgAdmin y Mantis detrás de HTTP Basic:</p>
+<pre><code class="language-nginx">auth_basic           &quot;Administracion - Practica Integradora&quot;;
+auth_basic_user_file /etc/nginx/.htpasswd;
+</code></pre>
+<ul>
+<li>El hash es <strong>apr1</strong> (<code>$apr1$...</code>), no la contraseña: <code>edge/.htpasswd</code> se puede versionar.</li>
+<li>La contraseña vive en <code>.env</code> (<code>EDGE_ADMIN_PASSWORD</code>) y no se versiona.</li>
+<li>Basic auth <strong>no reemplaza</strong> el login propio de cada herramienta: lo antepone. Dos barreras.</li>
+</ul>
+<p>Verificación sobre HTTPS público:</p>
+<table>
+<thead>
+<tr>
+<th>Petición</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GET pgadmin/</code> sin credenciales</td>
+<td><strong>401</strong></td>
+</tr>
+<tr>
+<td><code>GET mantis/</code> sin credenciales</td>
+<td><strong>401</strong></td>
+</tr>
+<tr>
+<td><code>GET pgadmin/</code> con clave incorrecta</td>
+<td><strong>401</strong></td>
+</tr>
+<tr>
+<td><code>GET pgadmin/</code> con credenciales</td>
+<td><strong>308</strong> → login de pgAdmin</td>
+</tr>
+<tr>
+<td><code>GET mantis/</code> con credenciales</td>
+<td><strong>302</strong> → login de Mantis</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-verificaci-n-de-superficie-con-nmap">5. Verificación de superficie con <code>nmap</code></h2>
+<h3>5.1 Desde la LAN (¿el host expone algo?)</h3>
+<pre><code class="language-powershell">docker run --rm instrumentisto/nmap -Pn -T4 -p 5000,3001,5433,8080,8081,8088,8089,8090,9090,9093 192.168.1.8
+</code></pre>
+<pre><code>PORT     STATE    SERVICE
+3001/tcp filtered nessus
+5000/tcp filtered upnp
+5433/tcp filtered pyrrho
+8080/tcp filtered http-proxy
+8081/tcp filtered blackice-icecap
+8088/tcp filtered radan-http
+8089/tcp filtered unknown
+8090/tcp filtered opsmessaging
+9090/tcp filtered zeus-admin
+9093/tcp filtered copycat
+</code></pre>
+<p><strong>Todos <code>filtered</code>.</strong> No es casualidad: cada puerto del compose está publicado como
+<code>127.0.0.1:&lt;puerto&gt;</code>, así que Docker los ata al loopback y no a la interfaz de red.</p>
+<h3>5.2 Desde Internet (¿qué se ve del otro lado?)</h3>
+<pre><code class="language-powershell">docker run --rm instrumentisto/nmap -Pn -p 80,443 macintosh-pension-california-grey.trycloudflare.com
+</code></pre>
+<pre><code>Nmap scan report for ...trycloudflare.com (104.16.231.132)
+PORT    STATE SERVICE
+80/tcp  open  http
+443/tcp open  https
+</code></pre>
+<p>Lo que se ve es <strong>Cloudflare</strong>, no el host. El origen no tiene dirección pública: no hay nada que
+escanear del otro lado. Ese es el punto del túnel.</p>
+<h2 id="6-riesgos-y-limitaciones">6. Riesgos y limitaciones</h2>
+<table>
+<thead>
+<tr>
+<th>Riesgo</th>
+<th>Impacto</th>
+<th>Mitigación / decisión</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Túnel rápido sin SLA</td>
+<td>la URL muere y no hay garantía de uptime</td>
+<td>es para demo; producción usa túnel con nombre</td>
+</tr>
+<tr>
+<td>Basic auth sin MFA</td>
+<td>una contraseña filtrada da acceso al panel</td>
+<td>contraseña fuerte en <code>.env</code> + login propio de la herramienta; Cloudflare Access para MFA</td>
+</tr>
+<tr>
+<td>pgAdmin expuesto a Internet</td>
+<td>superficie de ataque alta si hay un CVE</td>
+<td>se publica solo con auth; en producción conviene VPN o Access</td>
+</tr>
+<tr>
+<td>Cloudflare ve el tráfico</td>
+<td>el TLS termina en el borde</td>
+<td>aceptable para esta práctica; alternativa: túnel con TLS de extremo a extremo</td>
+</tr>
+<tr>
+<td>Sin rate limiting ni WAF</td>
+<td>fuerza bruta / abuso</td>
+<td>reglas de Cloudflare (no configuradas, requieren cuenta)</td>
+</tr>
+<tr>
+<td>Un solo nodo</td>
+<td>si el host cae, el túnel cae</td>
+<td>no hay alta disponibilidad; es una limitación del alcance</td>
+</tr>
+<tr>
+<td>Sin logs de acceso centralizados</td>
+<td>difícil auditar intentos</td>
+<td>se mitiga con §10 (métricas) y logs de <code>cloudflared</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Lo que NO se hizo y por qué</strong>: no se configuró Cloudflare Access (requiere cuenta y dominio), no
+se configuró WAF ni rate limiting, y no se usó un túnel con nombre. Todo eso es la evolución natural
+de esta arquitectura, no una omisión silenciosa.</p>
+<h2 id="7-plan-b-tailscale-funnel">7. Plan B: Tailscale Funnel</h2>
+<p>Se evaluó como alternativa. <strong>No se implementó</strong>: requiere cuenta de Tailscale y un <code>tailscale up</code>
+interactivo, igual que un túnel con nombre de Cloudflare requiere dominio propio.</p>
+<p>Procedimiento si se quisiera:</p>
+<pre><code class="language-powershell">tailscale up --advertise-exit-node=false
+tailscale funnel 8090
+</code></pre>
+<p>Diferencia con Cloudflare: Funnel publica el servicio en <code>*.ts.net</code> sin abrir puertos, pero el
+tráfico entra por la red de Tailscale (WireGuard) y no hay borde con DDoS/WAF. Para esta práctica
+Cloudflare es mejor opción porque además aporta TLS y ocultamiento del origen.</p>
+<h2 id="8-evidencia-2">8. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Acceso externo (HTTPS, auth, versión desplegada)</td>
+<td><code>evidence/09/acceso-externo.log</code></td>
+</tr>
+<tr>
+<td><code>nmap</code> desde la LAN y contra el endpoint público</td>
+<td><code>evidence/09/nmap.log</code></td>
+</tr>
+<tr>
+<td>Configuración del borde</td>
+<td><code>edge/nginx.conf</code>, <code>edge/.htpasswd</code></td>
+</tr>
+<tr>
+<td>Servicios en <code>compose.yaml</code></td>
+<td><code>edge</code>, túneles creados con <code>docker run</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="11-monitoreo.md"><h1 id="11-monitoreo">11 — Monitoreo</h1>
+<h2 id="1-objetivo-y-alcance">1. Objetivo y alcance</h2>
+<p>Saber <strong>qué está pasando</strong> antes de que lo reporte un usuario, y tener evidencia de que la alerta
+llega a una persona (o a un sistema) con el contexto suficiente para actuar.</p>
+<p>Alcance de esta sección: métricas de infraestructura, del motor de base de datos, de la
+replicación y de la disponibilidad HTTP real. Queda fuera el APM a nivel de código (traces) y la
+observabilidad de logs centralizada: se documentan como limitación en §7.</p>
+<h2 id="2-arquitectura">2. Arquitectura</h2>
+<pre><code>                          ┌──────────────┐
+   node-exporter ────────▶│              │
+   postgres-exporter ────▶│  Prometheus  │──▶ Alertmanager ──▶ webhook n8n (§13)
+   postgres-exporter-r ──▶│  :9090       │                      └─▶ alert-sink (§10)
+   blackbox-exporter ────▶│              │
+                          └──────┬───────┘
+                                 │ datasource
+                          ┌──────▼───────┐
+                          │   Grafana    │  dashboard `pi-overview` (8 paneles)
+                          │   :3001      │
+                          └──────────────┘
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Imagen</th>
+<th>Puerto publicado</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prometheus</td>
+<td><code>prom/prometheus:v2.54.1</code></td>
+<td><code>127.0.0.1:9090</code></td>
+<td>recolección (15 s) y evaluación de reglas</td>
+</tr>
+<tr>
+<td>Alertmanager</td>
+<td><code>prom/alertmanager:v0.27.0</code></td>
+<td><code>127.0.0.1:9093</code></td>
+<td>agrupación, silencios y envío de notificaciones</td>
+</tr>
+<tr>
+<td>Grafana</td>
+<td><code>grafana/grafana:11.2.0</code></td>
+<td><code>127.0.0.1:3001</code></td>
+<td>dashboard provisionado por archivo</td>
+</tr>
+<tr>
+<td>node-exporter</td>
+<td><code>prom/node-exporter:v1.8.2</code></td>
+<td>—</td>
+<td>CPU, memoria, disco, red del anfitrión</td>
+</tr>
+<tr>
+<td>postgres-exporter</td>
+<td><code>prometheuscommunity/postgres-exporter:v0.15.0</code></td>
+<td>—</td>
+<td>métricas del motor: primaria</td>
+</tr>
+<tr>
+<td>postgres-exporter-replica</td>
+<td>ídem</td>
+<td>—</td>
+<td>métricas del motor: standby</td>
+</tr>
+<tr>
+<td>blackbox-exporter</td>
+<td><code>prom/blackbox-exporter:v0.25.0</code></td>
+<td>—</td>
+<td>sondeo HTTP real de los servicios</td>
+</tr>
+<tr>
+<td>alert-sink</td>
+<td><code>python:3.12-alpine</code></td>
+<td>—</td>
+<td>receptor de evidencia del webhook</td>
+</tr>
+</tbody>
+</table>
+<p>Todo el monitoreo corre bajo el perfil <code>ops</code>:</p>
+<pre><code class="language-powershell">docker compose --profile ops up -d
+</code></pre>
+<p>Ningún puerto sale de loopback. El acceso remoto va por el túnel de §9.</p>
+<h2 id="3-targets-y-qu-mide-cada-uno">3. Targets y qué mide cada uno</h2>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Target</th>
+<th>Métricas que aporta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>prometheus</code></td>
+<td><code>localhost:9090</code></td>
+<td>salud del propio Prometheus (sirve para detectar evaluación atrasada)</td>
+</tr>
+<tr>
+<td><code>node</code></td>
+<td><code>node-exporter:9100</code></td>
+<td><code>node_cpu_seconds_total</code>, <code>node_memory_*</code>, <code>node_filesystem_*</code>, <code>node_load*</code>, <code>node_network_*</code></td>
+</tr>
+<tr>
+<td><code>postgres</code></td>
+<td><code>postgres-exporter:9187</code></td>
+<td><code>pg_up</code>, conexiones, cache hit, <code>pg_stat_replication_pg_wal_lsn_diff</code></td>
+</tr>
+<tr>
+<td><code>postgres-replica</code></td>
+<td><code>postgres-exporter-replica:9187</code></td>
+<td><code>pg_replication_lag_seconds</code>, <code>pg_replication_is_replica</code></td>
+</tr>
+<tr>
+<td><code>blackbox</code></td>
+<td><code>http://frontend/</code>, <code>http://backend:3000/health</code>, <code>http://mantis/</code></td>
+<td><code>probe_success</code>, <code>probe_duration_seconds</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Por qué blackbox y no solo <code>up</code></strong>: <code>up</code> dice que el exporter respondió; no dice que el servicio
+detrás responda. <code>probe_success</code> hace una petición HTTP real y verifica el código 2xx.</p>
+<p><strong>Por qué un usuario <code>monitor</code> y no el de la aplicación</strong>: <code>postgres_exporter</code> solo necesita leer
+vistas de estadísticas. Se crea con <code>db/init/06-monitoreo.sh</code> y se le otorga el rol predefinido
+<code>pg_monitor</code> (agrupa <code>pg_read_all_stats</code> y <code>pg_read_all_settings</code>), sin acceso a los datos.</p>
+<h2 id="4-las-6-reglas-y-su-umbral">4. Las 6 reglas y su umbral</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Alerta</th>
+<th>Expresión</th>
+<th><code>for</code></th>
+<th>Severidad</th>
+<th>Por qué ese umbral</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td><code>ServicioCaido</code></td>
+<td><code>(up{job!="prometheus"} == 0) or (probe_success == 0)</code></td>
+<td>2m</td>
+<td>critical</td>
+<td>2m descarta reinicios normales de contenedor; cubre caída del exporter y del servicio</td>
+</tr>
+<tr>
+<td>R2</td>
+<td><code>CPUAlta</code></td>
+<td>CPU del anfitrión &gt; 85%</td>
+<td>5m</td>
+<td>warning</td>
+<td>85% deja 15% de margen antes de saturar; 5m descarta picos de build. Verificado: <code>stress-ng</code> con 16 workers sobre 8 vCPU lleva la CPU a 100%</td>
+</tr>
+<tr>
+<td>R3</td>
+<td><code>MemoriaAlta</code></td>
+<td>memoria usada &gt; 90%</td>
+<td>5m</td>
+<td>warning</td>
+<td>deja margen antes de que el OOM killer mate un contenedor</td>
+</tr>
+<tr>
+<td>R4</td>
+<td><code>DiscoCasiLleno</code></td>
+<td>disco raíz usado &gt; 85%</td>
+<td>5m</td>
+<td>warning</td>
+<td>un disco lleno rompe PostgreSQL (no puede escribir WAL); 15% libre da tiempo a purgar</td>
+</tr>
+<tr>
+<td>R5</td>
+<td><code>PostgresCaido</code></td>
+<td><code>pg_up == 0</code></td>
+<td>1m</td>
+<td>critical</td>
+<td>sin base la app no sirve nada: es la única con 1m</td>
+</tr>
+<tr>
+<td>R6</td>
+<td><code>ReplicacionAtrasada</code></td>
+<td><code>max(pg_stat_replication_pg_wal_lsn_diff) &gt; 100 MB</code> <strong>o</strong> <code>absent(...)</code></td>
+<td>2m</td>
+<td>critical</td>
+<td>100 MB es un RPO que conviene mirar; <code>absent()</code> cubre el caso peor: ninguna réplica conectada</td>
+</tr>
+</tbody>
+</table>
+<p>Criterio transversal: <strong>una alerta que no es accionable es ruido</strong>. Cada regla tiene en su
+anotación <code>description</code> la acción concreta a ejecutar, no solo el síntoma.</p>
+<p>Las alertas de recursos se agrupan (<code>group_by: [alertname, severity]</code>) para que una saturación no
+genere una notificación por cada serie.</p>
+<h2 id="5-dashboard-monitoring-dashboards-pi-overview-json">5. Dashboard (<code>monitoring/dashboards/pi-overview.json</code>)</h2>
+<p>Versionado como JSON y provisionado por archivo (<code>updateIntervalSeconds: 30</code>): no se edita a mano
+en la UI. 8 paneles:</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Panel</th>
+<th>Fuente</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>CPU del anfitrión</td>
+<td>node-exporter</td>
+<td>detectar saturación</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Memoria del anfitrión</td>
+<td>node-exporter</td>
+<td>riesgo de OOM</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Disco raíz</td>
+<td>node-exporter</td>
+<td>riesgo de no poder escribir WAL</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Carga del sistema y procesos</td>
+<td>node-exporter</td>
+<td>distinguir CPU alta por carga real de un pico puntual</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Red del anfitrión</td>
+<td>node-exporter</td>
+<td>ver el corte de tráfico en un failover</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Disponibilidad y latencia HTTP</td>
+<td>blackbox-exporter</td>
+<td>¿el servicio responde y cuánto tarda?</td>
+</tr>
+<tr>
+<td>7</td>
+<td>PostgreSQL: conexiones y cache hit</td>
+<td>postgres-exporter</td>
+<td>saturación de conexiones y eficiencia de memoria</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Replicación: lag de WAL</td>
+<td>ambos exporters</td>
+<td>estado de replicación (§6)</td>
+</tr>
+</tbody>
+</table>
+<p>El panel 8 usa <strong>dos perspectivas</strong>: <code>pg_stat_replication_pg_wal_lsn_diff</code> (bytes que le faltan al
+standby, medido desde la primaria) y <code>pg_replication_lag_seconds</code> (segundos desde el último replay,
+medido desde la réplica). Un panel que solo mirara uno de los dos lados no distinguiría "la réplica
+no recibe WAL" de "la réplica recibe pero no aplica".</p>
+<p>Acceso: <code>http://127.0.0.1:3001/d/pi-overview</code>. Lectura anónima habilitada <strong>solo en loopback</strong>
+para la demo; el usuario <code>admin</code> conserva su contraseña.</p>
+<h3>5.1 Prueba de anomalía (cadena completa)</h3>
+<p>Objetivo: verificar que una anomalía real recorre <strong>métrica → regla → Alertmanager → webhook</strong>, no
+solo que la regla existe.</p>
+<pre><code class="language-powershell">./scripts/monitoreo.ps1 test-alerta -Minutos 13
+</code></pre>
+<p>El script lanza <code>stress-ng</code> en un contenedor efímero (16 workers, <strong>sin</strong> límite de <code>--cpus</code>) y
+sigue el estado de la regla leyéndolo de la API de reglas de Prometheus.</p>
+<table>
+<thead>
+<tr>
+<th>Momento</th>
+<th>CPU</th>
+<th>Estado de <code>CPUAlta</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>t = 1 s</td>
+<td>3,4%</td>
+<td><code>inactive</code></td>
+</tr>
+<tr>
+<td>t = 262 s</td>
+<td>99,9%</td>
+<td><code>pending</code></td>
+</tr>
+<tr>
+<td>t = 564 s</td>
+<td>99,9%</td>
+<td><strong><code>firing</code></strong></td>
+</tr>
+<tr>
+<td>t = 585 s</td>
+<td>—</td>
+<td>fin de la prueba; se retira el contenedor</td>
+</tr>
+</tbody>
+</table>
+<p>Alertmanager recibió la notificación 10 s después (<code>group_wait: 10s</code>):</p>
+<pre><code class="language-json">{&quot;status&quot;: &quot;firing&quot;,
+ &quot;alerts&quot;: [{&quot;labels&quot;: {&quot;alertname&quot;: &quot;CPUAlta&quot;, &quot;severity&quot;: &quot;warning&quot;},
+             &quot;annotations&quot;: {&quot;summary&quot;: &quot;CPU del anfitrión al 100.0%&quot;,
+                             &quot;description&quot;: &quot;CPU sostenida por encima del 85% durante 5 minutos...&quot;}}]}
+</code></pre>
+<p>Al retirar el estrés la expresión vuelve a <code>false</code>, la alerta se resuelve y Alertmanager envía el
+<code>resolved</code> (<code>send_resolved: true</code>).</p>
+<p><strong>Por qué 13 minutos y no 2</strong>: la regla usa <code>rate(...[5m])</code> <strong>y</strong> <code>for: 5m</code>. La ventana de 5m tarda
+unos 5 minutos en reflejar la carga real, y después hay que sostenerla 5 minutos más. Una prueba
+más corta no verifica la regla: verifica que no dispara. La primera corrida (8 min) fue
+exactamente ese error.</p>
+<p><strong>Lección registrada</strong>: la primera medición se hizo con <code>docker run --cpus 6</code>, que topa el
+contenedor en 6 de 8 vCPU (75%). La CPU se estabilizó en 77,7% y la alerta nunca disparó. Al medir
+capacidad con un generador de carga limitado se mide el límite del cgroup, no la del anfitrión.</p>
+<h2 id="6-limitaciones-encontradas-y-qu-se-hizo">6. Limitaciones encontradas (y qué se hizo)</h2>
+<h3>cAdvisor no funciona en Docker Desktop</h3>
+<p>Se intentó <code>gcr.io/cadvisor/cadvisor:v0.49.1</code> para métricas por contenedor. Falla al enumerar:</p>
+<pre><code>Failed to create existing container: /docker/&lt;id&gt;:
+failed to identify the read-write layer ID ... 
+open /rootfs/var/lib/docker/image/overlayfs/layerdb/mounts/&lt;id&gt;/mount-id: no such file or directory
+</code></pre>
+<p>Causa: Docker Desktop usa el <strong>snapshotter de containerd</strong>, así que <code>/var/lib/docker/image/overlayfs</code>
+no existe. Se probó también con <code>--containerd=/run/containerd/containerd.sock
+--containerd-namespace=moby</code>: el factory de containerd registra correctamente, pero no enumera los
+contenedores de Docker Desktop y cAdvisor cae al handler <code>raw</code> (series sin label <code>name</code>).</p>
+<p><strong>Decisión</strong>: se retira cAdvisor y los paneles 4 y 5 pasan a carga del sistema y red del
+anfitrión. El estado de cada servicio se cubre con <code>up</code> y con los sondeos HTTP del panel 6. Se
+documenta en vez de dejar un panel vacío o un contenedor privilegiado que no aporta datos.</p>
+<h3>Las métricas de "anfitrión" son las de la VM de Linux</h3>
+<p><code>node-exporter</code> corre dentro de la VM de Docker Desktop, no en Windows. Mide los 8 vCPU y la
+memoria asignados a esa VM. Es correcto para lo que corre en contenedores, pero <strong>no</strong> es el
+consumo de Windows. En un servidor Linux real la distinción desaparece.</p>
+<p>Nota de medición: la primera prueba con <code>docker run --cpus 6</code> se estabilizó en <strong>77,7%</strong> — el
+límite de cgroup era exactamente 6 de 8 vCPU (75%) más la carga del stack. Con <code>--cpus 8</code> el
+contenedor seguía limitado por la cuota y la lectura no subía. La prueba correcta es <strong>sin
+<code>--cpus</code></strong> y con sobre-suscripción (<code>stress-ng --cpu 16</code>): ahí la CPU llega a <strong>100%</strong> y la regla
+de 85% dispara. Lección registrada: al medir con un límite de cgroup se está midiendo el límite,
+no la capacidad del anfitrión.</p>
+<h3>Un solo nodo de monitoreo</h3>
+<p>Prometheus, Alertmanager y Grafana corren en el mismo host que lo monitoreado. Si el host cae, no
+hay alerta (no hay quien la emita). La solución real es un Prometheus externo con <code>remote_write</code>, o
+un segundo nodo con Thanos/Mimir. Se declara como limitación, no se simula.</p>
+<h2 id="7-fuera-de-alcance">7. Fuera de alcance</h2>
+<table>
+<thead>
+<tr>
+<th>No implementado</th>
+<th>Por qué</th>
+<th>Mejora posible</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Logs centralizados</td>
+<td>el alcance es métricas; los logs se leen con <code>docker compose logs</code></td>
+<td>Loki + Promtail</td>
+</tr>
+<tr>
+<td>Trazas (APM)</td>
+<td>requiere instrumentar el backend</td>
+<td>OpenTelemetry</td>
+</tr>
+<tr>
+<td>Retención larga</td>
+<td>15 días en el volumen local</td>
+<td><code>remote_write</code> a Mimir/Thanos</td>
+</tr>
+<tr>
+<td>Monitoreo del propio monitoreo</td>
+<td>un nodo solo no puede alertar de su propia caída</td>
+<td>segundo nodo + watchdog externo</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-operaci-n">8. Operación</h2>
+<pre><code class="language-powershell">./scripts/monitoreo.ps1 status        # targets, reglas y alertas activas
+./scripts/monitoreo.ps1 urls          # URLs de los tres servicios
+./scripts/monitoreo.ps1 test-alerta   # prueba de anomalía con stress-ng
+./scripts/monitoreo.ps1 recargar      # recarga la configuración de Prometheus
+</code></pre>
+<h2 id="9-evidencia">9. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Estado de targets, reglas y alertas</td>
+<td><code>evidence/10/monitoreo-estado.log</code></td>
+</tr>
+<tr>
+<td>Prueba de anomalía con <code>stress-ng</code></td>
+<td><code>evidence/10/alerta-stress.log</code></td>
+</tr>
+<tr>
+<td>Payload recibido por el webhook</td>
+<td><code>evidence/10/alertmanager-payloads.jsonl</code></td>
+</tr>
+<tr>
+<td>Dashboard versionado</td>
+<td><code>monitoring/dashboards/pi-overview.json</code></td>
+</tr>
+<tr>
+<td>Reglas</td>
+<td><code>monitoring/prometheus/rules.yml</code></td>
+</tr>
+<tr>
+<td>Configuración de scrape</td>
+<td><code>monitoring/prometheus/prometheus.yml</code></td>
+</tr>
+<tr>
+<td>Ruteo de alertas</td>
+<td><code>monitoring/alertmanager/alertmanager.yml</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="12-incidencias.md"><h1 id="12-gesti-n-de-incidencias-mantis">12 — Gestión de incidencias (Mantis)</h1>
+<h2 id="1-objetivo-5">1. Objetivo</h2>
+<p>Registrar, priorizar y resolver los defectos detectados durante el desarrollo y las pruebas, con
+trazabilidad hacia el código (§11).</p>
+<h2 id="2-herramienta-y-despliegue">2. Herramienta y despliegue</h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Decisión</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Herramienta</td>
+<td><strong>MantisBT 2.28.4</strong></td>
+<td>el enunciado la nombra explícitamente en §11 y en §13 (flujo 1)</td>
+</tr>
+<tr>
+<td>Imagen</td>
+<td><strong>propia</strong> (<code>app/mantis/Dockerfile</code>)</td>
+<td>no existe imagen oficial en Docker Hub; las comunitarias no fijan versión ni tienen mantenimiento verificable (riesgo de cadena de suministro, §14)</td>
+</tr>
+<tr>
+<td>Fuente</td>
+<td>paquete oficial de SourceForge</td>
+<td>el tarball de GitHub <strong>no incluye <code>vendor/</code></strong> y el instalador falla con <code>Failed opening required vendor/autoload.php</code></td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td>PostgreSQL 16, base <code>mantis</code> (misma instancia, base separada)</td>
+<td>la guía de administración de MantisBT soporta PostgreSQL; evita levantar un MariaDB extra</td>
+</tr>
+<tr>
+<td>Configuración</td>
+<td>generada en el arranque desde variables de entorno</td>
+<td>la imagen no contiene credenciales</td>
+</tr>
+<tr>
+<td>Exposición</td>
+<td><code>127.0.0.1:8081</code></td>
+<td>en producción se llega por túnel con auth (§9)</td>
+</tr>
+<tr>
+<td><code>/admin</code></td>
+<td><strong>bloqueado</strong> (<code>403</code>) por configuración de Apache</td>
+<td>es el instalador: dejarlo abierto es un hallazgo de §14</td>
+</tr>
+<tr>
+<td>Correo</td>
+<td>desactivado (<code>$g_enable_email_notification = OFF</code>)</td>
+<td>las notificaciones las maneja n8n (§13), no Mantis</td>
+</tr>
+<tr>
+<td>Adjuntos</td>
+<td>volumen <code>pi-mantis-files</code></td>
+<td>sin volumen, un <code>docker compose down</code> borra la evidencia de §11</td>
+</tr>
+</tbody>
+</table>
+<h3>Arranque</h3>
+<pre><code class="language-powershell">docker compose --profile ops up -d mantis
+# http://127.0.0.1:8081  (usuario: administrator)
+</code></pre>
+<p>El perfil <code>ops</code> evita que Mantis compita por recursos con la aplicación durante la demo.</p>
+<h3>Credenciales</h3>
+<p>Usuario <code>administrator</code>; la contraseña está en <code>.env</code> como <code>MANTIS_ADMIN_PASSWORD</code> (generada,
+no versionada). La contraseña por defecto (<code>root</code>) se reemplazó en la instalación.</p>
+<h2 id="3-incidentes-del-despliegue-reales-encontrados-durante-la-puesta-en-marcha">3. Incidentes del despliegue (reales, encontrados durante la puesta en marcha)</h2>
+<p>Estos son incidentes del entorno que quedan documentados como parte del aprendizaje del §11.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Síntoma</th>
+<th>Causa</th>
+<th>Solución</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M1</td>
+<td><code>Fatal error: Failed opening required vendor/autoload.php</code></td>
+<td>el tarball de GitHub es el árbol de fuentes, sin dependencias de Composer</td>
+<td>usar el paquete oficial de SourceForge (incluye <code>vendor/</code>)</td>
+</tr>
+<tr>
+<td>M2</td>
+<td><code>Undefined constant "LOG_ERROR"</code> en <code>config_inc.php</code></td>
+<td>el archivo de configuración se carga <strong>antes</strong> de que existan las constantes <code>LOG_*</code></td>
+<td>no fijar <code>$g_log_level</code> en la configuración</td>
+</tr>
+<tr>
+<td>M3</td>
+<td><code>APPLICATION ERROR #2900</code></td>
+<td>falta <code>$g_crypto_master_salt</code> (obligatorio desde 2.26, mínimo 16 caracteres)</td>
+<td>se genera desde <code>.env</code> (<code>MANTIS_CRYPTO_SALT</code>)</td>
+</tr>
+<tr>
+<td>M4</td>
+<td>Instalador: "Attempting to connect to database as admin → BAD"</td>
+<td>en este release, <code>admin_username</code>/<code>admin_password</code> del formulario son las <strong>credenciales de la base</strong>, no una cuenta de Mantis</td>
+<td>enviar el usuario/clave de la base en esos campos</td>
+</tr>
+<tr>
+<td>M5</td>
+<td><code>APPLICATION ERROR #401 — relation "mantis_user_table" does not exist</code></td>
+<td>esquema no instalado todavía</td>
+<td>completar el paso 2 del instalador</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-configuraci-n-de-categor-as-y-prioridades">4. Configuración de categorías y prioridades</h2>
+<table>
+<thead>
+<tr>
+<th>Categoría</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>base de datos</code></td>
+<td>consultas lentas, índices, réplicas</td>
+</tr>
+<tr>
+<td><code>infraestructura</code></td>
+<td>Docker, redes, volúmenes, despliegue</td>
+</tr>
+<tr>
+<td><code>aplicación</code></td>
+<td>defectos funcionales del backend/frontend</td>
+</tr>
+<tr>
+<td><code>seguridad</code></td>
+<td>hallazgos de §14</td>
+</tr>
+<tr>
+<td><code>automatización</code></td>
+<td>flujos de n8n</td>
+</tr>
+</tbody>
+</table>
+<p>Prioridades: <code>inmediata</code> (servicio caído), <code>urgente</code> (bloquea la demo), <code>normal</code>, <code>baja</code>.
+Severidades: <code>bloqueante</code>, <code>mayor</code>, <code>menor</code>, <code>trivial</code>, <code>ajuste</code>.</p>
+<h2 id="5-vinculaci-n-con-el-c-digo">5. Vinculación con el código</h2>
+<p>Mantis no se integra nativamente con GitHub, así que el vínculo se hace explícito en los dos
+sentidos:</p>
+<table>
+<thead>
+<tr>
+<th>Dirección</th>
+<th>Mecanismo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Incidencia → código</td>
+<td>campo personalizado <code>commit_sha</code> / <code>pr_url</code> en el formulario de la incidencia</td>
+</tr>
+<tr>
+<td>Código → incidencia</td>
+<td>el mensaje de commit referencia la incidencia: <code>fix(api): valida JWT_SECRET (refs MANTIS-0000012)</code></td>
+</tr>
+</tbody>
+</table>
+<p>Esto se declara como <strong>procedimiento manual</strong> en el informe: no se afirma integración automática.</p>
+<h2 id="6-estado">6. Estado</h2>
+<table>
+<thead>
+<tr>
+<th>Requisito de §11</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Herramienta funcionando</td>
+<td>✅ 32 tablas, login operativo, <code>/admin</code> bloqueado</td>
+</tr>
+<tr>
+<td>Categorías, prioridades y responsables</td>
+<td>✅ 5 categorías, 3 usuarios con roles distintos</td>
+</tr>
+<tr>
+<td>≥10 incidencias (1 de rendimiento, 1 de seguridad)</td>
+<td>✅ 14 incidencias</td>
+</tr>
+<tr>
+<td>Pasos de reproducción</td>
+<td>✅ en la descripción de cada una</td>
+</tr>
+<tr>
+<td>≥5 resueltas con commit/PR</td>
+<td>✅ 13 resueltas + 1 cerrada, con nota de verificación</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-configuraci-n">7. Configuración</h2>
+<table>
+<thead>
+<tr>
+<th>Elemento</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Proyecto</td>
+<td><code>HIA-2026</code> (id 1)</td>
+</tr>
+<tr>
+<td>Categorías</td>
+<td>Infraestructura, Base de Datos, Seguridad, Rendimiento, Aplicacion</td>
+</tr>
+<tr>
+<td>Usuarios</td>
+<td><code>administrator</code> (90), <code>dev.tomas</code> (55, developer), <code>qa.analista</code> (25, reporter)</td>
+</tr>
+<tr>
+<td>Token de API</td>
+<td>32 caracteres, guardado como <code>sha256</code> en <code>mantis_api_token_table</code></td>
+</tr>
+<tr>
+<td>Correo</td>
+<td>desactivado: las notificaciones las maneja n8n (§13)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Detalle que costó tiempo: Mantis exige que el token mida exactamente <code>API_TOKEN_LENGTH</code> = <strong>32</strong>
+caracteres. Un token de 48 devolvía 401 sin explicación; la validación es
+<code>mb_strlen($token) != 32</code> antes de tocar la base.</p>
+</blockquote>
+<h2 id="8-las-incidencias-registradas">8. Las incidencias registradas</h2>
+<p>14 incidencias del proyecto, todas con categoría, severidad, prioridad, responsable e historial.
+Además hay 8 incidencias generadas por las pruebas del flujo 1, cerradas como "no es un defecto".</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Categoría</th>
+<th>Tipo</th>
+<th>Estado</th>
+<th>Resumen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Rendimiento</td>
+<td>major / urgent</td>
+<td>resuelto</td>
+<td><code>GET /api/articles</code> tarda 7,9 s con 6M de filas</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Rendimiento</td>
+<td>major / high</td>
+<td>resuelto</td>
+<td>Filtro por tag sin índice GIN: 3,5 s</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Seguridad</td>
+<td>major / high</td>
+<td>resuelto</td>
+<td>Login permite enumerar usuarios por mensaje de error</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Seguridad</td>
+<td>crash / urgent</td>
+<td>resuelto</td>
+<td>Webhook de n8n acepta cualquier POST sin token</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Infraestructura</td>
+<td>major / high</td>
+<td>resuelto</td>
+<td>La réplica no acepta lecturas (<code>hot_standby</code> apagado)</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Infraestructura</td>
+<td>minor / normal</td>
+<td>resuelto</td>
+<td>El contenedor de réplica vuelve a clonar en cada reinicio</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Base de Datos</td>
+<td>major / high</td>
+<td>resuelto</td>
+<td>La carga inicial generó 38 GB de WAL</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Base de Datos</td>
+<td>crash / urgent</td>
+<td>resuelto</td>
+<td>Backups sin verificación de restauración</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Aplicacion</td>
+<td>crash / urgent</td>
+<td>resuelto</td>
+<td>Frontend no compila en Node 20 (CRA 1.1.1 de 2018)</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Aplicacion</td>
+<td>major / high</td>
+<td>resuelto</td>
+<td>Contador de artículos hace <code>COUNT(*)</code> sobre 6M de filas</td>
+</tr>
+<tr>
+<td>11</td>
+<td>Seguridad</td>
+<td>major / high</td>
+<td>resuelto</td>
+<td>Panel <code>/admin</code> de Mantis accesible sin restricción</td>
+</tr>
+<tr>
+<td>12</td>
+<td>Infraestructura</td>
+<td>crash / urgent</td>
+<td>cerrado</td>
+<td>Puertos del stack publicados en <code>0.0.0.0</code></td>
+</tr>
+<tr>
+<td>13</td>
+<td>Rendimiento</td>
+<td>minor / normal</td>
+<td>resuelto</td>
+<td>Alerta de CPU no dispara con <code>stress-ng</code> al 79%</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Seguridad</td>
+<td>crash / urgent</td>
+<td>resuelto</td>
+<td>Falta de auth en las rutas administrativas publicadas</td>
+</tr>
+</tbody>
+</table>
+<p>Requisito del enunciado: hay <strong>1 de rendimiento</strong> (#1, #2, #10, #13) y <strong>1 de seguridad</strong> (#3, #4,</p>
+<h1 id="11-14">11, #14).</h1>
+<h2 id="9-proceso-de-gesti-n">9. Proceso de gestión</h2>
+<pre><code>nuevo ──▶ asignado ──▶ resuelto ──▶ cerrado
+  │                        │
+  └── feedback ◀───────────┘
+</code></pre>
+<ol>
+<li><strong>Alta</strong>: categoría, severidad, prioridad y descripción reproducible (qué, cómo, resultado
+   esperado y obtenido).</li>
+<li><strong>Asignación</strong>: <code>handler_id</code> a <code>dev.tomas</code>. Mantis registra la transición en
+   <code>mantis_bug_history_table</code> (70 entradas para 14 incidencias).</li>
+<li><strong>Resolución</strong>: estado <code>resolved</code> + resolución <code>fixed</code>, con una nota que incluye el commit o PR
+   y la medición que verifica el arreglo.</li>
+<li><strong>Cierre</strong>: <code>closed</code> cuando la verificación está en la evidencia del informe.</li>
+</ol>
+<h2 id="10-campos-personalizados">10. Campos personalizados</h2>
+<p>Dos campos a nivel proyecto, para no depender de que el commit esté escrito en la nota:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>commit_sha</code></td>
+<td>string (40)</td>
+<td>SHA del merge que corrigió la incidencia</td>
+</tr>
+<tr>
+<td><code>pr_url</code></td>
+<td>string (200)</td>
+<td>URL del PR con la discusión y el diff</td>
+</tr>
+</tbody>
+</table>
+<p>Se guardan en <code>mantis_custom_field_string_table</code> y se ven en el detalle de cada incidencia.</p>
+<h2 id="11-evidencia-2">11. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Dónde</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Definición de la imagen</td>
+<td><code>app/mantis/Dockerfile</code>, <code>app/mantis/entrypoint.sh</code></td>
+</tr>
+<tr>
+<td>Servicio y volumen</td>
+<td><code>compose.yaml</code> (perfil <code>ops</code>)</td>
+</tr>
+<tr>
+<td>Creación de base y rol</td>
+<td><code>db/init/04-mantis-db.sh</code></td>
+</tr>
+<tr>
+<td>Instalación del esquema</td>
+<td>32 tablas en <code>mantis</code> + usuario <code>administrator</code></td>
+</tr>
+<tr>
+<td><code>/admin</code> bloqueado</td>
+<td><code>403</code> verificado con <code>curl</code></td>
+</tr>
+</tbody>
+</table>
+<p>| Incidencias cargadas | 14 en <code>HIA-2026</code> (script <code>scripts/mantis-seed.py</code>) |
+| Historial de estados | 70 filas en <code>mantis_bug_history_table</code> |
+| Campos <code>commit_sha</code> / <code>pr_url</code> | <code>scripts/mantis-campos.sql</code> |
+| Prueba de la cadena alerta → incidencia | <code>evidence/13/flujo-1.log</code> |</p></section><section class="doc" data-fuente="13-automatizacion.md"><h1 id="13-automatizaci-n-con-n8n">13 — Automatización con n8n</h1>
+<h2 id="1-objetivo-6">1. Objetivo</h2>
+<p>Que los eventos del sistema no dependan de que alguien mire: una alerta de Prometheus tiene que
+convertirse en una incidencia en Mantis, con contexto suficiente para actuar.</p>
+<h2 id="2-despliegue">2. Despliegue</h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Decisión</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Imagen</td>
+<td><code>docker.n8n.io/n8nio/n8n:1.68.0</code></td>
+<td>versión fija, no <code>latest</code></td>
+</tr>
+<tr>
+<td>Base de datos</td>
+<td>PostgreSQL, base <code>n8n</code> y rol <code>n8n</code> propios</td>
+<td>workflows y ejecuciones no comparten base con la app ni con Mantis</td>
+</tr>
+<tr>
+<td>Volumen</td>
+<td><code>pi-n8n-data</code></td>
+<td>configuración y clave de cifrado de n8n</td>
+</tr>
+<tr>
+<td>Red</td>
+<td><code>appnet</code>, <code>dbnet</code>, <code>monnet</code></td>
+<td>tiene que ver Mantis, la base y recibir de Alertmanager</td>
+</tr>
+<tr>
+<td>Puerto</td>
+<td><code>127.0.0.1:5678</code></td>
+<td>en producción va por el borde con auth (§9)</td>
+</tr>
+<tr>
+<td>Secretos</td>
+<td>placeholders en el JSON versionado</td>
+<td>el entrypoint los reemplaza desde <code>.env</code> antes de importar</td>
+</tr>
+</tbody>
+</table>
+<h3>Importación de workflows</h3>
+<p><code>n8n import:workflow</code> <strong>no es idempotente</strong>: crea un workflow nuevo cada vez. El entrypoint importa
+solo si la base no tiene ninguno:</p>
+<pre><code class="language-sh">EXISTENTES=$(n8n list:workflow 2&gt;/dev/null | grep -c '|' || true)
+</code></pre>
+<blockquote>
+<p>Primer intento fallido que vale documentar: se usaba un marcador en el volumen
+(<code>/home/node/.n8n/.workflows-imported</code>). Los workflows viven en <strong>PostgreSQL</strong>, no en el volumen,
+así que el marcador no reflejaba la realidad y terminamos con <strong>5 copias activas del mismo flujo</strong>
+peleando por el mismo webhook. La condición correcta es consultar la base.</p>
+</blockquote>
+<p>Segundo error: <code>n8n list:workflow</code> imprime un encabezado aunque no haya workflows, así que
+<code>wc -l</code> daba 1 y el import nunca corría. Se cuentan solo las líneas con <code>|</code>.</p>
+<h2 id="3-flujo-1-alerta-de-prometheus-a-incidencia-en-mantis">3. Flujo 1 — Alerta de Prometheus a incidencia en Mantis</h2>
+<pre><code>Alertmanager ──POST /webhook/alertmanager──▶ Webhook
+                                              │
+                                     Validar token y payload (Code)
+                                              │
+                                        ¿autorizado y válido?
+                                        ├── sí ──▶ POST /api/rest/issues ──▶ 200 {ok, issue}
+                                        └── no ──▶ 400 (payload) / 401 (token)
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Nodo</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Webhook Alertmanager</code></td>
+<td>recibe el POST en <code>/webhook/alertmanager</code>, responde con <code>respondToWebhook</code></td>
+</tr>
+<tr>
+<td><code>Validar token y payload</code></td>
+<td>compara el token (case-insensitive), exige <code>status</code> y <code>alerts[]</code>, arma el cuerpo de Mantis</td>
+</tr>
+<tr>
+<td><code>Peticion valida?</code></td>
+<td>rama única booleana: autorizado <strong>y</strong> válido</td>
+</tr>
+<tr>
+<td><code>Crear issue en Mantis</code></td>
+<td><code>POST http://mantis/api/rest/issues</code> con <code>Authorization: &lt;token&gt;</code></td>
+</tr>
+<tr>
+<td><code>Responder 200 / Responder error</code></td>
+<td>devuelve el id de la incidencia o el motivo del rechazo</td>
+</tr>
+</tbody>
+</table>
+<h3>Autenticación del webhook</h3>
+<p>El token viaja en <code>Authorization: Bearer &lt;token&gt;</code> porque es lo que soporta <code>http_config</code> de
+Alertmanager (no manda headers arbitrarios). El flujo también acepta <code>x-webhook-token</code> para pruebas
+manuales.</p>
+<p>El token <strong>no está en el repositorio</strong>: el JSON versionado tiene <code>__WEBHOOK_TOKEN__</code> y
+<code>__MANTIS_TOKEN__</code>, y el entrypoint genera una copia en <code>/tmp</code> con los valores de <code>.env</code> antes de
+importar. Si el reemplazo no ocurriera, el flujo falla cerrado (<code>autorizado</code> exige que el
+placeholder ya no esté presente).</p>
+<h3>Validación y rama de error</h3>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Respuesta</th>
+<th>Efecto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sin token</td>
+<td><strong>401</strong> <code>{"ok":false,"error":"token invalido o ausente"}</code></td>
+<td>no toca Mantis</td>
+</tr>
+<tr>
+<td>Token válido, payload sin <code>alerts</code></td>
+<td><strong>400</strong> <code>{"ok":false,"error":"payload invalido..."}</code></td>
+<td>no toca Mantis</td>
+</tr>
+<tr>
+<td>Token válido, payload correcto</td>
+<td><strong>200</strong> <code>{"ok":true,"issue":21,...}</code></td>
+<td>crea la incidencia</td>
+</tr>
+<tr>
+<td>Mantis caído</td>
+<td><strong>500</strong> <code>{"message":"Error in workflow"}</code></td>
+<td>ejecución en <code>error</code>; Alertmanager reintenta</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-pruebas-de-integraci-n">4. Pruebas de integración</h2>
+<table>
+<thead>
+<tr>
+<th>Prueba</th>
+<th>Resultado</th>
+<th>Evidencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cadena real Alertmanager → n8n → Mantis</td>
+<td>incidencia #18 creada por <code>amtool</code></td>
+<td><code>evidence/13/flujo-1.log</code></td>
+</tr>
+<tr>
+<td>Sin token</td>
+<td>401, sin incidencia</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Payload inválido</td>
+<td>400, sin incidencia</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Mantis caído (fallo controlado)</td>
+<td>ejecución <strong>21</strong> en <code>error</code>, HTTP 500</td>
+<td>idem</td>
+</tr>
+<tr>
+<td>Recuperación</td>
+<td>ejecución <strong>22</strong> en <code>success</code>, incidencia #21</td>
+<td>idem</td>
+</tr>
+</tbody>
+</table>
+<p>Ejecuciones (tabla <code>execution_entity</code>):</p>
+<pre><code> id | status  |         startedAt
+ 22 | success | 2026-11-13 16:56:04
+ 21 | error   | 2026-11-13 16:55:30   &lt;- Mantis detenido
+ 20 | success | 2026-11-13 16:55:24
+</code></pre>
+<h2 id="5-riesgos-de-las-automatizaciones">5. Riesgos de las automatizaciones</h2>
+<table>
+<thead>
+<tr>
+<th>Riesgo</th>
+<th>Qué pasaría</th>
+<th>Mitigación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Loop de disparo</strong></td>
+<td>Alertmanager repite la notificación cada <code>repeat_interval</code> (4h) y crea una incidencia por vez</td>
+<td><code>group_by</code> por <code>alertname</code>+<code>severity</code> y <code>repeat_interval</code> alto; el flujo no se auto-dispara</td>
+</tr>
+<tr>
+<td><strong>Mantis caído</strong></td>
+<td>la ejecución falla y Alertmanager reintenta 11 veces</td>
+<td>probado: ejecución en <code>error</code>, HTTP 500; no se pierde la alerta, se reintenta</td>
+</tr>
+<tr>
+<td><strong>Token filtrado</strong></td>
+<td>cualquiera podría crear incidencias</td>
+<td>token en <code>.env</code>, no en el JSON; rotación cambiando la variable y reimportando</td>
+</tr>
+<tr>
+<td><strong>Payload enorme</strong></td>
+<td>el flujo arma una descripción gigante</td>
+<td>se toman solo <code>summary</code>, <code>description</code> y <code>generatorURL</code> de la primera alerta</td>
+</tr>
+<tr>
+<td><strong>Duplicados</strong></td>
+<td>dos alertas iguales crean dos incidencias</td>
+<td><code>group_by</code> + <code>repeat_interval</code>; falta deduplicación por fingerprint (mejora pendiente)</td>
+</tr>
+<tr>
+<td><strong>n8n caído</strong></td>
+<td>no hay automatización, pero el sistema sigue funcionando</td>
+<td>es un componente auxiliar: la app y la base no dependen de n8n</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-flujos-2-y-3-no-implementados">6. Flujos 2 y 3 — no implementados</h2>
+<p>El diseño está en <code>docs/02-arquitectura.md</code> §5, pero <strong>no están implementados</strong> y no se declaran
+como hechos:</p>
+<table>
+<thead>
+<tr>
+<th>Flujo</th>
+<th>Qué falta</th>
+<th>Por qué no está</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2 — backup verificado</td>
+<td>cron en n8n que ejecute <code>pg_dump</code> y valide integridad</td>
+<td>n8n corre Alpine sin cliente de PostgreSQL; requiere imagen propia con <code>postgresql-client</code></td>
+</tr>
+<tr>
+<td>3 — informe IA a Nextcloud</td>
+<td>cron → script Python → resumen → subir a Nextcloud</td>
+<td>depende de §12 (Nextcloud), que todavía no está desplegado</td>
+</tr>
+<tr>
+<td>4 — eventos de seguridad</td>
+<td>—</td>
+<td>marcado como opcional en el backlog</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-evidencia-2">7. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Workflow versionado (con placeholders)</td>
+<td><code>automation/n8n/workflows/01-alerta-a-mantis.json</code></td>
+</tr>
+<tr>
+<td>Entrypoint (renderizado e importación)</td>
+<td><code>automation/n8n/entrypoint.sh</code></td>
+</tr>
+<tr>
+<td>Pruebas del flujo 1</td>
+<td><code>evidence/13/flujo-1.log</code></td>
+</tr>
+<tr>
+<td>Base y rol de n8n</td>
+<td><code>db/init/07-n8n-db.sh</code></td>
+</tr>
+<tr>
+<td>Servicio en compose</td>
+<td><code>compose.yaml</code> (perfil <code>ops</code>)</td>
+</tr>
+<tr>
+<td>Diagrama</td>
+<td><code>docs/02-arquitectura.md</code> §5</td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="14-seguridad.md"><h1 id="14-seguridad-inform-tica">14 — Seguridad informática</h1>
+<h2 id="1-objetivo-y-alcance-2">1. Objetivo y alcance</h2>
+<p>Identificar las amenazas reales del sistema, aplicar controles verificables y demostrar con
+herramientas que las mitigaciones funcionan. No se declara "seguro": se declara <strong>qué se probó y
+qué no</strong>.</p>
+<p>Alcance: 7 componentes del stack. Fuera de alcance: seguridad del host Windows, del hipervisor y de
+Cloudflare (se tratan como proveedores confiables).</p>
+<h2 id="2-matriz-stride">2. Matriz STRIDE</h2>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>S — Suplantación</th>
+<th>T — Manipulación</th>
+<th>R — Repudio</th>
+<th>I — Divulgación</th>
+<th>D — Denegación</th>
+<th>E — Elevación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frontend (nginx)</strong></td>
+<td>sesión JWT robada → HSTS + CSP limitan el impacto</td>
+<td>XSS modifica el DOM → React escapa por defecto + CSP sin <code>unsafe-eval</code></td>
+<td>sin log de auditoría por usuario → logs de nginx con IP</td>
+<td><code>Server</code> filtraba versión → <code>server_tokens off</code></td>
+<td>flooding → <code>limit_req</code> 10 r/s (98/120 → 429)</td>
+<td>nginx como root → imagen unprivileged, uid 101</td>
+</tr>
+<tr>
+<td><strong>Backend (API)</strong></td>
+<td><code>JWT_SECRET</code> débil → 32 bytes aleatorios</td>
+<td>SQLi → Prisma parametrizado (probado con 3 payloads)</td>
+<td>sin auditoría de acciones → logs de aplicación</td>
+<td>enumeración de usuarios → 401 genérico</td>
+<td>consultas costosas → índices + cap + rate limit</td>
+<td>RCE por dependencia → Trivy + <code>npm audit</code></td>
+</tr>
+<tr>
+<td><strong>PostgreSQL (primaria)</strong></td>
+<td>credenciales en <code>.env</code> (no en el repo)</td>
+<td>inyección → parámetros + rol sin DDL</td>
+<td><code>log_connections=off</code> → se acepta, se registra lo lento</td>
+<td>puerto 5433 solo en loopback (nmap: filtered)</td>
+<td><code>max_connections=200</code> + pool de 10</td>
+<td>app como superusuario → <strong>rol <code>app</code> solo DML</strong></td>
+</tr>
+<tr>
+<td><strong>Réplica</strong></td>
+<td>mismo rol de replicación con contraseña propia</td>
+<td>WAL íntegro (checksums)</td>
+<td>—</td>
+<td>sin puerto publicado</td>
+<td>si cae, la app sigue (escribe en la primaria)</td>
+<td>solo lectura por diseño</td>
+</tr>
+<tr>
+<td><strong>Monitoreo</strong></td>
+<td>Grafana anónimo <strong>solo lectura</strong> y solo loopback</td>
+<td>reglas en archivos versionados</td>
+<td>historial de alertas en Alertmanager</td>
+<td>paneles sin datos personales</td>
+<td>un solo nodo (limitación declarada)</td>
+<td>Prometheus sin auth pero en loopback</td>
+</tr>
+<tr>
+<td><strong>Mantis</strong></td>
+<td>login propio + Basic auth del borde</td>
+<td><code>/admin</code> bloqueado (403)</td>
+<td>historial de estados (70 filas)</td>
+<td>solo por túnel con auth</td>
+<td>depende de PostgreSQL</td>
+<td>Apache corre como root → <strong>limitación declarada</strong></td>
+</tr>
+<tr>
+<td><strong>n8n</strong></td>
+<td>UI detrás del borde con Basic auth</td>
+<td>webhook con token (falla cerrado)</td>
+<td>ejecuciones registradas en su base</td>
+<td>token fuera del repo (placeholders)</td>
+<td>si cae, la app no se ve afectada</td>
+<td>contenedor como <code>node</code> (no root)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-informe-de-vulnerabilidades">3. Informe de vulnerabilidades</h2>
+<h3>3.1 Trivy — imágenes</h3>
+<p>Escaneo con <code>--severity HIGH,CRITICAL</code> sobre las 5 imágenes. Estado inicial y después de corregir:</p>
+<table>
+<thead>
+<tr>
+<th>Imagen</th>
+<th>Antes (total / críticas)</th>
+<th>Después (total / críticas)</th>
+<th>Qué se hizo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pi-backend</code></td>
+<td>100 / <strong>9</strong></td>
+<td>62 / <strong>2</strong></td>
+<td><code>apt-get upgrade</code> + <code>npm audit fix</code></td>
+</tr>
+<tr>
+<td><code>pi-frontend</code></td>
+<td>8 / 4</td>
+<td>—</td>
+<td>imagen unprivileged de nginx</td>
+</tr>
+<tr>
+<td><code>pi-mantis</code></td>
+<td>11 / 5</td>
+<td>—</td>
+<td>limitación declarada (ver §7)</td>
+</tr>
+<tr>
+<td><code>postgres:16.4-alpine</code></td>
+<td>12 / 6</td>
+<td>—</td>
+<td>tag base de la imagen oficial</td>
+</tr>
+<tr>
+<td><code>n8n:1.68.0</code></td>
+<td>36 / 18</td>
+<td>—</td>
+<td>tag base de la imagen oficial</td>
+</tr>
+</tbody>
+</table>
+<p>Detalle de la corrección del backend:</p>
+<ul>
+<li><strong>Sistema operativo</strong>: <code>apt-get upgrade</code> en la etapa de runtime. Debian pasa de 54 hallazgos
+  (6 críticas) a 35 (1 crítica: <code>zlib</code> CVE-2023-45853, marcada <code>will_not_fix</code> por el proveedor).</li>
+<li><strong>Dependencias npm</strong>: <code>npm audit fix</code> sobre el lockfile. De 46 hallazgos (3 críticas) a 27
+  (1 crítica: <code>tar</code> 6.2.1, transitiva; requiere salto mayor).</li>
+</ul>
+<p><strong>Lo que queda y por qué</strong>: la crítica de <code>tar</code> y la de <code>zlib</code> no tienen corrección compatible sin
+romper la aplicación. Se documentan en vez de ocultarlas. Las imágenes base de Mantis, n8n y
+PostgreSQL arrastran CVEs de sus mantenedores: actualizarlas es una tarea de mantenimiento
+periódico, no un cambio de configuración.</p>
+<h3>3.2 npm audit</h3>
+<table>
+<thead>
+<tr>
+<th>Servicio</th>
+<th>Antes (solo producción)</th>
+<th>Después</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>backend</td>
+<td>14 (2 críticas)</td>
+<td><strong>9 (0 críticas)</strong></td>
+</tr>
+<tr>
+<td>frontend</td>
+<td>2 moderadas (<code>react-router</code>)</td>
+<td>2 moderadas (requiere salto mayor)</td>
+</tr>
+</tbody>
+</table>
+<h3>3.3 Semgrep</h3>
+<p><code>--config=auto</code> sobre <code>app/</code>: <strong>6 hallazgos</strong>, todos <code>dockerfile.security.missing-user</code> en
+<code>app/mantis/Dockerfile</code> (Apache corre como root). Es el mismo hallazgo que declara la matriz: no se
+corrige porque Apache necesita el puerto 80 y escribir en el web root; se mitiga con el borde
+autenticado y <code>/admin</code> bloqueado.</p>
+<h3>3.4 Bandit</h3>
+<p>Sobre <code>scripts/*.py</code>: <strong>2 hallazgos medios</strong> (B310, <code>urlopen</code> con esquema no validado). Triados con
+<code># nosec B310</code>: las URLs son constantes del código, no vienen del usuario.</p>
+<h3>3.5 gitleaks</h3>
+<p>Historial completo (35 commits): <strong>sin filtraciones</strong>. El mismo escaneo corre en CI como job
+<code>secrets</code> y bloquea el merge si aparece un secreto.</p>
+<h2 id="4-controles-aplicados">4. Controles aplicados</h2>
+<table>
+<thead>
+<tr>
+<th>Control</th>
+<th>Implementación</th>
+<th>Verificación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cabeceras de seguridad</td>
+<td><code>app/frontend/nginx.conf</code>: CSP, HSTS, <code>X-Frame-Options</code>, <code>X-Content-Type-Options</code>, <code>Referrer-Policy</code>, <code>Permissions-Policy</code></td>
+<td><code>curl -I</code> (evidence)</td>
+</tr>
+<tr>
+<td>Ocultar versión</td>
+<td><code>server_tokens off</code></td>
+<td><code>Server: nginx</code> (sin versión)</td>
+</tr>
+<tr>
+<td>Rate limit</td>
+<td><code>limit_req_zone</code> 10 r/s, burst 20, sobre <code>/api/</code></td>
+<td>120 peticiones → <strong>98 × 429</strong></td>
+</tr>
+<tr>
+<td>Non-root</td>
+<td>backend <code>USER node</code>, frontend <code>uid 101</code>, n8n <code>node</code>, Prometheus <code>nobody</code>, Grafana <code>472</code></td>
+<td><code>docker inspect</code> + <code>id</code></td>
+</tr>
+<tr>
+<td>Rol mínimo de base</td>
+<td>rol <code>app</code> con solo <code>SELECT/INSERT/UPDATE/DELETE</code></td>
+<td><code>CREATE TABLE</code> → <code>permission denied</code></td>
+</tr>
+<tr>
+<td>Puertos</td>
+<td>todo en <code>127.0.0.1</code></td>
+<td>nmap desde la LAN: <code>filtered</code></td>
+</tr>
+<tr>
+<td>Secretos</td>
+<td><code>.env</code> fuera del repo, gitleaks en CI, tokens con placeholder</td>
+<td>gitleaks: sin filtraciones</td>
+</tr>
+<tr>
+<td>Auth administrativa</td>
+<td>Basic auth en el borde (§9)</td>
+<td>401 sin credenciales</td>
+</tr>
+<tr>
+<td><code>/admin</code> de Mantis</td>
+<td>bloqueado por Apache</td>
+<td>403</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-pruebas-controladas">5. Pruebas controladas</h2>
+<h3>5.1 SQLi</h3>
+<table>
+<thead>
+<tr>
+<th>Payload</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tag=' OR 1=1--</code></td>
+<td>200, lista vacía (33 bytes)</td>
+</tr>
+<tr>
+<td><code>tag=' UNION SELECT NULL,NULL,NULL--</code></td>
+<td>200, lista vacía</td>
+</tr>
+<tr>
+<td><code>tag='; DROP TABLE "Article";--</code></td>
+<td>200, lista vacía</td>
+</tr>
+<tr>
+<td>login con <code>admin' OR '1'='1</code></td>
+<td><strong>403</strong>, mensaje genérico</td>
+</tr>
+</tbody>
+</table>
+<p>La tabla <code>Article</code> sigue con <strong>6.000.001 filas</strong> después de las pruebas. Prisma usa consultas
+parametrizadas: el payload se trata como valor, no como SQL.</p>
+<h3>5.2 Puerto de la base cerrado</h3>
+<p><code>nmap</code> desde la LAN contra <code>192.168.1.8</code>: <strong>5433, 8090, 9090, 9093, 3001, 5000, 8088, 8089, 8091 →
+todos <code>filtered</code></strong>. Evidencia: <code>evidence/09/nmap.log</code>.</p>
+<h3>5.3 ZAP baseline</h3>
+<p>Escaneo pasivo sobre la URL pública (<code>https://&lt;tunel&gt;.trycloudflare.com</code>), con spider de 2 minutos.</p>
+<table>
+<thead>
+<tr>
+<th>Corrida</th>
+<th>FAIL</th>
+<th>WARN</th>
+<th>PASS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Antes (cabeceras heredadas mal)</td>
+<td>0</td>
+<td>8</td>
+<td>60</td>
+</tr>
+<tr>
+<td>Después (include de cabeceras en assets)</td>
+<td><strong>0</strong></td>
+<td><strong>5</strong></td>
+<td><strong>63</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Las 3 advertencias que se corrigieron eran <code>X-Content-Type-Options</code>, <code>HSTS</code> y <code>Permissions-Policy</code>
+ausentes en <code>/assets/*</code>: nginx descarta las cabeceras del <code>server</code> cuando un <code>location</code> declara su
+propio <code>add_header</code>, y el <code>location</code> de assets declaraba <code>Cache-Control</code>.</p>
+<p>Las 5 restantes son informativas o de bajo impacto: <code>Cache-Control</code> reexaminado, contenido
+cacheable, <code>img-src https:</code> (necesario para imágenes de artículos), "Modern Web Application" y
+<code>Cross-Origin-Embedder-Policy</code> (la app no usa recursos cross-origin aislados).</p>
+<p>Evidencia: <code>evidence/14/zap-baseline-antes.log</code>, <code>zap-baseline.log</code> y <code>zap-baseline.html</code>.</p>
+<h2 id="6-runbook-de-respuesta-a-incidentes">6. Runbook de respuesta a incidentes</h2>
+<table>
+<thead>
+<tr>
+<th>Fase</th>
+<th>Qué se hace</th>
+<th>Quién</th>
+<th>Evidencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1. Detección</strong></td>
+<td>alerta de Prometheus/Alertmanager, o incidencia en Mantis</td>
+<td>monitoreo</td>
+<td><code>ALERTS</code> en estado <code>firing</code></td>
+</tr>
+<tr>
+<td><strong>2. Clasificación</strong></td>
+<td>severidad y alcance: ¿afecta disponibilidad, datos o confidencialidad?</td>
+<td>responsable de guardia</td>
+<td>incidencia en Mantis con categoría</td>
+</tr>
+<tr>
+<td><strong>3. Contención</strong></td>
+<td>si hay compromiso: rotar <code>JWT_SECRET</code> y tokens, cortar el túnel, aislar el contenedor</td>
+<td>operador</td>
+<td>commit del cambio de secreto</td>
+</tr>
+<tr>
+<td><strong>4. Erradicación y recuperación</strong></td>
+<td>aplicar el fix, <code>deploy.ps1</code> con rollback si falla, verificar <code>/health</code></td>
+<td>desarrollo</td>
+<td>PR + ejecución de deploy</td>
+</tr>
+<tr>
+<td><strong>5. Cierre</strong></td>
+<td>nota en la incidencia con causa raíz y verificación; actualizar el informe</td>
+<td>ambos</td>
+<td>incidencia <code>resolved</code> con <code>commit_sha</code></td>
+</tr>
+</tbody>
+</table>
+<p>Tiempos objetivo: detección &lt; 5 min (scrape 15 s + <code>for</code> de la regla), contención &lt; 30 min,
+recuperación medida por el RTO del despliegue (§8: ~50 s con rollback).</p>
+<h2 id="7-limitaciones-declaradas">7. Limitaciones declaradas</h2>
+<table>
+<thead>
+<tr>
+<th>Limitación</th>
+<th>Motivo</th>
+<th>Riesgo aceptado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mantis corre como root</td>
+<td>Apache necesita el puerto 80 y escribir en el web root</td>
+<td>mitigado con borde autenticado y <code>/admin</code> bloqueado</td>
+</tr>
+<tr>
+<td>Prometheus/Grafana sin auth propia</td>
+<td>solo escuchan en loopback</td>
+<td>el acceso remoto pasa por el túnel</td>
+</tr>
+<tr>
+<td>Basic auth sin MFA</td>
+<td>Cloudflare Access requiere cuenta y dominio</td>
+<td>contraseña fuerte + login propio de cada herramienta</td>
+</tr>
+<tr>
+<td><code>tar</code> y <code>zlib</code> con CVE crítica</td>
+<td>sin versión compatible</td>
+<td>documentado y monitoreado</td>
+</tr>
+<tr>
+<td>Sin WAF ni rate limit en el borde</td>
+<td>requiere plan pago</td>
+<td>el rate limit de nginx cubre <code>/api/</code></td>
+</tr>
+<tr>
+<td>Sin escaneo de secretos en tiempo real</td>
+<td>gitleaks corre en CI y manual</td>
+<td>un secreto llega al repo pero no a <code>main</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-flujo-de-incidentes-con-n8n">8. Flujo de incidentes con n8n</h2>
+<p>La alerta de Prometheus se convierte en incidencia automáticamente (§13, flujo 1):</p>
+<pre><code>Prometheus → Alertmanager → n8n (token) → POST /api/rest/issues → Mantis
+</code></pre>
+<p>Verificado con <code>amtool</code>: incidencia #18 creada desde una alerta real, y ejecución 21 en <code>error</code> con
+Mantis caído. Ese es el eslabón que el enunciado pide para §14.</p>
+<h2 id="9-evidencia-2">9. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Trivy antes (5 imágenes)</td>
+<td><code>evidence/14/trivy-*.txt</code></td>
+</tr>
+<tr>
+<td>Trivy después (backend)</td>
+<td><code>evidence/14/trivy-backend-despues.txt</code></td>
+</tr>
+<tr>
+<td>npm audit</td>
+<td><code>evidence/14/npm-audit-backend.txt</code>, <code>npm-audit-frontend.txt</code></td>
+</tr>
+<tr>
+<td>Semgrep</td>
+<td><code>evidence/14/semgrep.txt</code></td>
+</tr>
+<tr>
+<td>Bandit</td>
+<td><code>evidence/14/bandit.txt</code></td>
+</tr>
+<tr>
+<td>gitleaks</td>
+<td><code>evidence/14/gitleaks.log</code></td>
+</tr>
+<tr>
+<td>Pruebas de SQLi y non-root</td>
+<td><code>evidence/14/pruebas-controladas.log</code></td>
+</tr>
+<tr>
+<td>Rate limit</td>
+<td><code>evidence/14/rate-limit.log</code></td>
+</tr>
+<tr>
+<td>ZAP baseline</td>
+<td><code>evidence/14/zap-baseline.log</code>, <code>zap-baseline.html</code></td>
+</tr>
+<tr>
+<td>nmap</td>
+<td><code>evidence/09/nmap.log</code></td>
+</tr>
+<tr>
+<td>Script reproducible</td>
+<td><code>scripts/seguridad-scan.ps1</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="15-backup.md"><h1 id="15-backup-y-restauraci-n">15 — Backup y restauración</h1>
+<h2 id="1-pol-tica">1. Política</h2>
+<table>
+<thead>
+<tr>
+<th>Aspecto</th>
+<th>Decisión</th>
+<th>Motivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tipo</td>
+<td><strong>dump lógico</strong> (<code>pg_dump</code>) comprimido con gzip</td>
+<td>independiente de la versión del motor; restaurable en otra instancia</td>
+</tr>
+<tr>
+<td>Ejecución</td>
+<td><code>scripts/backup.ps1</code>, pensado para correr por cron (n8n, §13)</td>
+<td>el flujo 2 del enunciado verifica el resultado del backup</td>
+</tr>
+<tr>
+<td>Retención</td>
+<td>7 días (parámetro <code>-RetentionDays</code>)</td>
+<td>evita llenar el disco; se puede subir sin tocar el código</td>
+</tr>
+<tr>
+<td>Destino</td>
+<td><code>./backups/</code> (montado en el contenedor, <strong>fuera del repo</strong>)</td>
+<td>un backup dentro del repo se versiona y se filtra</td>
+</tr>
+<tr>
+<td>Verificación</td>
+<td>restauración en base limpia + comparación de conteos</td>
+<td>un backup que nunca se restauró no es un backup</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-ejecuci-n-y-resultados-medidos">2. Ejecución y resultados medidos</h2>
+<pre><code class="language-powershell">./scripts/backup.ps1                 # solo backup
+./scripts/backup.ps1 -RestoreTest    # backup + restauración verificada
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Tamaño de la base</td>
+<td>8.551 MB</td>
+</tr>
+<tr>
+<td>Tamaño del backup</td>
+<td><strong>402,6 MB</strong> (gzip -6, ~21:1)</td>
+</tr>
+<tr>
+<td>Tiempo de backup</td>
+<td><strong>84,9 s</strong></td>
+</tr>
+<tr>
+<td>Tiempo de restauración</td>
+<td><strong>746,1 s</strong> (~12,5 min)</td>
+</tr>
+</tbody>
+</table>
+<p>Evidencia: <code>evidence/04/backup-restore.log</code>.</p>
+<h2 id="3-prueba-de-restauraci-n">3. Prueba de restauración</h2>
+<p>Procedimiento del script:</p>
+<ol>
+<li><code>pg_dump --no-owner --no-privileges | gzip</code> dentro del contenedor (no requiere <code>psql</code> en el host).</li>
+<li><code>CREATE DATABASE restore_test</code> en limpio.</li>
+<li><code>gunzip -c | psql</code> sobre la base nueva.</li>
+<li>Comparación de conteos origen vs. restaurada.</li>
+<li><code>DROP DATABASE restore_test</code>.</li>
+</ol>
+<p>Resultado:</p>
+<table>
+<thead>
+<tr>
+<th>Tabla</th>
+<th>Origen</th>
+<th>Restaurada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Article</code></td>
+<td>6.000.001</td>
+<td>6.000.001</td>
+</tr>
+<tr>
+<td><code>Comment</code></td>
+<td>6.000.001</td>
+<td>6.000.001</td>
+</tr>
+<tr>
+<td><code>User</code></td>
+<td>200.001</td>
+<td>200.001</td>
+</tr>
+<tr>
+<td><code>Tag</code></td>
+<td>5.002</td>
+<td>5.002</td>
+</tr>
+<tr>
+<td><code>_ArticleToTag</code></td>
+<td>6.000.002</td>
+<td>6.000.002</td>
+</tr>
+<tr>
+<td><code>_UserFavorites</code></td>
+<td>6.000.000</td>
+<td>6.000.000</td>
+</tr>
+</tbody>
+</table>
+<p>Los conteos no son redondos porque incluyen las filas creadas por las pruebas E2E y por §5
+(usuario <code>tomas_demo</code>, artículo de prueba, relaciones). Eso es intencional: demuestra que el backup
+captura el estado <strong>real</strong>, no el dataset recién cargado.</p>
+<h2 id="4-persistencia-de-datos-vol-menes">4. Persistencia de datos (volúmenes)</h2>
+<p>Prueba: <code>docker compose --profile ops down</code> (<strong>sin</strong> <code>-v</code>) y <code>up -d</code> de nuevo.</p>
+<table>
+<thead>
+<tr>
+<th>Verificación</th>
+<th>Resultado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Conteos tras recrear contenedores</td>
+<td>idénticos a los de antes</td>
+</tr>
+<tr>
+<td><code>GET /api/articles</code> tras el reinicio</td>
+<td>200 en 0,23 s</td>
+</tr>
+<tr>
+<td>Servicios</td>
+<td>todos <code>healthy</code></td>
+</tr>
+</tbody>
+</table>
+<p>Evidencia: <code>evidence/04/persistencia.txt</code>.</p>
+<blockquote>
+<p><code>down -v</code> sí borra <code>pi-pgdata</code>: en ese caso la base se regenera con <code>scripts/db.ps1 seed</code>
+(~13 min). Es la diferencia que hay que saber explicar en la defensa.</p>
+</blockquote>
+<h2 id="5-limitaciones">5. Limitaciones</h2>
+<ul>
+<li>El backup es <strong>lógico</strong>: 12,5 min de restauración para 8,5 GB. Un backup físico (<code>pg_basebackup</code>)
+  sería mucho más rápido, pero es específico de la versión y del clúster.</li>
+<li>No hay backup incremental ni envío a almacenamiento externo: si se pierde el host, se pierden
+  backups y base. Se documenta como mejora (§15.16) y es el punto que justifica la réplica de §6.</li>
+<li>El script no cifra el dump. Para datos reales habría que cifrarlo (<code>age</code>/<code>gpg</code>) antes de sacarlo
+  del host.</li>
+<li>La retención se aplica por fecha de archivo; no hay verificación de integridad del dump más allá
+  de la restauración de prueba manual.</li>
+</ul>
+<h2 id="6-evidencia-2">6. Evidencia</h2>
+<table>
+<thead>
+<tr>
+<th>Evidencia</th>
+<th>Archivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Script</td>
+<td><code>scripts/backup.ps1</code></td>
+</tr>
+<tr>
+<td>Backup + restauración con conteos</td>
+<td><code>evidence/04/backup-restore.log</code></td>
+</tr>
+<tr>
+<td>Persistencia tras recrear contenedores</td>
+<td><code>evidence/04/persistencia.txt</code></td>
+</tr>
+<tr>
+<td>Volumen y tamaño de la base</td>
+<td><code>evidence/04/volumen.txt</code></td>
+</tr>
+</tbody>
+</table></section><section class="doc" data-fuente="16-limitaciones.md"><h1 id="16-limitaciones-y-mejoras-futuras">16 — Limitaciones y mejoras futuras</h1>
+<h2 id="1-objetivo-7">1. Objetivo</h2>
+<p>Declarar lo que el sistema <strong>no</strong> hace. Un informe que solo enumera logros no es verificable; este
+documento existe para que quien evalúe pueda distinguir entre "no se hizo", "no se pudo" y "no
+correspondía".</p>
+<p>Criterio: cada limitación tiene <strong>causa</strong>, <strong>riesgo aceptado</strong> y <strong>qué haría falta</strong> para cerrarla.</p>
+<h2 id="2-limitaciones-de-arquitectura">2. Limitaciones de arquitectura</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limitación</th>
+<th>Causa</th>
+<th>Riesgo aceptado</th>
+<th>Para cerrarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A1</td>
+<td><strong>Sin failover automático</strong></td>
+<td>se eligió replicación streaming manual (D-04); Patroni exige un clúster de 3 nodos y consenso</td>
+<td>si cae la primaria, la app queda en escritura hasta que un operador promueva la réplica (<strong>RTO medido: 8,6 s</strong> manual)</td>
+<td>Patroni + etcd, o un servicio gestionado</td>
+</tr>
+<tr>
+<td>A2</td>
+<td><strong>Primaria y réplica en el mismo host</strong></td>
+<td>un solo equipo disponible</td>
+<td>la caída del host se lleva ambas: la réplica protege de un fallo de proceso, no de hardware</td>
+<td>segundo host o nube</td>
+</tr>
+<tr>
+<td>A3</td>
+<td><strong>Un solo nodo de monitoreo</strong></td>
+<td>Prometheus local sin HA</td>
+<td>si cae Prometheus, se pierde la observabilidad, no el servicio</td>
+<td>Prometheus en pares + Thanos</td>
+</tr>
+<tr>
+<td>A4</td>
+<td><strong>Sin balanceo ni réplicas de la app</strong></td>
+<td>un backend y un frontend</td>
+<td>el techo es un contenedor; no hay tolerancia a fallo de la app</td>
+<td>varias réplicas + balanceador</td>
+</tr>
+<tr>
+<td>A5</td>
+<td><strong>Sin cola de trabajos</strong></td>
+<td>el envío de alertas es síncrono (n8n)</td>
+<td>una alerta puede perderse si n8n está caído; Alertmanager reintenta</td>
+<td>cola persistente (Redis/RabbitMQ)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-limitaciones-de-datos">3. Limitaciones de datos</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limitación</th>
+<th>Causa</th>
+<th>Riesgo aceptado</th>
+<th>Para cerrarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1</td>
+<td><strong>Dataset sintético</strong></td>
+<td>no se dispone de datos reales de producción</td>
+<td>los patrones de consulta son realistas, los valores no</td>
+<td>anonimizar un dump real</td>
+</tr>
+<tr>
+<td>D2</td>
+<td><strong>24,2 M de filas, no 6 M por tabla</strong></td>
+<td>el enunciado pide 6 M en tablas de volumen; se cargaron 6 M en <code>Article</code>, <code>Comment</code> y <code>_UserFavorites</code></td>
+<td>cumple el mínimo en las tres tablas de volumen, no en todas</td>
+<td>subir <code>SEED_*</code> (multiplica el tiempo de carga)</td>
+</tr>
+<tr>
+<td>D3</td>
+<td><strong>Backup lógico</strong></td>
+<td><code>pg_dump</code> es independiente de la versión y simple de verificar</td>
+<td><strong>12,5 min</strong> de restauración para 8,5 GB</td>
+<td><code>pg_basebackup</code> + WAL archiving (PITR)</td>
+</tr>
+<tr>
+<td>D4</td>
+<td><strong>Backups en el mismo host y sin cifrar</strong></td>
+<td>no hay almacenamiento externo ni claves gestionadas</td>
+<td>si se pierde el host, se pierden base y backups</td>
+<td>destino S3 + <code>age</code>/<code>gpg</code></td>
+</tr>
+<tr>
+<td>D5</td>
+<td><strong>Sin PITR</strong></td>
+<td>requeriría archivado continuo de WAL</td>
+<td>la granularidad de recuperación es el último dump (24 h)</td>
+<td><code>archive_command</code> + retención de WAL</td>
+</tr>
+</tbody>
+</table>
+<h2 id="4-limitaciones-de-seguridad">4. Limitaciones de seguridad</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limitación</th>
+<th>Causa</th>
+<th>Riesgo aceptado</th>
+<th>Para cerrarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>S1</td>
+<td><strong>Mantis corre como root</strong></td>
+<td>Apache necesita el puerto 80 y escribir en el web root</td>
+<td>mitigado con borde autenticado y <code>/admin</code> bloqueado (403)</td>
+<td>imagen con <code>su-exec</code> y puerto alto</td>
+</tr>
+<tr>
+<td>S2</td>
+<td><strong>Basic auth sin MFA</strong></td>
+<td>Cloudflare Access requiere dominio propio y cuenta</td>
+<td>contraseña fuerte + login propio de cada herramienta</td>
+<td>Cloudflare Access o TOTP</td>
+</tr>
+<tr>
+<td>S3</td>
+<td><strong>Token JWT en <code>localStorage</code></strong></td>
+<td>simplicidad del cliente Conduit</td>
+<td>un XSS podría leerlo; la CSP sin <code>unsafe-inline</code> en scripts reduce la superficie</td>
+<td>cookie <code>HttpOnly</code> + <code>SameSite</code></td>
+</tr>
+<tr>
+<td>S4</td>
+<td><strong>Sin WAF en el borde</strong></td>
+<td>plan pago de Cloudflare</td>
+<td>el rate limit de nginx cubre <code>/api/</code>, no el resto</td>
+<td>WAF o ModSecurity</td>
+</tr>
+<tr>
+<td>S5</td>
+<td><strong>2 CVE críticas sin fix</strong></td>
+<td><code>zlib</code> (<code>will_not_fix</code> de Debian) y <code>tar</code> 6.2.1 (transitiva, requiere salto mayor)</td>
+<td>documentadas y monitoreadas; no explotables desde la API</td>
+<td>esperar el fix upstream o reemplazar la dependencia</td>
+</tr>
+<tr>
+<td>S6</td>
+<td><strong>Prometheus y Grafana sin auth propia</strong></td>
+<td>solo escuchan en loopback</td>
+<td>el acceso remoto pasa por el borde con Basic auth</td>
+<td>OAuth proxy</td>
+</tr>
+<tr>
+<td>S7</td>
+<td><strong>Sin pentest manual</strong></td>
+<td>alcance académico y tiempo</td>
+<td>ZAP baseline + pruebas controladas de SQLi cubren lo automatizable</td>
+<td>pentest con especialista</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-limitaciones-de-automatizaci-n">5. Limitaciones de automatización</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limitación</th>
+<th>Causa</th>
+<th>Riesgo aceptado</th>
+<th>Para cerrarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>N1</td>
+<td><strong>Flujo 2 (backup programado) no implementado</strong></td>
+<td>la imagen oficial de n8n no trae <code>postgresql-client</code>, y el flujo necesita <code>pg_dump</code></td>
+<td>el backup se ejecuta con <code>scripts/backup.ps1</code> (manual o por Programador de tareas)</td>
+<td>imagen propia de n8n con <code>postgresql-client</code></td>
+</tr>
+<tr>
+<td>N2</td>
+<td><strong>Flujo 3 (informe semanal a Nextcloud) no implementado</strong></td>
+<td>depende de §12, que no se desplegó</td>
+<td>el informe se genera a mano desde <code>docs/informe/</code></td>
+<td>desplegar Nextcloud + nodo HTTP de subida</td>
+</tr>
+<tr>
+<td>N3</td>
+<td><strong>Flujo 4 no implementado</strong></td>
+<td>no estaba en el alcance mínimo</td>
+<td>—</td>
+<td>definir disparador y destino</td>
+</tr>
+<tr>
+<td>N4</td>
+<td><strong>n8n sin alta disponibilidad</strong></td>
+<td>un contenedor con SQLite/Postgres propio</td>
+<td>si cae, se pierden alertas automatizadas; el resto sigue</td>
+<td>cola + workers de n8n</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-limitaciones-de-gesti-n">6. Limitaciones de gestión</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limitación</th>
+<th>Causa</th>
+<th>Riesgo aceptado</th>
+<th>Para cerrarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td><strong>§12 Nextcloud no desplegado</strong></td>
+<td>prioridad a §1–§11, §13 y §14; el tiempo restante se usó en seguridad y documentación</td>
+<td>la documentación vive en el repo (versionada, con historial) y las incidencias en Mantis; no hay una herramienta única de "intranet documental"</td>
+<td>desplegar Nextcloud y migrar <code>docs/</code> con la matriz de permisos</td>
+</tr>
+<tr>
+<td>G2</td>
+<td><strong>HS2-32 sin revisión cruzada real</strong></td>
+<td>una sola cuenta de GitHub; GitHub no permite autoaprobar un PR</td>
+<td>los 10 PRs tienen CI obligatorio y revisión del propio autor documentada</td>
+<td>incorporar un segundo integrante con cuenta</td>
+</tr>
+<tr>
+<td>G3</td>
+<td><strong>HS2-67 sin E2E manual con capturas</strong></td>
+<td>el flujo se validó por API y con el navegador, pero sin set de capturas sistemático</td>
+<td>el E2E por API cubre los mismos pasos y queda versionado</td>
+<td>agregar Playwright con capturas en CI</td>
+</tr>
+</tbody>
+</table>
+<h2 id="7-limitaciones-de-publicaci-n">7. Limitaciones de publicación</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limitación</th>
+<th>Causa</th>
+<th>Riesgo aceptado</th>
+<th>Para cerrarla</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P1</td>
+<td><strong>URL efímera de Cloudflare</strong></td>
+<td><em>quick tunnels</em> no requieren dominio ni cuenta</td>
+<td>la URL cambia en cada arranque y hay que republicar antes de la demo</td>
+<td>túnel nombrado + dominio propio</td>
+</tr>
+<tr>
+<td>P2</td>
+<td><strong>Dependencia de Cloudflare</strong></td>
+<td>es el único camino a Internet</td>
+<td>si Cloudflare falla, la app solo es accesible en la LAN</td>
+<td>segundo proveedor o IP pública</td>
+</tr>
+<tr>
+<td>P3</td>
+<td><strong>Sin TLS propio</strong></td>
+<td>el TLS lo termina Cloudflare</td>
+<td>el tramo host→Cloudflare viaja cifrado por el túnel, pero no se controla el certificado</td>
+<td>certificado propio con <code>cloudflared</code> + origen HTTPS</td>
+</tr>
+<tr>
+<td>P4</td>
+<td><strong>Sin dominio ni DNS propio</strong></td>
+<td>costo y tiempo</td>
+<td>—</td>
+<td>registrar dominio y usar túnel nombrado</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-lo-que-s-est-resuelto">8. Lo que sí está resuelto</h2>
+<p>Para que la lista anterior no oculte lo importante:</p>
+<ul>
+<li>24,2 M de filas cargadas y <strong>8 consultas optimizadas</strong> con medición antes/después (7,9 s → 0,19 s).</li>
+<li>Replicación streaming verificada y <strong>failover manual probado</strong> (RTO 8,6 s, divergencia documentada).</li>
+<li>CI/CD con 4 checks obligatorios, imágenes en GHCR y <strong>rollback automático</strong>.</li>
+<li>Monitoreo con 8 paneles, 6 reglas y <strong>alerta real convertida en incidencia</strong> por n8n.</li>
+<li>Seguridad con matriz STRIDE de 7 componentes, escaneos antes/después y <strong>ZAP sin fallos</strong>.</li>
+<li>Backup <strong>restaurado y verificado</strong> con comparación de conteos.</li>
+</ul>
+<h2 id="9-mejoras-priorizadas">9. Mejoras priorizadas</h2>
+<p>Ordenadas por relación impacto/esfuerzo, para un supuesto sprint 5:</p>
+<table>
+<thead>
+<tr>
+<th>Prioridad</th>
+<th>Mejora</th>
+<th>Impacto</th>
+<th>Esfuerzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Nextcloud (§12) + flujo 3</td>
+<td>cierra el único entregable ausente</td>
+<td>1 día</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Imagen de n8n con <code>postgresql-client</code> + flujo 2</td>
+<td>automatiza el backup</td>
+<td>3 h</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Playwright E2E con capturas en CI</td>
+<td>cierra HS2-67 y previene regresiones</td>
+<td>4 h</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>pg_basebackup</code> + PITR</td>
+<td>reduce RTO/RPO de datos</td>
+<td>1 día</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Cookie <code>HttpOnly</code> para el JWT</td>
+<td>elimina el riesgo de S3</td>
+<td>3 h</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Patroni + etcd</td>
+<td>failover automático</td>
+<td>2 días</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Túnel nombrado + dominio</td>
+<td>URL estable y TLS propio</td>
+<td>4 h</td>
+</tr>
+</tbody>
+</table>
+<h2 id="10-preguntas-frecuentes-2">10. Preguntas frecuentes</h2>
+<p><strong>¿Por qué no hay failover automático si el enunciado lo sugiere?</strong>
+Porque el enunciado pide <strong>replicación</strong>, y el failover automático con Patroni requiere consenso de
+3 nodos. Se implementó lo que se puede demostrar en un host: promoción manual medida en 8,6 s y
+procedimiento escrito. Se declara como limitación en vez de simularlo.</p>
+<p><strong>¿El sistema aguanta un usuario real?</strong>
+Aguanta el tráfico de la práctica (prueba de carga con 100 usuarios concurrentes). No está
+dimensionado para producción: un backend, un frontend y un solo host.</p>
+<p><strong>¿Qué pasa si se cae Cloudflare?</strong>
+La aplicación sigue funcionando en la LAN (<code>http://192.168.1.8:8090</code> no está publicado; el acceso
+es por <code>127.0.0.1</code> en el host). Se pierde el acceso remoto, no el servicio.</p></section>
+
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs";
+mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "loose" });
+const bloques = Array.from(document.querySelectorAll("pre.mermaid"));
+for (let i = 0; i < bloques.length; i++) {
+  try {
+    const { svg } = await mermaid.render("diagrama-" + i, bloques[i].textContent);
+    const caja = document.createElement("div");
+    caja.className = "diagrama";
+    caja.innerHTML = svg;
+    bloques[i].replaceWith(caja);
+  } catch (e) {
+    bloques[i].textContent = "No se pudo renderizar el diagrama: " + e.message;
+  }
+}
+document.body.dataset.mermaid = "listo";
+</script>
+
+</body></html>
