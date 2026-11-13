@@ -54,3 +54,6 @@ pr-resp.json
 api.json
 # token del webhook de n8n que lee Alertmanager (§13)
 monitoring/alertmanager/n8n_token
+
+# notas locales (pueden tener claves pegadas a mano)
+opencode.md

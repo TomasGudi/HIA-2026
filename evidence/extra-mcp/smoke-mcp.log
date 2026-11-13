@@ -1,0 +1,11 @@
+PASS  GET /health ÔÇö escritura=false
+PASS  POST /mcp sin token ÔÇö HTTP 401
+PASS  initialize ÔÇö handshake MCP completado
+PASS  tools/list ÔÇö estado_plataforma, listar_articulos, obtener_articulo, listar_tags, estadisticas_bd
+PASS  estado_plataforma ÔÇö { "estado": "ok", "base_de_datos": "up", "version": "sha-cf60357", "uptime_segundos": 2767 }
+PASS  listar_articulos ÔÇö { "total": 10000, "mostrados": 2, "articulos": [ { "slug": "article-9be40cee5b0eee1462c82c6964087ff9", "titulo": "Art├¡cu
+PASS  listar_tags ÔÇö { "total": 10, "tags": [ "tag-00002", "tag-00003", "tag-00004", "tag-00005", "tag-00006", "tag-00007", "tag-00008", "tag
+PASS  estadisticas_bd ÔÇö { "tamano": "8551 MB", "estadisticas_actualizadas": true, "tablas": [ { "tabla": "Article", "filas_estimadas": "6000003"
+PASS  obtener_articulo ÔÇö { "slug": "article-9be40cee5b0eee1462c82c6964087ff9", "titulo": "Art├¡culo n├║mero 365", "descripcion": "Descripci├│n breve
+
+OK: 0 fallo(s)

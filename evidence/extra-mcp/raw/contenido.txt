@@ -1,0 +1,35 @@
+docker.exe : ⚠ install out of sync (pnpm: not installed or outdated) — this docker-managed install must rebuild the 
+artifact to fix
+At C:\Users\tomas\OneDrive\Documents\tarea\final-mcp\scripts\hermes-demo.ps1:46 char:14
++ ...    $crudo = & docker exec pi-hermes hermes chat -q $p.texto 2>&1 | Ou ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⚠ install out o...artifact to fix:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Query: Mostrame el título y el autor del artículo más reciente.
+
+────────────────────────────────────────
+The user wants the title and author of the most recent article. Use mcp__practica__listar_
+articulos. Need schemas first? tool_describe. Let's describe and call.
+
+I can call tool_describe first then tool_call.
+∴ Thought for 1s
+────────────────────────────────────────
+
+📖 Reading tool details · 1 tool
+🔌 Practica · listar articulos  0.3s
+
+────────────────────────────────────────
+☤ Hermes
+Artículo más reciente:  Título: Artículo número 365
+  Autor:  user366Slug: article-9be40cee5b0eee1462c82c6964087ff9
+Creado: 2026-11-13 03:56 UTC
+Tag: tag-00366 — 1 favorito
+────────────────────────────────────────
+
+Resume this session with:
+  hermes --resume local-d58a0e94b01ac01045e6c475362df75a05a98fd460ed6eef380224b62ba84c95
+
+Session:        local-d58a0e94b01ac01045e6c475362df75a05a98fd460ed6eef380224b62ba84c95
+Duration:       13s
+Messages:       6 (1 user, 4 tool calls)

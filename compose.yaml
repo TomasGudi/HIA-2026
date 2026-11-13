@@ -375,6 +375,46 @@ services:
       - monnet
 
   # ---------------------------------------------------------------
+  # Servidor MCP (extra): expone la aplicación como herramientas para
+  # agentes (Hermes). Solo lee; la escritura se habilita con
+  # MCP_ALLOW_WRITE=true y un usuario dedicado.
+  # ---------------------------------------------------------------
+  mcp:
+    build:
+      context: ./app/mcp
+    image: ${MCP_IMAGE:-pi-mcp:dev}
+    container_name: pi-mcp
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    environment:
+      # sin token el servidor no arranca (falla cerrado)
+      MCP_TOKEN: ${MCP_TOKEN}
+      API_URL: http://backend:3000
+      # métricas de PostgreSQL con el rol de solo lectura `monitor`
+      DB_HOST: db
+      DB_NAME: ${POSTGRES_DB}
+      DB_MONITOR_USER: ${MONITOR_DB_USER:-monitor}
+      DB_MONITOR_PASSWORD: ${MONITOR_DB_PASSWORD}
+      MCP_ALLOW_WRITE: ${MCP_ALLOW_WRITE:-false}
+      MCP_USER_EMAIL: ${MCP_USER_EMAIL:-}
+      MCP_USER_PASSWORD: ${MCP_USER_PASSWORD:-}
+    ports:
+      - "127.0.0.1:8098:8080"
+    networks:
+      - appnet
+      - dbnet
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8080/health || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ---------------------------------------------------------------
   # n8n (§13): automatización, con base propia en PostgreSQL.
   # El flujo 1 crea la incidencia en Mantis cuando Alertmanager avisa.
   # ---------------------------------------------------------------

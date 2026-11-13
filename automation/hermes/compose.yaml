@@ -1,0 +1,51 @@
+# Agente Hermes para la Práctica Integradora (extra)
+#
+#   docker compose -f automation/hermes/compose.yaml up -d
+#
+# Se levanta aparte del stack principal y se conecta a su red (pi-appnet) para
+# llegar al servidor MCP. El modelo corre en la API de opencode-go: el agente
+# es local (contenedor), la inferencia no.
+name: pi-hermes
+
+services:
+  hermes:
+    image: nousresearch/hermes-agent:latest
+    container_name: pi-hermes
+    restart: unless-stopped
+    command: gateway run
+    volumes:
+      - hermes_data:/opt/data
+      # configuración versionada: modelo + servidor MCP de la app
+      - ./config.yaml:/opt/data/config.yaml
+      - ./SOUL.md:/opt/data/SOUL.md:ro
+    environment:
+      # token del servidor MCP (se resuelve desde el .env del proyecto)
+      MCP_TOKEN: ${MCP_TOKEN}
+      # proveedor del modelo
+      OPENCODE_GO_API_KEY: ${OPENCODE_GO_API_KEY}
+      # respuestas largas: el default corta antes de terminar
+      HERMES_API_TIMEOUT: 1800
+      # dashboard y API compatible OpenAI, solo en loopback
+      HERMES_DASHBOARD: "1"
+      HERMES_DASHBOARD_HOST: 0.0.0.0
+      HERMES_DASHBOARD_BASIC_AUTH_USERNAME: ${HERMES_DASHBOARD_USER:-admin}
+      HERMES_DASHBOARD_BASIC_AUTH_PASSWORD: ${HERMES_DASHBOARD_PASSWORD}
+      HERMES_DASHBOARD_BASIC_AUTH_SECRET: ${HERMES_DASHBOARD_SECRET}
+      API_SERVER_ENABLED: "true"
+      API_SERVER_HOST: 0.0.0.0
+      API_SERVER_KEY: ${HERMES_API_KEY}
+    ports:
+      - "127.0.0.1:9119:9119"
+      - "127.0.0.1:8642:8642"
+    networks:
+      - appnet
+
+volumes:
+  hermes_data:
+    name: pi-hermes-data
+
+networks:
+  # red de la aplicación, ya creada por el compose principal
+  appnet:
+    name: pi-appnet
+    external: true
