@@ -444,6 +444,13 @@ services:
       GENERIC_TIMEZONE: America/Argentina/Buenos_Aires
       MANTIS_TOKEN: ${MANTIS_API_TOKEN}
       N8N_WEBHOOK_TOKEN: ${N8N_WEBHOOK_TOKEN}
+      # flujo 3: sube el informe semanal por WebDAV a Nextcloud (§12)
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER:-admin}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      NEXTCLOUD_URL: http://nextcloud
+      # flujo 2: umbrales de vigencia del backup
+      BACKUP_MAX_HORAS: ${BACKUP_MAX_HORAS:-26}
+      BACKUP_MIN_MB: ${BACKUP_MIN_MB:-1}
     ports:
       # solo loopback: en producción se llega por el túnel con auth (§9)
       - "127.0.0.1:5678:5678"
@@ -451,11 +458,54 @@ services:
       - n8n_data:/home/node/.n8n
       - ./automation/n8n/workflows:/workflows:ro
       - ./automation/n8n/entrypoint.sh:/entrypoint-import.sh:ro
+      # flujo 2: verifica el backup mas reciente sin ejecutar pg_dump
+      - ./backups:/backups:ro
     entrypoint: ["/bin/sh", "/entrypoint-import.sh"]
     networks:
       - appnet
       - dbnet
       - monnet
+
+  # ---------------------------------------------------------------
+  # Nextcloud (§12): gestión documental centralizada.
+  # Base propia en PostgreSQL, volumen propio y login propio. El
+  # acceso externo va por túnel directo: no lleva Basic auth del
+  # borde porque rompería WebDAV y el cliente de escritorio.
+  # ---------------------------------------------------------------
+  nextcloud:
+    image: nextcloud:30-apache
+    container_name: pi-nextcloud
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_DB: ${NEXTCLOUD_DB_NAME:-nextcloud}
+      POSTGRES_USER: ${NEXTCLOUD_DB_USER:-nextcloud}
+      POSTGRES_PASSWORD: ${NEXTCLOUD_DB_PASSWORD}
+      NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER:-admin}
+      NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
+      # el túnel y la LAN; el comodín cubre la URL efímera de trycloudflare
+      NEXTCLOUD_TRUSTED_DOMAINS: "localhost 127.0.0.1 nextcloud *.trycloudflare.com"
+      # el TLS lo termina Cloudflare: confiar en el proxy para el esquema
+      TRUSTED_PROXIES: ${REPL_SUBNET:-172.16.0.0/12}
+      APACHE_DISABLE_REWRITE_IP: "1"
+      PHP_MEMORY_LIMIT: 512M
+      NEXTCLOUD_MEMORY_LIMIT: 512M
+    ports:
+      - "127.0.0.1:8082:80"
+    volumes:
+      - nextcloud_data:/var/www/html
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1/status.php >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 180s
+    networks:
+      - dbnet
 
   # ---------------------------------------------------------------
   # Borde de administración (§9): pgAdmin y Mantis detrás de HTTP
@@ -519,6 +569,8 @@ volumes:
     name: pi-registry-data
   n8n_data:
     name: pi-n8n-data
+  nextcloud_data:
+    name: pi-nextcloud-data
 
 networks:
   appnet:

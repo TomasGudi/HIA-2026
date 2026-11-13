@@ -23,7 +23,8 @@ del enunciado. Los documentos de gestión (plan, backlog, arquitectura, decision
 | 15 | Backup y restauración | `docs/informe/15-backup.md` | §4/§13 | R1 |
 | 16 | Limitaciones y mejoras futuras | `docs/informe/16-limitaciones.md` | todas | R5 |
 
-Extras: `docs/20-guion-demo.md` (guion de la defensa) y `docs/dailies/YYYY-MM-DD.md` (seguimiento Scrum).
+Extras: `docs/20-guion-demo.md` (guion de la defensa), `docs/12-nextcloud.md` (gestión documental
+de §12) y `docs/dailies/YYYY-MM-DD.md` (seguimiento Scrum).
 
 ---
 

@@ -2,13 +2,12 @@
 # Entrypoint de n8n (§13).
 #
 # Los workflows versionados tienen placeholders (__WEBHOOK_TOKEN__,
-# __MANTIS_TOKEN__) en vez de secretos. Acá se renderiza una copia en /tmp con
-# los valores de .env y se importa esa copia: el repositorio nunca contiene el
-# token, y n8n solo ve el valor en su propia base.
+# __MANTIS_TOKEN__, __NC_USER__, __NC_BASIC__) en vez de secretos. Acá se
+# renderiza una copia en /tmp con los valores de .env y se importa esa copia:
+# el repositorio nunca contiene el token, y n8n solo ve el valor en su base.
 #
-# La condición para importar es que NO haya workflows en la base (no un
-# marcador en el volumen): los workflows viven en PostgreSQL, no en el volumen,
-# así que un marcador local no refleja la realidad y duplicaba el flujo.
+# Se importa workflow por workflow si su nombre no está en la base. Así se
+# pueden agregar flujos nuevos sin borrar los existentes ni duplicarlos.
 set -e
 
 echo "[n8n] esperando la base de datos..."
@@ -22,25 +21,46 @@ while ! n8n list:workflow >/dev/null 2>&1; do
   sleep 2
 done
 
+# header Basic para WebDAV de Nextcloud: base64(usuario:contraseña)
+NC_BASIC="Basic $(printf '%s:%s' "${NEXTCLOUD_ADMIN_USER:-admin}" "${NEXTCLOUD_ADMIN_PASSWORD:-}" | base64 | tr -d '\n')"
+
+echo "[n8n] renderizando workflows con los secretos del entorno"
+mkdir -p /tmp/wf
+for origen in /workflows/*.json; do
+  destino="/tmp/wf/$(basename "$origen")"
+  sed -e "s|__WEBHOOK_TOKEN__|${N8N_WEBHOOK_TOKEN}|g" \
+      -e "s|__MANTIS_TOKEN__|${MANTIS_TOKEN}|g" \
+      -e "s|__NC_USER__|${NEXTCLOUD_ADMIN_USER:-admin}|g" \
+      -e "s|__NC_BASIC__|${NC_BASIC}|g" \
+      "$origen" > "$destino"
+done
+
 # `n8n list:workflow` imprime un encabezado aunque no haya workflows: se
 # cuentan solo las líneas con el separador `id|nombre`.
 EXISTENTES=$(n8n list:workflow 2>/dev/null | grep -c '|' || true)
 echo "[n8n] workflows existentes: ${EXISTENTES}"
 
-if [ "${EXISTENTES}" = "0" ]; then
-  echo "[n8n] renderizando workflows con los secretos del entorno"
-  mkdir -p /tmp/wf
-  sed -e "s|__WEBHOOK_TOKEN__|${N8N_WEBHOOK_TOKEN}|g" \
-      -e "s|__MANTIS_TOKEN__|${MANTIS_TOKEN}|g" \
-      /workflows/01-alerta-a-mantis.json > /tmp/wf/01-alerta-a-mantis.json
+IMPORTADOS=0
+for archivo in /tmp/wf/*.json; do
+  # el primer "name" del JSON es el nombre del workflow
+  nombre=$(sed -n 's/.*"name": "\([^"]*\)".*/\1/p' "$archivo" | head -1)
+  if [ -z "$nombre" ]; then
+    echo "[n8n] no se pudo leer el nombre de $(basename "$archivo"); se omite"
+    continue
+  fi
+  if n8n list:workflow 2>/dev/null | grep -F "|${nombre}" >/dev/null; then
+    echo "[n8n] ya existe: ${nombre}"
+  else
+    echo "[n8n] importando: ${nombre}"
+    n8n import:workflow --input="$archivo" || echo "[n8n] fallo el import de ${nombre}"
+    IMPORTADOS=$((IMPORTADOS + 1))
+  fi
+done
 
-  echo "[n8n] importando workflows"
-  n8n import:workflow --input=/tmp/wf/01-alerta-a-mantis.json || echo "[n8n] fallo el import"
+if [ "$IMPORTADOS" -gt 0 ]; then
   n8n update:workflow --all --active=true || echo "[n8n] fallo la activacion"
-  rm -rf /tmp/wf
-  echo "[n8n] workflows importados y activados"
-else
-  echo "[n8n] ya hay workflows en la base: no se importa de nuevo"
 fi
+rm -rf /tmp/wf
+echo "[n8n] listo (${IMPORTADOS} workflows nuevos)"
 
 exec n8n start

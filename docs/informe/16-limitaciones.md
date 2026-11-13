@@ -44,16 +44,17 @@ Criterio: cada limitación tiene **causa**, **riesgo aceptado** y **qué haría 
 
 | # | Limitación | Causa | Riesgo aceptado | Para cerrarla |
 |---|---|---|---|---|
-| N1 | **Flujo 2 (backup programado) no implementado** | la imagen oficial de n8n no trae `postgresql-client`, y el flujo necesita `pg_dump` | el backup se ejecuta con `scripts/backup.ps1` (manual o por Programador de tareas) | imagen propia de n8n con `postgresql-client` |
-| N2 | **Flujo 3 (informe semanal a Nextcloud) no implementado** | depende de §12, que no se desplegó | el informe se genera a mano desde `docs/informe/` | desplegar Nextcloud + nodo HTTP de subida |
+| N1 | **Flujo 2 verifica pero no ejecuta el backup** | la imagen oficial de n8n no trae `postgresql-client` | el backup lo corre `scripts/backup.ps1` por Programador de tareas; el flujo alerta si falta o está viejo | imagen propia de n8n con `postgresql-client` |
+| N2 | **Flujo 3 usa el usuario admin de Nextcloud** | no se creó una cuenta de servicio con permisos mínimos | la contraseña vive en `.env` y el flujo solo escribe en una carpeta | crear usuario `n8n` con acceso solo a `00-informe-consolidado` |
 | N3 | **Flujo 4 no implementado** | no estaba en el alcance mínimo | — | definir disparador y destino |
 | N4 | **n8n sin alta disponibilidad** | un contenedor con SQLite/Postgres propio | si cae, se pierden alertas automatizadas; el resto sigue | cola + workers de n8n |
+| N5 | **Flujo 3 sin IA generativa** | no hay proveedor de LLM sin costo ni salida a Internet desde n8n | el informe es una plantilla con métricas reales, no un resumen "inteligente" | integrar un LLM local (Ollama) o una API con clave |
 
 ## 6. Limitaciones de gestión
 
 | # | Limitación | Causa | Riesgo aceptado | Para cerrarla |
 |---|---|---|---|---|
-| G1 | **§12 Nextcloud no desplegado** | prioridad a §1–§11, §13 y §14; el tiempo restante se usó en seguridad y documentación | la documentación vive en el repo (versionada, con historial) y las incidencias en Mantis; no hay una herramienta única de "intranet documental" | desplegar Nextcloud y migrar `docs/` con la matriz de permisos |
+| G1 | **Nextcloud sin SSO/LDAP ni backup propio** | usuarios locales y volumen en el mismo host | la documentación está además versionada en Git, que es la fuente de verdad | SSO (SAML/LDAP) y backup del volumen |
 | G2 | **HS2-32 sin revisión cruzada real** | una sola cuenta de GitHub; GitHub no permite autoaprobar un PR | los 10 PRs tienen CI obligatorio y revisión del propio autor documentada | incorporar un segundo integrante con cuenta |
 | G3 | **HS2-67 sin E2E manual con capturas** | el flujo se validó por API y con el navegador, pero sin set de capturas sistemático | el E2E por API cubre los mismos pasos y queda versionado | agregar Playwright con capturas en CI |
 
@@ -83,8 +84,8 @@ Ordenadas por relación impacto/esfuerzo, para un supuesto sprint 5:
 
 | Prioridad | Mejora | Impacto | Esfuerzo |
 |---|---|---|---|
-| 1 | Nextcloud (§12) + flujo 3 | cierra el único entregable ausente | 1 día |
-| 2 | Imagen de n8n con `postgresql-client` + flujo 2 | automatiza el backup | 3 h |
+| 1 | Usuario de servicio para el flujo 3 | reduce el privilegio de la automatización | 1 h |
+| 2 | Imagen de n8n con `postgresql-client` (flujo 2 ejecuta el backup) | cierra N1 | 3 h |
 | 3 | Playwright E2E con capturas en CI | cierra HS2-67 y previene regresiones | 4 h |
 | 4 | `pg_basebackup` + PITR | reduce RTO/RPO de datos | 1 día |
 | 5 | Cookie `HttpOnly` para el JWT | elimina el riesgo de S3 | 3 h |

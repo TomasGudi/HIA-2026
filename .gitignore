@@ -55,5 +55,9 @@ api.json
 # token del webhook de n8n que lee Alertmanager (§13)
 monitoring/alertmanager/n8n_token
 
-# notas locales (pueden tener claves pegadas a mano)
+# notas locales y credenciales del agente (nunca al repo)
 opencode.md
+.opencode/
+
+# credenciales de la demo (locales, nunca al repo)
+CREDENCIALES.local.md

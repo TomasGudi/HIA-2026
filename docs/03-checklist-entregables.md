@@ -144,25 +144,29 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 
 ## §12 Nextcloud — R4
 
-| ☐ | Entregable | Evidencia esperada |
+| ✔ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | Estructura documental | árbol de carpetas 01..15 |
-| ☐ | Matriz de permisos | tabla usuario/grupo/carpeta/permiso |
-| ☐ | Informes centralizados | ≥6 archivos versionados + prueba con segundo usuario |
+| ☑ | Estructura documental | 17 carpetas (00..16) en `HIA-2026`, ver `docs/12-nextcloud.md` §3 |
+| ☑ | Matriz de permisos | tabla en `12-nextcloud.md` §4; verificada por WebDAV |
+| ☑ | Informes centralizados | 18 archivos (16 `.md` + PDF + consolidado), `evidence/12/nextcloud-status.log` |
+| ☑ | Prueba con segundo usuario | `r1` escribe, `auditor` recibe 403, `invitado` recibe 404 (`evidence/12/permisos.log`) |
+| ☑ | Provisión reproducible | `scripts/nextcloud.ps1` + `db/init/09-nextcloud-db.sh` |
 
 ## §13 n8n - R4
 
-| ☑ | Entregable | Evidencia esperada |
+| ✔ | Entregable | Evidencia esperada |
 |---|---|---|
 | ☑ | Configuración | `compose.yaml` (perfil `ops`) + volumen + base `n8n` propia |
-| ☑ | Diagramas | `docs/02-arquitectura.md` §5 + JSON en `automation/n8n/workflows/` |
-| ☑ | Evidencias de ejecución | `evidence/13/flujo-1.log` (ejecuciones 14, 21, 22) |
+| ☑ | Diagramas | `docs/02-arquitectura.md` §7 + JSON en `automation/n8n/workflows/` |
+| ☑ | Flujo 1 (alerta → incidencia) | `evidence/13/flujo-1.log` (ejecuciones 14, 21, 22) |
+| ☑ | Flujo 2 (verificación de backup) | `evidence/13/flujo-2.log`; vigente → sin acción, vencido → issue #28 |
+| ☑ | Flujo 3 (informe a Nextcloud) | `evidence/13/flujo-3.log`; `informe-semanal-2026-11-13.md` |
 | ☑ | Registro de errores | ejecución 21 en `error` con Mantis caído |
 | ☑ | Pruebas de integración | 401 sin token, 400 payload inválido, 200 con incidencia |
 | ☑ | Análisis de riesgos | `docs/informe/13-automatizacion.md` §5 |
 
-> Flujos 2 y 3 **no implementados**: el 2 necesita imagen de n8n con `postgresql-client`;
-> el 3 depende de Nextcloud (§12). Declarado en el informe.
+> Flujo 4 (eventos de seguridad) no implementado: opcional en el backlog, declarado en
+> `16-limitaciones.md` (N3).
 
 
 ## §14 Seguridad - R5
@@ -186,7 +190,7 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 | ✔ | Entregable | Evidencia esperada |
 |---|---|---|
 | ☑ | 16 documentos obligatorios | `docs/informe/01..16` completos, mapa en `04-informe-final-outline.md` |
-| ☑ | Informe consolidado | `docs/HIA-2026-informe-final.pdf` (59 páginas, portada e índice) |
+| ☑ | Informe consolidado | `docs/HIA-2026-informe-final.pdf` (60 páginas, portada e índice) |
 | ☑ | Generación reproducible | `python scripts/informe.py` (HTML + PDF, diagramas Mermaid) |
 | ☑ | Demo de 20 min | `docs/20-guion-demo.md` con tiempos, comandos y contingencias |
 | ☑ | Checklist completo | este archivo, §1 a §15 |

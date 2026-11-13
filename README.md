@@ -82,10 +82,10 @@ docker compose ps
 | §9 Publicación | ✅ Cloudflare Tunnel + borde con auth |
 | §10 Monitoreo | ✅ 8 paneles, 6 reglas, alerta real |
 | §11 Incidencias | ✅ Mantis con 14 incidencias |
-| §13 Automatización | ✅ flujo 1 alerta → incidencia |
+| §13 Automatización | ✅ 3 flujos: alerta→incidencia, backup, informe a Nextcloud |
 | §14 Seguridad | ✅ STRIDE, escaneos y correcciones |
 | §15 Documentación | ✅ 16 documentos, PDF y guion de demo |
-| §12 Nextcloud | ⚠️ no desplegado (declarado en `16-limitaciones.md`) |
+| §12 Nextcloud | ✅ desplegado con 17 carpetas, permisos y prueba de acceso denegado |
 
 Detalle y evidencia de cada sección: [`docs/informe/`](docs/informe/).
 Informe consolidado: [`docs/HIA-2026-informe-final.pdf`](docs/HIA-2026-informe-final.pdf).

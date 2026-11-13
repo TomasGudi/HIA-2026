@@ -9,6 +9,7 @@
 | `backend` | build `./app/backend` | — (solo `expose 3000`) | `appnet`, `dbnet` | — |
 | `frontend` | build `./app/frontend` | `127.0.0.1:8090` | `appnet` | — |
 | `mantis` | build `./app/mantis` | `127.0.0.1:8081` | `dbnet` | `ops` |
+| `nextcloud` | `nextcloud:30-apache` | `127.0.0.1:8082` | `dbnet` | `ops` |
 
 Regla transversal: **ningún puerto se publica fuera de `127.0.0.1`**. La publicación a Internet
 es por túnel (§9), no abriendo puertos.

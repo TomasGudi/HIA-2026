@@ -105,6 +105,7 @@ flowchart TB
     subgraph CF[Cloudflare]
         T1[Túnel app]
         T2[Túnel administración]
+        T3[Túnel Nextcloud]
     end
 
     subgraph HOST[Host Windows + Docker Desktop]
@@ -122,6 +123,7 @@ flowchart TB
             MAN[Mantis :80]
             EDGE["edge<br/>Basic auth :8080-8082"]
             PGE[postgres-exporter]
+            NC["Nextcloud :80"]
         end
 
         subgraph MONNET[monnet]
@@ -135,6 +137,7 @@ flowchart TB
 
     U -->|HTTPS 443| T1 --> FE
     U -->|HTTPS 443| T2 --> EDGE
+    U -->|HTTPS 443| T3 --> NC
     EDGE --> PGA
     EDGE --> MAN
     FE -->|"/api/*"| BE
@@ -146,9 +149,9 @@ flowchart TB
     GRAF --> PROM
 ```
 
-Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y siete de
-operación (`mantis`, `prometheus`, `alertmanager`, `grafana`, `n8n`, `edge`, `registry`), más cuatro
-exporters. Todos los puertos publicados están en `127.0.0.1`.
+Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y ocho de
+operación (`mantis`, `nextcloud`, `prometheus`, `alertmanager`, `grafana`, `n8n`, `edge`, `registry`),
+más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
 
 ## 2. Componentes y responsabilidades
 
@@ -160,6 +163,7 @@ exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `db-replica` | Réplica de solo lectura por streaming asíncrono | PostgreSQL 16.4 | ninguno |
 | `pgadmin` | Administración de la base | pgAdmin 8 | `127.0.0.1:8080` |
 | `mantis` | Gestión de incidencias (§11) | MantisBT 2.28.4 sobre PostgreSQL | `127.0.0.1:8081` |
+| `nextcloud` | Gestión documental con permisos por grupo (§12) | Nextcloud 30 sobre PostgreSQL | `127.0.0.1:8082` |
 | `prometheus` | Recolección y evaluación de reglas | Prometheus 2.54 | `127.0.0.1:9090` |
 | `alertmanager` | Agrupación, silencios y envío a n8n | Alertmanager 0.27 | `127.0.0.1:9093` |
 | `grafana` | 8 paneles de observabilidad | Grafana 11 | `127.0.0.1:3001` |
@@ -177,6 +181,7 @@ exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `db-replica` | `dbnet` | **ninguno** | solo lectura, sin exposición |
 | `pgadmin` | `dbnet` | `127.0.0.1:8080` | administración, jamás expuesta a Internet |
 | `mantis` | `dbnet` | `127.0.0.1:8081` | perfil `ops`; acceso por el borde |
+| `nextcloud` | `dbnet` | `127.0.0.1:8082` | perfil `ops`; túnel directo (login propio) |
 | `prometheus` | `monnet`, `appnet`, `dbnet` | `127.0.0.1:9090` | necesita scrapear exporters de las tres redes |
 | `n8n` | `appnet`, `dbnet`, `monnet` | `127.0.0.1:5678` | recibe webhooks y escribe en Mantis y en su base |
 
@@ -310,10 +315,10 @@ administrativas quedan detrás de HTTP Basic en `edge`, y además tienen su prop
 
 ## 10. Estado actual
 
-Todo lo planificado para §6, §7, §9, §10 y §13 está desplegado y verificado. Lo que no está:
+Todo lo planificado para §6, §7, §9, §10, §12 y §13 está desplegado y verificado. Lo que no está:
 
-- **§12 Nextcloud**: no desplegado (declarado en `16-limitaciones.md`, G1).
-- **Flujos 2 y 3 de n8n**: dependen de una imagen con `postgresql-client` y de Nextcloud.
+- **Flujos 2 y 3 de n8n**: el 2 necesita una imagen con `postgresql-client`; el 3 está implementado
+  pero no programado (ver `13-automatizacion.md`).
 - **Failover automático**: fuera de alcance por diseño (D-04).
 
 ---
@@ -614,6 +619,7 @@ para §6 y §10, no para que la aplicación funcione.
 | `backend` | build `./app/backend` | — (solo `expose 3000`) | `appnet`, `dbnet` | — |
 | `frontend` | build `./app/frontend` | `127.0.0.1:8090` | `appnet` | — |
 | `mantis` | build `./app/mantis` | `127.0.0.1:8081` | `dbnet` | `ops` |
+| `nextcloud` | `nextcloud:30-apache` | `127.0.0.1:8082` | `dbnet` | `ops` |
 
 Regla transversal: **ningún puerto se publica fuera de `127.0.0.1`**. La publicación a Internet
 es por túnel (§9), no abriendo puertos.
@@ -1913,12 +1919,16 @@ convertirse en una incidencia en Mantis, con contexto suficiente para actuar.
 
 ### Importación de workflows
 
-`n8n import:workflow` **no es idempotente**: crea un workflow nuevo cada vez. El entrypoint importa
-solo si la base no tiene ninguno:
+`n8n import:workflow` **no es idempotente**: crea un workflow nuevo cada vez. El entrypoint
+renderiza los secretos y después importa **workflow por workflow**, solo si su nombre no está en la
+base:
 
 ```sh
-EXISTENTES=$(n8n list:workflow 2>/dev/null | grep -c '|' || true)
+nombre=$(sed -n 's/.*"name": "\([^"]*\)".*/\1/p' "$archivo" | head -1)
+n8n list:workflow | grep -F "|${nombre}" || n8n import:workflow --input="$archivo"
 ```
+
+Así se pueden agregar flujos nuevos sin duplicar los existentes ni borrar ejecuciones.
 
 > Primer intento fallido que vale documentar: se usaba un marcador en el volumen
 > (`/home/node/.n8n/.workflows-imported`). Los workflows viven en **PostgreSQL**, no en el volumen,
@@ -1998,24 +2008,73 @@ Ejecuciones (tabla `execution_entity`):
 | **Duplicados** | dos alertas iguales crean dos incidencias | `group_by` + `repeat_interval`; falta deduplicación por fingerprint (mejora pendiente) |
 | **n8n caído** | no hay automatización, pero el sistema sigue funcionando | es un componente auxiliar: la app y la base no dependen de n8n |
 
-## 6. Flujos 2 y 3 — no implementados
+## 6. Flujo 2 — Verificación de backup
 
-El diseño está en `docs/02-arquitectura.md` §5, pero **no están implementados** y no se declaran
-como hechos:
+No ejecuta `pg_dump` (la imagen oficial de n8n no trae cliente de PostgreSQL): **verifica** el
+backup que genera `scripts/backup.ps1`. Es la parte que el enunciado pide cuando habla de
+"verificar el resultado del backup".
 
-| Flujo | Qué falta | Por qué no está |
+```
+Cron diario 03:00 ──▶ stat /backups/*.sql.gz ──▶ Evaluar (Code) ──▶ ¿vigente?
+                                                                   ├── sí ──▶ sin acción
+                                                                   └── no ──▶ issue en Mantis
+```
+
+| Regla | Valor por defecto | Variable |
 |---|---|---|
-| 2 — backup verificado | cron en n8n que ejecute `pg_dump` y valide integridad | n8n corre Alpine sin cliente de PostgreSQL; requiere imagen propia con `postgresql-client` |
-| 3 — informe IA a Nextcloud | cron → script Python → resumen → subir a Nextcloud | depende de §12 (Nextcloud), que todavía no está desplegado |
-| 4 — eventos de seguridad | — | marcado como opcional en el backlog |
+| Edad máxima del backup | 26 h | `BACKUP_MAX_HORAS` |
+| Tamaño mínimo | 1 MB (detecta un dump vacío) | `BACKUP_MIN_MB` |
 
-## 7. Evidencia
+```powershell
+# caso vigente: no hace nada
+docker compose exec n8n n8n execute --id <id>
+
+# caso vencido: umbral 0 h fuerza la alerta
+docker compose exec -e BACKUP_MAX_HORAS=0 n8n n8n execute --id <id>
+```
+
+Resultado medido (`evidence/13/flujo-2.log`): con el backup real de 402,6 MB y 5,5 h de antigüedad
+→ `ok: true`, `Sin accion`. Con el umbral en 0 → `Crear issue en Mantis`, incidencia **#28**
+("Backup vencido o invalido: tiene 5.5 h (maximo 0)"), cerrada después como prueba.
+
+El volumen `./backups` se monta **solo lectura** en n8n: el flujo no puede borrar ni modificar un
+backup.
+
+## 7. Flujo 3 — Informe semanal a Nextcloud
+
+```
+Cron semanal (lunes 07:00)
+   ──▶ GET prometheus /api/v1/query (CPU)
+   ──▶ GET prometheus /api/v1/query (memoria)
+   ──▶ Code: arma el markdown
+   ──▶ PUT http://nextcloud/remote.php/dav/files/admin/HIA-2026/00-informe-consolidado/informe-semanal-YYYY-MM-DD.md
+```
+
+- La autenticación es **WebDAV con Basic**: el JSON versionado tiene `__NC_USER__` y `__NC_BASIC__`,
+  y el entrypoint los reemplaza por el usuario y el header en base64. La contraseña no está en el
+  repo.
+- El archivo se escribe en la carpeta de grupo de §12, así que los 5 integrantes lo ven sin
+  compartir nada a mano.
+- Verificado (`evidence/13/flujo-3.log`): ejecución `success`, último nodo `Subir a Nextcloud`,
+  archivo `informe-semanal-2026-11-13.md` de 263 bytes con los valores de Prometheus.
+- **No usa IA generativa**: el informe se arma con una plantilla y las métricas de Prometheus. No hay
+  proveedor de LLM disponible sin costo ni salida a Internet desde n8n; se declara en
+  `16-limitaciones.md` (N5).
+
+## 8. Flujo 4 — no implementado
+
+El flujo 4 (eventos de seguridad) está marcado como opcional en el backlog y no se implementó. Se
+declara en `16-limitaciones.md` (N3).
+
+## 9. Evidencia
 
 | Evidencia | Archivo |
 |---|---|
-| Workflow versionado (con placeholders) | `automation/n8n/workflows/01-alerta-a-mantis.json` |
-| Entrypoint (renderizado e importación) | `automation/n8n/entrypoint.sh` |
+| Workflows versionados (con placeholders) | `automation/n8n/workflows/01..03-*.json` |
+| Entrypoint (renderizado e importación por nombre) | `automation/n8n/entrypoint.sh` |
 | Pruebas del flujo 1 | `evidence/13/flujo-1.log` |
+| Pruebas del flujo 2 (vigente y vencido) | `evidence/13/flujo-2.log` |
+| Pruebas del flujo 3 (subida a Nextcloud) | `evidence/13/flujo-3.log` |
 | Base y rol de n8n | `db/init/07-n8n-db.sh` |
 | Servicio en compose | `compose.yaml` (perfil `ops`) |
 | Diagrama | `docs/02-arquitectura.md` §5 |
@@ -2336,16 +2395,17 @@ Criterio: cada limitación tiene **causa**, **riesgo aceptado** y **qué haría 
 
 | # | Limitación | Causa | Riesgo aceptado | Para cerrarla |
 |---|---|---|---|---|
-| N1 | **Flujo 2 (backup programado) no implementado** | la imagen oficial de n8n no trae `postgresql-client`, y el flujo necesita `pg_dump` | el backup se ejecuta con `scripts/backup.ps1` (manual o por Programador de tareas) | imagen propia de n8n con `postgresql-client` |
-| N2 | **Flujo 3 (informe semanal a Nextcloud) no implementado** | depende de §12, que no se desplegó | el informe se genera a mano desde `docs/informe/` | desplegar Nextcloud + nodo HTTP de subida |
+| N1 | **Flujo 2 verifica pero no ejecuta el backup** | la imagen oficial de n8n no trae `postgresql-client` | el backup lo corre `scripts/backup.ps1` por Programador de tareas; el flujo alerta si falta o está viejo | imagen propia de n8n con `postgresql-client` |
+| N2 | **Flujo 3 usa el usuario admin de Nextcloud** | no se creó una cuenta de servicio con permisos mínimos | la contraseña vive en `.env` y el flujo solo escribe en una carpeta | crear usuario `n8n` con acceso solo a `00-informe-consolidado` |
 | N3 | **Flujo 4 no implementado** | no estaba en el alcance mínimo | — | definir disparador y destino |
 | N4 | **n8n sin alta disponibilidad** | un contenedor con SQLite/Postgres propio | si cae, se pierden alertas automatizadas; el resto sigue | cola + workers de n8n |
+| N5 | **Flujo 3 sin IA generativa** | no hay proveedor de LLM sin costo ni salida a Internet desde n8n | el informe es una plantilla con métricas reales, no un resumen "inteligente" | integrar un LLM local (Ollama) o una API con clave |
 
 ## 6. Limitaciones de gestión
 
 | # | Limitación | Causa | Riesgo aceptado | Para cerrarla |
 |---|---|---|---|---|
-| G1 | **§12 Nextcloud no desplegado** | prioridad a §1–§11, §13 y §14; el tiempo restante se usó en seguridad y documentación | la documentación vive en el repo (versionada, con historial) y las incidencias en Mantis; no hay una herramienta única de "intranet documental" | desplegar Nextcloud y migrar `docs/` con la matriz de permisos |
+| G1 | **Nextcloud sin SSO/LDAP ni backup propio** | usuarios locales y volumen en el mismo host | la documentación está además versionada en Git, que es la fuente de verdad | SSO (SAML/LDAP) y backup del volumen |
 | G2 | **HS2-32 sin revisión cruzada real** | una sola cuenta de GitHub; GitHub no permite autoaprobar un PR | los 10 PRs tienen CI obligatorio y revisión del propio autor documentada | incorporar un segundo integrante con cuenta |
 | G3 | **HS2-67 sin E2E manual con capturas** | el flujo se validó por API y con el navegador, pero sin set de capturas sistemático | el E2E por API cubre los mismos pasos y queda versionado | agregar Playwright con capturas en CI |
 
@@ -2375,8 +2435,8 @@ Ordenadas por relación impacto/esfuerzo, para un supuesto sprint 5:
 
 | Prioridad | Mejora | Impacto | Esfuerzo |
 |---|---|---|---|
-| 1 | Nextcloud (§12) + flujo 3 | cierra el único entregable ausente | 1 día |
-| 2 | Imagen de n8n con `postgresql-client` + flujo 2 | automatiza el backup | 3 h |
+| 1 | Usuario de servicio para el flujo 3 | reduce el privilegio de la automatización | 1 h |
+| 2 | Imagen de n8n con `postgresql-client` (flujo 2 ejecuta el backup) | cierra N1 | 3 h |
 | 3 | Playwright E2E con capturas en CI | cierra HS2-67 y previene regresiones | 4 h |
 | 4 | `pg_basebackup` + PITR | reduce RTO/RPO de datos | 1 día |
 | 5 | Cookie `HttpOnly` para el JWT | elimina el riesgo de S3 | 3 h |

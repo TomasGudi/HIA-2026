@@ -1,0 +1,20 @@
+=== flujo 2: verificacion de backup (2026-11-13) ===
+
+Workflow: "02 - Verificacion de backup" (id lPDcT9Z2AKaA2XHB)
+Disparador: Cron diario 03:00 + ejecucion manual para la prueba.
+Fuente: stat -c "%Y %s %n" /backups/*.sql.gz | sort -n | tail -1
+
+--- caso vigente (BACKUP_MAX_HORAS=26, valor por defecto) ---
+"ok": true
+"motivo": "backup vigente"
+"lastNodeExecuted": "Sin accion"
+
+--- caso vencido (BACKUP_MAX_HORAS=0, fuerza la alerta) ---
+"motivo": "tiene 5.5 h (maximo 0)"
+"id": 28
+"summary": "Backup vencido o invalido: tiene 5.5 h (maximo 0)"
+"description": "El flujo 02 de n8n no encontro un backup valido.\n\nMotivo: tiene 5.5 h (maximo 0)\nArchivo: /backups/practica-20261113-100058.sql.gz\nEdad: 5.5 h\nTamano: 402.6 MB"
+"lastNodeExecuted": "Crear issue en Mantis"
+
+Conclusion: el flujo distingue backup vigente de backup ausente/vencido y crea la incidencia
+en Mantis solo en el segundo caso. El backup lo genera scripts/backup.ps1; el flujo verifica.
