@@ -19,7 +19,7 @@ ejecutable no suma; una demo sin documento sí resta menos.
 3. **Orden por dependencias reales**, no por el orden del enunciado (ver §4).
 4. **Congelar el martes a las 00:00**. El martes solo se ensaya.
 
-## 3. (version B del cronograma) Cronograma (5 días)
+## 3. Cronograma (5 días)
 
 | Fecha | Bloque | Entregable verificable |
 |---|---|---|
