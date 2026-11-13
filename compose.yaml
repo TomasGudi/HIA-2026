@@ -25,6 +25,10 @@ services:
       MANTIS_DB_NAME: ${MANTIS_DB_NAME:-mantis}
       MANTIS_DB_USER: ${MANTIS_DB_USER:-mantis}
       MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
+      # necesarias para db/init/05-replicacion.sh (§6)
+      REPL_USER: ${REPL_USER:-replicador}
+      REPL_PASSWORD: ${REPL_PASSWORD}
+      REPL_SUBNET: ${REPL_SUBNET:-172.16.0.0/12}
     command:
       - postgres
       - -c
@@ -70,6 +74,51 @@ services:
     networks:
       - dbnet
     shm_size: 1gb
+
+  # ---------------------------------------------------------------
+  # Réplica streaming (§6). Clona la primaria con pg_basebackup -R en el
+  # primer arranque y luego solo se mantiene en caliente.
+  # Sin puerto publicado: se llega desde dbnet.
+  # ---------------------------------------------------------------
+  db-replica:
+    image: postgres:16.4-alpine
+    container_name: pi-db-replica
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      PGDATA: /var/lib/postgresql/data
+      PRIMARY_HOST: db
+      REPL_USER: ${REPL_USER:-replicador}
+      REPL_PASSWORD: ${REPL_PASSWORD}
+    entrypoint: ["/entrypoint-replica.sh"]
+    command:
+      - postgres
+      - -c
+      - hot_standby=on
+      - -c
+      - max_connections=200
+      - -c
+      - shared_buffers=1GB
+      - -c
+      - effective_cache_size=3GB
+      - -c
+      - work_mem=16MB
+      - -c
+      - log_min_duration_statement=200
+    volumes:
+      - pgdata_replica:/var/lib/postgresql/data
+      - ./db/replica/entrypoint.sh:/entrypoint-replica.sh:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 120s
+    networks:
+      - dbnet
+    shm_size: 512mb
 
   pgadmin:
     image: dpage/pgadmin4:8
@@ -141,7 +190,9 @@ services:
       NODE_ENV: production
       PORT: 3000
       # dentro de la red Docker el puerto de la DB es 5432 (no el 5433 del host)
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}?schema=public&connection_limit=10
+      # DATABASE_HOST permite el failover manual (§6): cambiar a db-replica
+      # y reiniciar el backend es todo el procedimiento del lado de la app.
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_HOST:-db}:5432/${POSTGRES_DB}?schema=public&connection_limit=10
       JWT_SECRET: ${JWT_SECRET}
     expose:
       - "3000"
@@ -173,6 +224,8 @@ services:
 volumes:
   pgdata:
     name: pi-pgdata
+  pgdata_replica:
+    name: pi-pgdata-replica
   pgadmin:
     name: pi-pgadmin
   mantis_files:
