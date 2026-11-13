@@ -22,9 +22,10 @@ $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
 $tunnels = @(
-  @{ name = 'pi-tunnel';        net = 'pi-appnet'; url = 'http://frontend:8080'; label = 'app    ' },
-  @{ name = 'pi-tunnel-admin';  net = 'pi-dbnet';  url = 'http://edge:8080';   label = 'pgadmin' },
-  @{ name = 'pi-tunnel-mantis'; net = 'pi-dbnet';  url = 'http://edge:8081';   label = 'mantis ' }
+  @{ name = 'pi-tunnel';           net = 'pi-appnet'; url = 'http://frontend:8080';  label = 'app      ' },
+  @{ name = 'pi-tunnel-admin';     net = 'pi-dbnet';  url = 'http://edge:8080';      label = 'pgadmin  ' },
+  @{ name = 'pi-tunnel-mantis';    net = 'pi-dbnet';  url = 'http://edge:8081';      label = 'mantis   ' },
+  @{ name = 'pi-tunnel-nextcloud'; net = 'pi-dbnet';  url = 'http://nextcloud:80';   label = 'nextcloud' }
 )
 
 function Get-TunnelUrl([string]$name) {

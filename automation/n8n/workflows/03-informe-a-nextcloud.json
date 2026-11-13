@@ -1,0 +1,201 @@
+[
+  {
+    "name": "03 - Informe semanal a Nextcloud",
+    "active": true,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "nodes": [
+      {
+        "parameters": {},
+        "id": "a3000000-0000-4000-8000-000000000000",
+        "name": "Ejecutar a mano",
+        "type": "n8n-nodes-base.manualTrigger",
+        "typeVersion": 1,
+        "position": [
+          -220,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "rule": {
+            "interval": [
+              {
+                "field": "weeks",
+                "weeksInterval": 1,
+                "triggerAtDay": [
+                  1
+                ],
+                "triggerAtHour": 7,
+                "triggerAtMinute": 0
+              }
+            ]
+          }
+        },
+        "id": "a3000000-0000-4000-8000-000000000001",
+        "name": "Cron semanal",
+        "type": "n8n-nodes-base.scheduleTrigger",
+        "typeVersion": 1.2,
+        "position": [
+          0,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "url": "http://prometheus:9090/api/v1/query",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "query",
+                "value": "100 - (avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "id": "a3000000-0000-4000-8000-000000000002",
+        "name": "CPU",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          220,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "url": "http://prometheus:9090/api/v1/query",
+          "sendQuery": true,
+          "queryParameters": {
+            "parameters": [
+              {
+                "name": "query",
+                "value": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)"
+              }
+            ]
+          },
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "id": "a3000000-0000-4000-8000-000000000003",
+        "name": "Memoria",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          440,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "jsCode": "// Arma el markdown que se sube a Nextcloud.\n// Toma los valores de los dos nodos de Prometheus; si falta alguno, lo dice.\nconst cpu = $('CPU').first().json;\nconst mem = $('Memoria').first().json;\n\nconst valor = (r) => {\n  const v = r && r.data && r.data.result && r.data.result[0] && r.data.result[0].value;\n  return v ? Number(v[1]) : null;\n};\nconst fmt = (x) => (x === null ? 'sin dato' : x.toFixed(1));\n\nconst ahora = new Date();\nconst fecha = ahora.toISOString().slice(0, 10);\n\nconst contenido = [\n  '# Informe semanal - HIA-2026',\n  '',\n  `Generado: ${ahora.toISOString()}`,\n  '',\n  '| Metrica | Valor |',\n  '|---|---|',\n  `| CPU del host | ${fmt(valor(cpu))} % |`,\n  `| Memoria usada | ${fmt(valor(mem))} % |`,\n  '',\n  'Fuente: Prometheus (http://prometheus:9090), ultimo valor disponible.',\n  'Documento generado por el flujo 03 de n8n.',\n  ''\n].join('\\n');\n\nreturn [{\n  json: {\n    contenido,\n    nombre: `informe-semanal-${fecha}.md`,\n  },\n}];"
+        },
+        "id": "a3000000-0000-4000-8000-000000000004",
+        "name": "Armar informe",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          660,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "method": "PUT",
+          "url": "=http://nextcloud/remote.php/dav/files/__NC_USER__/HIA-2026/00-informe-consolidado/{{ $json.nombre }}",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "__NC_BASIC__"
+              },
+              {
+                "name": "Content-Type",
+                "value": "text/markdown; charset=utf-8"
+              }
+            ]
+          },
+          "sendBody": true,
+          "contentType": "raw",
+          "rawContentType": "text/markdown",
+          "body": "={{ $json.contenido }}",
+          "options": {
+            "timeout": 20000
+          }
+        },
+        "id": "a3000000-0000-4000-8000-000000000005",
+        "name": "Subir a Nextcloud",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          880,
+          0
+        ]
+      }
+    ],
+    "connections": {
+      "Ejecutar a mano": {
+        "main": [
+          [
+            {
+              "node": "CPU",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Cron semanal": {
+        "main": [
+          [
+            {
+              "node": "CPU",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "CPU": {
+        "main": [
+          [
+            {
+              "node": "Memoria",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Memoria": {
+        "main": [
+          [
+            {
+              "node": "Armar informe",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Armar informe": {
+        "main": [
+          [
+            {
+              "node": "Subir a Nextcloud",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
+]
