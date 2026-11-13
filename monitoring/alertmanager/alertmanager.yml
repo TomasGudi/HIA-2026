@@ -17,11 +17,15 @@ receivers:
   - name: webhook
     webhook_configs:
       # §13: n8n recibe el webhook y crea la incidencia en Mantis.
-      # Se deja comentado hasta montar n8n: si el host no existe, Alertmanager
-      # reintenta 11 veces y llena el log de errores. En §13 se descomenta.
-      # - url: http://n8n:5678/webhook/alertmanager
-      #   send_resolved: true
-      #   max_alerts: 0
+      # El token viaja en Authorization: Bearer (http_config es lo que
+      # soporta Alertmanager; no manda headers arbitrarios).
+      - url: http://n8n:5678/webhook/alertmanager
+        send_resolved: true
+        max_alerts: 0
+        http_config:
+          authorization:
+            type: Bearer
+            credentials_file: /etc/alertmanager/n8n_token
       # §10: receptor de evidencia, sin lógica (ver monitoring/sink/sink.py)
       - url: http://alert-sink:8080/alertmanager
         send_resolved: true

@@ -1,0 +1,195 @@
+[
+  {
+    "name": "01 - Alerta de Prometheus a incidencia en Mantis",
+    "active": true,
+    "settings": {
+      "executionOrder": "v1"
+    },
+    "nodes": [
+      {
+        "parameters": {
+          "httpMethod": "POST",
+          "path": "alertmanager",
+          "responseMode": "responseNode",
+          "options": {
+            "rawBody": false
+          }
+        },
+        "id": "a1000000-0000-4000-8000-000000000001",
+        "name": "Webhook Alertmanager",
+        "type": "n8n-nodes-base.webhook",
+        "typeVersion": 2,
+        "position": [
+          0,
+          0
+        ],
+        "webhookId": "alertmanager"
+      },
+      {
+        "parameters": {
+          "jsCode": "// Valida token y payload antes de tocar Mantis.\n// El token NO esta en el workflow versionado: el entrypoint reemplaza\n// __WEBHOOK_TOKEN__ por el valor de .env antes de importar. El archivo que\n// n8n guarda en su base ya tiene el valor, pero el repo solo tiene el\n// placeholder.\n// Los headers pueden llegar con distinta capitalizacion segun el cliente.\nconst h = $json.headers || {};\nconst header = (name) => {\n  const k = Object.keys(h).find((key) => key.toLowerCase() === name.toLowerCase());\n  return k ? h[k] : undefined;\n};\n\nconst esperado = '__WEBHOOK_TOKEN__';\nconst recibido = header('x-webhook-token');\nconst auth = header('authorization') || '';\nconst bearer = auth.toLowerCase().startsWith('bearer ') ? auth.slice(7) : '';\nconst autorizado = esperado.indexOf('__') === -1 && (recibido === esperado || bearer === esperado);\n\nconst cuerpo = $json.body || {};\nconst alertas = Array.isArray(cuerpo.alerts) ? cuerpo.alerts : [];\nconst valido = alertas.length > 0 && !!cuerpo.status;\n\nconst a = alertas[0] || {};\nconst labels = a.labels || {};\nconst ann = a.annotations || {};\nconst estado = cuerpo.status || 'firing';\nconst resumen = `[${estado}] ${labels.alertname || 'alerta'} en ${labels.instance || 'desconocido'}`;\nconst descripcion = [ann.summary, ann.description, a.generatorURL]\n  .filter(Boolean)\n  .join('\\n\\n') || 'Sin descripcion en el payload';\n\nreturn [{\n  json: {\n    autorizado,\n    valido,\n    motivo: !autorizado ? 'token invalido o ausente' : 'payload invalido: falta status o alerts',\n    codigo: !autorizado ? 401 : 400,\n    body: {\n      summary: resumen,\n      description: descripcion,\n      category: { name: 'Infraestructura' },\n      project: { id: 1 },\n      severity: { name: 'major' },\n      priority: { name: labels.severity === 'critical' ? 'urgent' : 'high' },\n    },\n  },\n}];"
+        },
+        "id": "a1000000-0000-4000-8000-000000000002",
+        "name": "Validar token y payload",
+        "type": "n8n-nodes-base.code",
+        "typeVersion": 2,
+        "position": [
+          220,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "conditions": {
+            "options": {
+              "caseSensitive": true,
+              "leftValue": "",
+              "typeValidation": "loose",
+              "version": 2
+            },
+            "conditions": [
+              {
+                "id": "cond-1",
+                "leftValue": "={{ $json.autorizado && $json.valido }}",
+                "rightValue": "",
+                "operator": {
+                  "type": "boolean",
+                  "operation": "true",
+                  "singleValue": true
+                }
+              }
+            ],
+            "combinator": "and"
+          },
+          "options": {}
+        },
+        "id": "a1000000-0000-4000-8000-000000000003",
+        "name": "Peticion valida?",
+        "type": "n8n-nodes-base.if",
+        "typeVersion": 2,
+        "position": [
+          440,
+          0
+        ]
+      },
+      {
+        "parameters": {
+          "method": "POST",
+          "url": "http://mantis/api/rest/issues",
+          "sendHeaders": true,
+          "headerParameters": {
+            "parameters": [
+              {
+                "name": "Authorization",
+                "value": "__MANTIS_TOKEN__"
+              },
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          },
+          "sendBody": true,
+          "specifyBody": "json",
+          "jsonBody": "={{ JSON.stringify($json.body) }}",
+          "options": {
+            "timeout": 15000
+          }
+        },
+        "id": "a1000000-0000-4000-8000-000000000004",
+        "name": "Crear issue en Mantis",
+        "type": "n8n-nodes-base.httpRequest",
+        "typeVersion": 4.2,
+        "position": [
+          680,
+          -100
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ ok: true, issue: $json.issue && $json.issue.id, summary: $json.issue && $json.issue.summary }) }}",
+          "options": {}
+        },
+        "id": "a1000000-0000-4000-8000-000000000005",
+        "name": "Responder 200",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          900,
+          -100
+        ]
+      },
+      {
+        "parameters": {
+          "respondWith": "json",
+          "responseBody": "={{ JSON.stringify({ ok: false, error: $json.motivo }) }}",
+          "options": {
+            "responseCode": "={{ $json.codigo }}"
+          }
+        },
+        "id": "a1000000-0000-4000-8000-000000000006",
+        "name": "Responder error",
+        "type": "n8n-nodes-base.respondToWebhook",
+        "typeVersion": 1.1,
+        "position": [
+          680,
+          120
+        ]
+      }
+    ],
+    "connections": {
+      "Webhook Alertmanager": {
+        "main": [
+          [
+            {
+              "node": "Validar token y payload",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Validar token y payload": {
+        "main": [
+          [
+            {
+              "node": "Peticion valida?",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Peticion valida?": {
+        "main": [
+          [
+            {
+              "node": "Crear issue en Mantis",
+              "type": "main",
+              "index": 0
+            }
+          ],
+          [
+            {
+              "node": "Responder error",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      },
+      "Crear issue en Mantis": {
+        "main": [
+          [
+            {
+              "node": "Responder 200",
+              "type": "main",
+              "index": 0
+            }
+          ]
+        ]
+      }
+    }
+  }
+]

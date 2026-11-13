@@ -52,3 +52,5 @@ pr-resp.json
 # la evidencia en texto SI se versiona (los logs de runtime no)
 !evidence/**/*.log
 api.json
+# token del webhook de n8n que lee Alertmanager (§13)
+monitoring/alertmanager/n8n_token

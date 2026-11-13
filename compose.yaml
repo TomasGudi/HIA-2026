@@ -268,6 +268,8 @@ services:
       - "127.0.0.1:9093:9093"
     volumes:
       - ./monitoring/alertmanager:/etc/alertmanager:ro
+      # token del webhook de n8n (§13): generado por scripts/preparar-tokens.ps1
+      - ./monitoring/alertmanager/n8n_token:/etc/alertmanager/n8n_token:ro
       - alertmanager_data:/alertmanager
     networks:
       - monnet
@@ -371,6 +373,49 @@ services:
       - monnet
 
   # ---------------------------------------------------------------
+  # n8n (§13): automatización, con base propia en PostgreSQL.
+  # El flujo 1 crea la incidencia en Mantis cuando Alertmanager avisa.
+  # ---------------------------------------------------------------
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:1.68.0
+    container_name: pi-n8n
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_TYPE: postgresdb
+      DB_POSTGRESDB_HOST: db
+      DB_POSTGRESDB_PORT: 5432
+      DB_POSTGRESDB_DATABASE: ${N8N_DB_NAME:-n8n}
+      DB_POSTGRESDB_USER: ${N8N_DB_USER:-n8n}
+      DB_POSTGRESDB_PASSWORD: ${N8N_DB_PASSWORD}
+      N8N_HOST: 127.0.0.1
+      N8N_PORT: 5678
+      N8N_PROTOCOL: http
+      WEBHOOK_URL: http://n8n:5678/
+      N8N_DIAGNOSTICS_ENABLED: "false"
+      # permite leer $env en los nodos sin poner secretos en el workflow
+      N8N_BLOCK_ENV_ACCESS_IN_NODE: "false"
+      N8N_LOG_LEVEL: info
+      GENERIC_TIMEZONE: America/Argentina/Buenos_Aires
+      MANTIS_TOKEN: ${MANTIS_API_TOKEN}
+      N8N_WEBHOOK_TOKEN: ${N8N_WEBHOOK_TOKEN}
+    ports:
+      # solo loopback: en producción se llega por el túnel con auth (§9)
+      - "127.0.0.1:5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - ./automation/n8n/workflows:/workflows:ro
+      - ./automation/n8n/entrypoint.sh:/entrypoint-import.sh:ro
+    entrypoint: ["/bin/sh", "/entrypoint-import.sh"]
+    networks:
+      - appnet
+      - dbnet
+      - monnet
+
+  # ---------------------------------------------------------------
   # Borde de administración (§9): pgAdmin y Mantis detrás de HTTP
   # Basic. Publica solo en loopback; el acceso externo va por túnel.
   #   :8088 -> pgAdmin   |   :8089 -> Mantis
@@ -385,6 +430,7 @@ services:
     ports:
       - "127.0.0.1:8088:8080"
       - "127.0.0.1:8089:8081"
+      - "127.0.0.1:8091:8082"
     volumes:
       - ./edge/nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./edge/.htpasswd:/etc/nginx/.htpasswd:ro
@@ -429,6 +475,8 @@ volumes:
     name: pi-grafana-data
   registry_data:
     name: pi-registry-data
+  n8n_data:
+    name: pi-n8n-data
 
 networks:
   appnet:
