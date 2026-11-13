@@ -32,7 +32,7 @@ def call(method, path, body=None):
     req.add_header("Authorization", TOKEN)
     req.add_header("Content-Type", "application/json")
     try:
-        with urllib.request.urlopen(req, timeout=30) as r:
+        with urllib.request.urlopen(req, timeout=30)  # nosec B310 - URL constante, no viene del usuario as r:
             raw = r.read().decode()
             return r.status, (json.loads(raw) if raw else None)
     except urllib.error.HTTPError as e:

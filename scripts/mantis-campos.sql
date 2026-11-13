@@ -47,7 +47,7 @@ WITH datos(bug_id, sha, pr) AS (
     (1,  '2d6f360', 'https://github.com/TomasGudi/HIA-2026/pull/2'),
     (2,  '2d6f360', 'https://github.com/TomasGudi/HIA-2026/pull/2'),
     (3,  '2d6f360', 'https://github.com/TomasGudi/HIA-2026/pull/2'),
-    (4,  'PENDIENTE', 'https://github.com/TomasGudi/HIA-2026/pull/9'),
+    (4,  '9b77ac0', 'https://github.com/TomasGudi/HIA-2026/pull/9'),
     (5,  'e08768f', 'https://github.com/TomasGudi/HIA-2026/pull/4'),
     (6,  'e08768f', 'https://github.com/TomasGudi/HIA-2026/pull/4'),
     (7,  '2d6f360', 'https://github.com/TomasGudi/HIA-2026/pull/2'),

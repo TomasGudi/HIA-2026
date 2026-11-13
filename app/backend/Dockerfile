@@ -24,8 +24,12 @@ RUN npm run build
 FROM node:20-slim AS runtime
 WORKDIR /app
 
-# Prisma necesita OpenSSL en runtime
-RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
+# Prisma necesita OpenSSL en runtime.
+# §14: `apt-get upgrade` aplica los parches de seguridad de Debian; sin esto
+# la imagen arrastra las versiones del momento en que se publicó el tag base.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openssl ca-certificates \
+ && apt-get upgrade -y \
  && rm -rf /var/lib/apt/lists/*
 
 ENV NODE_ENV=production

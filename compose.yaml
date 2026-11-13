@@ -199,7 +199,9 @@ services:
       # dentro de la red Docker el puerto de la DB es 5432 (no el 5433 del host)
       # DATABASE_HOST permite el failover manual (Â§6): cambiar a db-replica
       # y reiniciar el backend es todo el procedimiento del lado de la app.
-      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DATABASE_HOST:-db}:5432/${POSTGRES_DB}?schema=public&connection_limit=10
+      # §14: la app se conecta con un rol de privilegios mínimos (solo DML),
+      # no con el usuario administrador que hace las migraciones.
+      DATABASE_URL: postgresql://${APP_DB_USER}:${APP_DB_PASSWORD}@${DATABASE_HOST:-db}:5432/${POSTGRES_DB}?schema=public&connection_limit=10
       JWT_SECRET: ${JWT_SECRET}
     expose:
       - "3000"
@@ -224,7 +226,7 @@ services:
         condition: service_healthy
     ports:
       # solo loopback; la publicaciÃ³n real es por tÃºnel (Â§9)
-      - "127.0.0.1:8090:80"
+      - "127.0.0.1:8090:8080"
     networks:
       - appnet
 

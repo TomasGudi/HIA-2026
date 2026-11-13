@@ -1,0 +1,121 @@
+
+=== escaneos de seguridad (Â§14) 2026-11-13T14:13:44.4692027-03:00 ===
+
+=== trivy: pi-backend:dev ===
+2026-11-13T17:14:34Z	INFO	[node-pkg] Detecting vulnerabilities...
+2026-11-13T17:14:34Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.76/guide/scanner/vulnerability#severity-selection for details.
+2026-11-13T17:14:34Z	INFO	Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+pi-backend:dev: CRITICAL=8 HIGH=10
+
+=== trivy: pi-frontend:dev ===
+2026-11-13T17:15:15Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.76/guide/scanner/vulnerability#severity-selection for details.
+2026-11-13T17:15:15Z	WARN	This OS version is no longer supported by the distribution	family="alpine" version="3.21.3"
+2026-11-13T17:15:15Z	WARN	The vulnerability detection may be insufficient because security updates are not provided
+pi-frontend:dev: CRITICAL=4 HIGH=4
+
+=== trivy: pi-mantis:2.28.4 ===
+2026-11-13T17:16:27Z	INFO	[composer-vendor] Detecting vulnerabilities...
+2026-11-13T17:16:27Z	WARN	Version matching error	err="version error (dev-mantis): malformed version: dev-mantis"
+2026-11-13T17:16:27Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.76/guide/scanner/vulnerability#severity-selection for details.
+pi-mantis:2.28.4: CRITICAL=5 HIGH=6
+
+=== trivy: postgres:16.4-alpine ===
+2026-11-13T17:17:22Z	WARN	Using severities from other vendors for some vulnerabilities. Read https://trivy.dev/docs/v0.76/guide/scanner/vulnerability#severity-selection for details.
+2026-11-13T17:17:22Z	WARN	This OS version is no longer supported by the distribution	family="alpine" version="3.20.3"
+2026-11-13T17:17:22Z	WARN	The vulnerability detection may be insufficient because security updates are not provided
+postgres:16.4-alpine: CRITICAL=6 HIGH=6
+
+=== trivy: docker.n8n.io/n8nio/n8n:1.68.0 ===
+2026-11-13T17:18:10Z	WARN	This OS version is no longer supported by the distribution	family="alpine" version="3.20.3"
+2026-11-13T17:18:10Z	WARN	The vulnerability detection may be insufficient because security updates are not provided
+2026-11-13T17:18:10Z	INFO	Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+docker.n8n.io/n8nio/n8n:1.68.0: CRITICAL=18 HIGH=18
+
+=== npm audit: backend ===
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+14 vulnerabilities (3 low, 4 moderate, 5 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+=== npm audit: frontend ===
+  Depends on vulnerable versions of react-router
+  node_modules/react-router-dom
+
+2 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
+
+=== semgrep (app/) ===
+a19e714f9403: Download complete
+ebe3c1bc793f: Download complete
+d43ffef2f55c: Download complete
+5e9b4a97f639: Download complete
+5e9b4a97f639: Pull complete
+b6cf1b432f4e: Download complete
+21495a98d08f: Pull complete
+777d1f35a34c: Pull complete
+ebe3c1bc793f: Pull complete
+bd9ddc54bea9: Pull complete
+92b52671f041: Pull complete
+a395850e2056: Download complete
+20970f6e00d7: Download complete
+a395850e2056: Pull complete
+20970f6e00d7: Pull complete
+d43ffef2f55c: Pull complete
+a19e714f9403: Pull complete
+c51ea70fe996: Pull complete
+4b7fe183b993: Pull complete
+7e9b9e935201: Pull complete
+7a86cee43274: Pull complete
+678147e73337: Pull complete
+Digest: sha256:cc1b68266f267878b39739373ea9985b9a78e5d64497dd875c8de100b22695ed
+Status: Downloaded newer image for returntocorp/semgrep:latest
+[00.07][ERROR]: Cannot create auto config when metrics are off. Please allow metrics or run with a specific config.
+
+=== bandit (scripts/) ===
+
+--------------------------------------------------
+
+Code scanned:
+	Total lines of code: 201
+	Total lines skipped (#nosec): 0
+	Total potential issues skipped due to specifically being disabled (e.g., #nosec BXXX): 0
+
+Run metrics:
+	Total issues (by severity):
+		Undefined: 0
+		Low: 0
+		Medium: 2
+		High: 0
+	Total issues (by confidence):
+		Undefined: 0
+		Low: 0
+		Medium: 0
+		High: 2
+Files skipped (0):
+
+=== gitleaks (historial completo) ===
+    ÔöéÔò¦
+    Ôöé Ôùï
+    Ôùï Ôûæ
+    Ôûæ    gitleaks
+System.Management.Automation.RemoteException
+[90m5:19PM[0m [32mINF[0m [1m35 commits scanned.[0m
+[90m5:19PM[0m [32mINF[0m [1mscanned ~2024330 bytes (2.02 MB) in 2.43s[0m
+[90m5:19PM[0m [32mINF[0m [1mno leaks found[0m
+
+=== fin 2026-11-13T14:19:10.5190922-03:00 ===
