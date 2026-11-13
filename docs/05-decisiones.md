@@ -161,3 +161,19 @@ los checkpoints se disparaban constantemente y cada uno reiniciaba las full-page
 reinicio), documentado y reversible.
 **Consecuencia**: menos checkpoints, menos WAL, más velocidad. El cambio queda en
 `postgresql.auto.conf` y se registra como parte del análisis de parámetros de §5.
+
+## D-21 — MantisBT con imagen propia sobre PostgreSQL
+**Contexto**: §11 exige Mantis o GLPI. No existe imagen oficial de MantisBT en Docker Hub; las
+comunitarias (`xlrl/`, `vimagick/`) no fijan versión ni tienen mantenimiento verificable.
+**Decisión**: construir la imagen desde el **paquete oficial de release** (2.28.4) sobre
+`php:8.3-apache`, con base PostgreSQL separada (`mantis`) en la misma instancia.
+**Consecuencias**:
+- El tarball de GitHub **no sirve**: no incluye `vendor/` (Mantis 2.28 usa Composer) y el
+  instalador muere con `Failed opening required vendor/autoload.php`.
+- `$g_crypto_master_salt` es obligatorio (error 2900) y se inyecta desde `.env`.
+- En este release, `admin_username`/`admin_password` del instalador son **credenciales de la
+  base**, no una cuenta de Mantis. Perdimos tiempo por eso; queda documentado en §11 (M4).
+- `/admin` se bloquea por Apache (`403`) y se habilita solo para actualizaciones de esquema.
+- PostgreSQL figura como soportado en la guía de administración, aunque la ruta mejor testeada
+  del proyecto es MySQL/MariaDB. **Riesgo declarado**: si aparece un problema de esquema, el plan
+  B es un contenedor MariaDB solo para Mantis.

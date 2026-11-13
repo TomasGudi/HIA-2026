@@ -21,6 +21,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       # parámetros del motor (§5): se ajustan y se miden, no se copian de un blog
       POSTGRES_INITDB_ARGS: "--data-checksums"
+      # necesarias para que db/init/04-mantis-db.sh cree la base de §11
+      MANTIS_DB_NAME: ${MANTIS_DB_NAME:-mantis}
+      MANTIS_DB_USER: ${MANTIS_DB_USER:-mantis}
+      MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
     command:
       - postgres
       - -c
@@ -85,11 +89,45 @@ services:
     networks:
       - dbnet
 
+  # ---------------------------------------------------------------
+  # Mantis Bug Tracker (§11). Perfil "ops": no arranca con el stack
+  # principal, para no competir por recursos durante la demo de la app.
+  #   docker compose --profile ops up -d mantis
+  # ---------------------------------------------------------------
+  mantis:
+    build:
+      context: ./app/mantis
+      args:
+        MANTIS_VERSION: 2.28.4
+    image: pi-mantis:2.28.4
+    container_name: pi-mantis
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MANTIS_DB_HOST: db
+      MANTIS_DB_NAME: ${MANTIS_DB_NAME:-mantis}
+      MANTIS_DB_USER: ${MANTIS_DB_USER:-mantis}
+      MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
+      MANTIS_CRYPTO_SALT: ${MANTIS_CRYPTO_SALT}
+    ports:
+      # solo loopback: en producción se llega por túnel con auth (§9)
+      - "127.0.0.1:8081:80"
+    volumes:
+      # adjuntos de las incidencias: sin volumen, un `down` borra la evidencia de §11
+      - mantis_files:/var/www/html/files
+    networks:
+      - dbnet
+
 volumes:
   pgdata:
     name: pi-pgdata
   pgadmin:
     name: pi-pgadmin
+  mantis_files:
+    name: pi-mantis-files
 
 networks:
   dbnet:
