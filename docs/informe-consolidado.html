@@ -4206,6 +4206,9 @@ backup.</p>
   compartir nada a mano.</li>
 <li>Verificado (<code>evidence/13/flujo-3.log</code>): ejecución <code>success</code>, último nodo <code>Subir a Nextcloud</code>,
   archivo <code>informe-semanal-2026-11-13.md</code> de 263 bytes con los valores de Prometheus.</li>
+<li><strong>No usa IA generativa</strong>: el informe se arma con una plantilla y las métricas de Prometheus. No hay
+  proveedor de LLM disponible sin costo ni salida a Internet desde n8n; se declara en
+  <code>16-limitaciones.md</code> (N5).</li>
 </ul>
 <h2 id="8-flujo-4-no-implementado">8. Flujo 4 — no implementado</h2>
 <p>El flujo 4 (eventos de seguridad) está marcado como opcional en el backlog y no se implementó. Se
@@ -5092,6 +5095,13 @@ correspondía".</p>
 <td>un contenedor con SQLite/Postgres propio</td>
 <td>si cae, se pierden alertas automatizadas; el resto sigue</td>
 <td>cola + workers de n8n</td>
+</tr>
+<tr>
+<td>N5</td>
+<td><strong>Flujo 3 sin IA generativa</strong></td>
+<td>no hay proveedor de LLM sin costo ni salida a Internet desde n8n</td>
+<td>el informe es una plantilla con métricas reales, no un resumen "inteligente"</td>
+<td>integrar un LLM local (Ollama) o una API con clave</td>
 </tr>
 </tbody>
 </table>

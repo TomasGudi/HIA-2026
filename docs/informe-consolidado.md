@@ -2057,6 +2057,9 @@ Cron semanal (lunes 07:00)
   compartir nada a mano.
 - Verificado (`evidence/13/flujo-3.log`): ejecución `success`, último nodo `Subir a Nextcloud`,
   archivo `informe-semanal-2026-11-13.md` de 263 bytes con los valores de Prometheus.
+- **No usa IA generativa**: el informe se arma con una plantilla y las métricas de Prometheus. No hay
+  proveedor de LLM disponible sin costo ni salida a Internet desde n8n; se declara en
+  `16-limitaciones.md` (N5).
 
 ## 8. Flujo 4 — no implementado
 
@@ -2396,6 +2399,7 @@ Criterio: cada limitación tiene **causa**, **riesgo aceptado** y **qué haría 
 | N2 | **Flujo 3 usa el usuario admin de Nextcloud** | no se creó una cuenta de servicio con permisos mínimos | la contraseña vive en `.env` y el flujo solo escribe en una carpeta | crear usuario `n8n` con acceso solo a `00-informe-consolidado` |
 | N3 | **Flujo 4 no implementado** | no estaba en el alcance mínimo | — | definir disparador y destino |
 | N4 | **n8n sin alta disponibilidad** | un contenedor con SQLite/Postgres propio | si cae, se pierden alertas automatizadas; el resto sigue | cola + workers de n8n |
+| N5 | **Flujo 3 sin IA generativa** | no hay proveedor de LLM sin costo ni salida a Internet desde n8n | el informe es una plantilla con métricas reales, no un resumen "inteligente" | integrar un LLM local (Ollama) o una API con clave |
 
 ## 6. Limitaciones de gestión
 

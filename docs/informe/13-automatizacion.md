@@ -156,6 +156,9 @@ Cron semanal (lunes 07:00)
   compartir nada a mano.
 - Verificado (`evidence/13/flujo-3.log`): ejecución `success`, último nodo `Subir a Nextcloud`,
   archivo `informe-semanal-2026-11-13.md` de 263 bytes con los valores de Prometheus.
+- **No usa IA generativa**: el informe se arma con una plantilla y las métricas de Prometheus. No hay
+  proveedor de LLM disponible sin costo ni salida a Internet desde n8n; se declara en
+  `16-limitaciones.md` (N5).
 
 ## 8. Flujo 4 — no implementado
 
