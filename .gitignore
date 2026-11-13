@@ -54,3 +54,7 @@ pr-resp.json
 api.json
 # token del webhook de n8n que lee Alertmanager (§13)
 monitoring/alertmanager/n8n_token
+
+# credenciales locales del agente (nunca al repo)
+opencode.md
+.opencode/
