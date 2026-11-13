@@ -75,21 +75,28 @@ de código que todavía no se mergeó llena el registro de versiones que nadie v
 El tag `sha-<7>` es el que se usa para desplegar: `latest` es una comodidad, no una referencia
 estable. Desplegar `latest` en producción es un error clásico porque no se sabe qué código corre.
 
-## 6. Registro local para el despliegue
+## 6. Registro
 
-CI publica en GHCR, pero **el host de despliegue es local** y el paquete de GHCR queda privado por
-defecto. Un `docker pull` anónimo de un paquete privado falla, y cambiarlo a público requiere un
-token con `write:packages` que este entorno no tiene.
+CI publica en **GHCR** y el despliegue baja de ahí. Verificado: el paquete quedó público
+(repositorio público) y se puede bajar sin credenciales:
 
-Decisión: el host corre un **registro propio** (`registry:2` en `127.0.0.1:5000`) que recibe las
-mismas imágenes con los mismos tags. Es una decisión de entorno, no de diseño: en un servidor con
-salida a Internet y un PAT con `read:packages`, `deploy.ps1` apunta a GHCR cambiando `-Registry`.
-
-```powershell
-docker push 127.0.0.1:5000/hia-2026-backend:sha-1a2b3c4
+```
+docker pull ghcr.io/tomasgudi/hia-2026-backend:sha-0946375
+Digest: sha256:7c81e91823a992a85bc60660420b213c7d438918663a2f724e56ab1346964bc8
+Status: Downloaded newer image for ghcr.io/tomasgudi/hia-2026-backend:sha-0946375
 ```
 
-El registro se levanta con el perfil `ops` y solo escucha en loopback.
+```powershell
+./scripts/deploy.ps1 -Tag sha-0946375 -Registry ghcr.io/tomasgudi
+```
+
+Además hay un **registro local** (`registry:2` en `127.0.0.1:5000`, perfil `ops`) con las mismas
+imágenes. No es el camino principal: es el plan B para un host sin salida a Internet o si el paquete
+se vuelve privado. En ese caso `deploy.ps1` funciona igual cambiando `-Registry`.
+
+Si el paquete fuera privado, el host necesitaría `docker login ghcr.io` con un PAT que tenga
+`read:packages`. Este entorno no lo tenía, y por eso se probó primero el registro local; después se
+confirmó que el paquete de GHCR era accesible y se desplegó desde ahí.
 
 ## 7. Despliegue pull-based (`scripts/deploy.ps1`)
 
@@ -130,6 +137,7 @@ Eso permite responder "¿qué está corriendo?" sin entrar al contenedor.
 | 3 | `deploy.ps1 -Tag broken` | el contenedor no levanta: `dependency failed to start` |
 | 4 | rollback **automático** | vuelve a `v2` sin intervención; `version: v2`, app 200 |
 | 5 | `deploy.ps1 -Rollback` | vuelve a `v1`; `version: v1`, app 200 |
+| 6 | `deploy.ps1 -Tag sha-0946375 -Registry ghcr.io/tomasgudi` | imagen de GHCR desplegada; `version: sha-0946375` |
 
 La imagen `broken` es un `alpine` que no escucha en `:3000`: no es un error simulado en el script,
 es un contenedor que realmente no sirve. El rollback se dispara porque el healthcheck falla, no
@@ -183,5 +191,8 @@ feature/* ──PR──▶ develop ──PR──▶ main ──push──▶ r
 | Despliegue v1 → v2 | `evidence/08/deploy.log` |
 | Rollback automático | `evidence/08/rollback-automatico.log` |
 | Rollback manual | `evidence/08/rollback-manual.log` |
-| Registro y digests | `evidence/08/registro-y-despliegue.log` |
+| Registro y digests (local) | `evidence/08/registro-y-despliegue.log` |
+| Publicación en GHCR | `evidence/08/ghcr-release.log` |
+| Despliegue desde GHCR por SHA | `evidence/08/deploy-desde-ghcr.log` |
+| Prueba negativa de CI | `evidence/03/ci-negativo.log`, `evidence/03/ci-negativo-job.log`, `evidence/03/ci-negativo-checkruns.json` |
 | Script de despliegue | `scripts/deploy.ps1` |
