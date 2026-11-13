@@ -1,0 +1,28 @@
+# Configuración de gitleaks (detección de secretos)
+# Uso:  docker run --rm -v "${PWD}:/repo" zricethezav/gitleaks:latest \
+#         detect --source=/repo --config=/repo/.gitleaks.toml --no-git
+
+title = "Practica Integradora — reglas de secretos"
+
+[extend]
+# mantiene las reglas por defecto (AWS, GitHub, Stripe, claves privadas, etc.)
+useDefault = true
+
+[allowlist]
+description = "Falsos positivos esperados en este repositorio"
+paths = [
+  # documentación y ejemplos: contienen placeholders, no credenciales reales
+  '''docs/.*\.md''',
+  '''backlog/.*''',
+  '''\.env\.example''',
+  # dependencias y artefactos de build
+  '''app/.*/node_modules/.*''',
+  '''app/.*/package-lock\.json''',
+  '''evidence/.*''',
+]
+regexes = [
+  # valores de ejemplo explícitos
+  '''cambiar_en_local''',
+  '''admin@example\.com''',
+  '''\$2[aby]\$10\$N9qo8uLOickgx2ZMRZoMye''',
+]

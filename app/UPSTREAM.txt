@@ -1,0 +1,26 @@
+﻿# Origen del código de aplicación (vendorizado, no submódulos)
+
+Código de terceros reutilizado, con su commit exacto para trazabilidad.
+
+| Componente | Repositorio | Commit | Licencia |
+|---|---|---|---|
+| Backend | https://github.com/gothinkster/node-express-realworld-example-app | `30b68e1e881462b2f4164ea09ab4c4f5699c7b0b` | MIT |
+| Frontend | https://github.com/gothinkster/react-redux-realworld-example-app | `ee72eba4056392c95a27bc48d385d3f54ba38a18` | MIT |
+
+## Por qué vendorizado y no submódulo
+
+- El repositorio del integrador debe ser **autocontenido**: `git clone` y `docker compose up`
+  sin `--recursive`.
+- Necesitamos modificar la configuración de la API (URL por variable de entorno) y agregar
+  Dockerfiles; con submódulos esas modificaciones viven en otro repo.
+- La trazabilidad se conserva acá: commit exacto + licencia.
+
+## Qué se modificó respecto del upstream
+
+| Archivo | Cambio | Motivo |
+|---|---|---|
+| `backend/*` | se quita la configuración de SQLite/sql.js si existe | el proyecto usa PostgreSQL (§4) |
+| `frontend/src/*` | URL de API por `REACT_APP_BACKEND_URL` | evitar `localhost` hardcodeado (§7) |
+| ambos | `Dockerfile` propio con build multi-stage | §7 |
+
+Este archivo se actualiza si se cambia el commit base.
