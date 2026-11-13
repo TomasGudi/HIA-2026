@@ -58,3 +58,6 @@ monitoring/alertmanager/n8n_token
 # credenciales locales del agente (nunca al repo)
 opencode.md
 .opencode/
+
+# credenciales de la demo (locales, nunca al repo)
+CREDENCIALES.local.md
