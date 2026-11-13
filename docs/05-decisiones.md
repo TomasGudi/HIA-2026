@@ -129,3 +129,35 @@ sigue siendo 5432 (`db:5432`), así que la app no cambia.
 **Consecuencia**: dos cargas producen exactamente el mismo dataset (reproducible para comparar
 mediciones de §5) y la generación es más rápida. Las relaciones N:M se generan de forma que no
 puedan violar la restricción `UNIQUE (A,B)`.
+
+## D-18 — Frontend reescrito (Vite) en lugar del CRA de 2018
+**Contexto**: la implementación de referencia de Conduit en React
+(`react-redux-realworld-example-app`, último commit 2018) usa **react-scripts 1.1.1**, React 16.3
+y **no tiene lockfile**. Compilarla hoy exige Node 8 (EOL desde 2019) y resolvería dependencias
+transitivas de 2026 contra un webpack 3.
+**Decisión**: se **reutiliza el backend** (API RealWorld, MIT, Prisma + Postgres) y se reescribe
+el frontend como SPA mínima con **Vite 5 + React 18**, respetando el mismo contrato de API.
+**Motivo**: (a) una imagen base Node 8 EOL es un hallazgo crítico en el escaneo de §14;
+(b) sin lockfile el build no es reproducible, que es justamente lo que §7/§8 exigen;
+(c) 74 MB de imagen final (nginx estático) frente a un build de webpack 3.
+**Consecuencia**: el frontend es código propio (~350 líneas) y se declara como tal en §1
+("heredado vs. reescrito"). El dominio, el esquema y la API siguen siendo los de la app existente.
+
+## D-19 — Carga masiva sin triggers de FK + validación posterior
+**Contexto**: el seed inicial insertaba los comentarios con los triggers de integridad activos.
+Cada fila ejecuta `SELECT 1 FROM "User" ... FOR KEY SHARE`, y como 6M de comentarios apuntan a
+solo 200k usuarios, la contención de locks de fila degradó la carga a ~0,4 filas/s
+(medido: 30 min para menos de mil filas).
+**Decisión**: durante la carga se usa `SET session_replication_role = replica` (desactiva los
+triggers de FK) y al final se **verifican los huérfanos con consultas explícitas** (4 controles,
+todos deben dar 0). La carga se hace en trozos de 1M para que sea observable.
+**Consecuencia**: la evidencia de integridad de §4 no es "confío en el motor", es una consulta
+ejecutada y archivada. Es el mismo procedimiento que usa cualquier carga masiva profesional.
+
+## D-20 — Parámetros del motor ajustados durante la carga
+**Contexto**: la primera carga generó **38 GB de WAL** con `max_wal_size` en el default (1 GB):
+los checkpoints se disparaban constantemente y cada uno reiniciaba las full-page writes.
+**Decisión**: `ALTER SYSTEM SET max_wal_size='8GB'` y `checkpoint_timeout='15min'` (SIGHUP, sin
+reinicio), documentado y reversible.
+**Consecuencia**: menos checkpoints, menos WAL, más velocidad. El cambio queda en
+`postgresql.auto.conf` y se registra como parte del análisis de parámetros de §5.

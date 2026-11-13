@@ -1,26 +1,30 @@
-﻿# Origen del código de aplicación (vendorizado, no submódulos)
+﻿# Origen del código de aplicación
 
-Código de terceros reutilizado, con su commit exacto para trazabilidad.
+## Reutilizado (vendorizado)
 
 | Componente | Repositorio | Commit | Licencia |
 |---|---|---|---|
 | Backend | https://github.com/gothinkster/node-express-realworld-example-app | `30b68e1e881462b2f4164ea09ab4c4f5699c7b0b` | MIT |
-| Frontend | https://github.com/gothinkster/react-redux-realworld-example-app | `ee72eba4056392c95a27bc48d385d3f54ba38a18` | MIT |
 
-## Por qué vendorizado y no submódulo
+Se vendoriza (sin submódulos) porque hay que modificar configuración de conexión y agregar
+Dockerfile propio: con submódulos esos cambios vivirían en otro repositorio.
 
-- El repositorio del integrador debe ser **autocontenido**: `git clone` y `docker compose up`
-  sin `--recursive`.
-- Necesitamos modificar la configuración de la API (URL por variable de entorno) y agregar
-  Dockerfiles; con submódulos esas modificaciones viven en otro repo.
-- La trazabilidad se conserva acá: commit exacto + licencia.
+## Reescrito
+
+| Componente | Motivo | Stack |
+|---|---|---|
+| Frontend | La implementación de referencia (2018) usa `react-scripts 1.1.1`, React 16.3 y no tiene lockfile: no compila en un Node soportado y no es reproducible | Vite 5 + React 18, SPA mínima sobre el mismo contrato de API |
+
+Decisión registrada en `docs/05-decisiones.md` (D-18). El **dominio, el esquema y la API** siguen
+siendo los de la aplicación existente (Conduit/RealWorld); lo reescrito es la capa de
+presentación.
 
 ## Qué se modificó respecto del upstream
 
 | Archivo | Cambio | Motivo |
 |---|---|---|
-| `backend/*` | se quita la configuración de SQLite/sql.js si existe | el proyecto usa PostgreSQL (§4) |
-| `frontend/src/*` | URL de API por `REACT_APP_BACKEND_URL` | evitar `localhost` hardcodeado (§7) |
-| ambos | `Dockerfile` propio con build multi-stage | §7 |
+| `backend/*` | conexión a PostgreSQL por `DATABASE_URL` (ya soportado por Prisma) | §4 |
+| `backend/*` | `JWT_SECRET` obligatorio, sin fallback `'superSecret'` | hallazgo de §14 |
+| `frontend/*` | reescrito completo | D-18 |
 
-Este archivo se actualiza si se cambia el commit base.
+Este archivo se actualiza si se cambia el commit base del backend.

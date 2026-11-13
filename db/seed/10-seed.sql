@@ -43,6 +43,12 @@
 SET synchronous_commit = off;
 SET maintenance_work_mem = '1GB';
 SET work_mem = '256MB';
+-- evita la amplificación de WAL por checkpoints frecuentes (se midieron 38 GB con el default).
+-- max_wal_size es de clúster, no de sesión: ALTER SYSTEM SET max_wal_size='8GB'; SELECT pg_reload_conf();
+-- desactiva los triggers de FK durante la carga: con 6M de comentarios apuntando a
+-- 200k usuarios, el `FOR KEY SHARE` de cada fila serializa la carga (ver D-19).
+-- La integridad se valida al final con las consultas del bloque de verificación.
+SET session_replication_role = replica;
 
 \echo '>>> 1/6 limpiando tablas'
 TRUNCATE "_UserFollows", "_UserFavorites", "_ArticleToTag", "Comment", "Article", "Tag", "User" RESTART IDENTITY CASCADE;
@@ -98,9 +104,23 @@ INSERT INTO "_ArticleToTag" ("A", "B")
 SELECT g, 1 + (g % :tags)
 FROM generate_series(1, :articles) AS g;
 
+SET session_replication_role = origin;
 ANALYZE;
 
 RESET synchronous_commit;
+
+\echo '>>> verificacion de integridad (debe dar 0 en todas)'
+SELECT 'comentarios huerfanos (articulo)' AS control, count(*) AS huerfanos
+  FROM "Comment" c LEFT JOIN "Article" a ON a.id = c."articleId" WHERE a.id IS NULL
+UNION ALL
+SELECT 'comentarios huerfanos (autor)', count(*)
+  FROM "Comment" c LEFT JOIN "User" u ON u.id = c."authorId" WHERE u.id IS NULL
+UNION ALL
+SELECT 'favoritos huerfanos', count(*)
+  FROM "_UserFavorites" f LEFT JOIN "Article" a ON a.id = f."B" WHERE a.id IS NULL
+UNION ALL
+SELECT 'articulo-etiqueta huerfanos', count(*)
+  FROM "_ArticleToTag" t LEFT JOIN "Tag" g ON g.id = t."B" WHERE g.id IS NULL;
 
 \echo '>>> conteos finales'
 SELECT 'User'           AS tabla, count(*) AS filas FROM "User"
