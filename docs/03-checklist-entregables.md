@@ -190,7 +190,7 @@ Controles obligatorios: `main` protegida, PR + CI verde requerido, `.env` en `.g
 | ✔ | Entregable | Evidencia esperada |
 |---|---|---|
 | ☑ | 16 documentos obligatorios | `docs/informe/01..16` completos, mapa en `04-informe-final-outline.md` |
-| ☑ | Informe consolidado | `docs/HIA-2026-informe-final.pdf` (59 páginas, portada e índice) |
+| ☑ | Informe consolidado | `docs/HIA-2026-informe-final.pdf` (60 páginas, portada e índice) |
 | ☑ | Generación reproducible | `python scripts/informe.py` (HTML + PDF, diagramas Mermaid) |
 | ☑ | Demo de 20 min | `docs/20-guion-demo.md` con tiempos, comandos y contingencias |
 | ☑ | Checklist completo | este archivo, §1 a §15 |

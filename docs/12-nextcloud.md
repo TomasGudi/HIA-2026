@@ -41,7 +41,7 @@ Una **carpeta de grupo** (`groupfolders`) llamada `HIA-2026`, con 17 carpetas:
 
 ```
 HIA-2026/
-├── 00-informe-consolidado/     ← PDF de 59 páginas + markdown consolidado
+├── 00-informe-consolidado/     ← PDF de 60 páginas + markdown consolidado
 ├── 01-descripcion-app/         ├── 09-cicd/
 ├── 02-arquitectura/            ├── 10-publicacion/
 ├── 03-inventario-tecnologico/  ├── 11-monitoreo/
