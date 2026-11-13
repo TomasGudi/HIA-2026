@@ -41,3 +41,7 @@ desktop.ini
 .vscode/
 .idea/
 *.swp
+
+# artefactos temporales de API
+pr.json
+pr-resp.json
