@@ -66,13 +66,42 @@ const buildFindAllQuery = (query: any, id: number | undefined) => {
   return queries;
 };
 
+const COUNT_CAP = 10000;
+
+/**
+ * Conteo de artículos del listado.
+ *
+ * El `prisma.article.count()` con el filtro por relación genera una subconsulta
+ * con `IN (SELECT id FROM "User" WHERE demo)` que el planificador resuelve mal:
+ * medido con pg_stat_statements, 17,8 s de promedio (5 llamadas) contra 656 ms
+ * del equivalente SQL escrito a mano.
+ *
+ * Para el caso sin filtros (el más frecuente) se usa SQL directo y se acota el
+ * conteo: la interfaz solo necesita saber cuántas páginas mostrar. Con filtros
+ * se mantiene el conteo exacto del ORM (ver docs/informe/07-optimizacion-sql.md).
+ */
+const countArticles = async (andQueries: any[], hasFilters: boolean): Promise<number> => {
+  if (hasFilters) {
+    return prisma.article.count({ where: { AND: andQueries } });
+  }
+
+  const rows = await prisma.$queryRaw<{ total: number }[]>`
+    SELECT count(*)::int AS total
+    FROM (
+      SELECT 1
+      FROM "Article" a
+      JOIN "User" u ON u.id = a."authorId"
+      WHERE u.demo = true
+      LIMIT ${COUNT_CAP}
+    ) t
+  `;
+  return rows[0]?.total ?? 0;
+};
+
 export const getArticles = async (query: any, id?: number) => {
   const andQueries = buildFindAllQuery(query, id);
-  const articlesCount = await prisma.article.count({
-    where: {
-      AND: andQueries,
-    },
-  });
+  const hasFilters = 'tag' in query || 'author' in query || 'favorited' in query;
+  const articlesCount = await countArticles(andQueries, hasFilters);
 
   const articles = await prisma.article.findMany({
     where: { AND: andQueries },

@@ -1,0 +1,30 @@
+Flujo E2E sobre el stack contenerizado (§7)
+Fecha: 2026-11-13
+Stack: pi-db (5433) + pi-backend (3000 interno) + pi-frontend (8090) + pi-pgadmin (8080) + pi-mantis (8081)
+
+1) Estado de los servicios
+   pi-db        Up (healthy)   127.0.0.1:5433->5432/tcp
+   pi-backend   Up (healthy)   3000/tcp
+   pi-frontend  Up (healthy)   127.0.0.1:8090->80/tcp
+
+2) Healthcheck del backend (incluye ping a la base)
+   GET http://127.0.0.1:3000/health -> {"status":"ok","db":"up","uptime":26.2}
+
+3) SPA servida por nginx
+   GET http://127.0.0.1:8090/ -> 200
+
+4) Lectura a través del proxy /api de nginx
+   GET /api/articles?limit=3 -> 200, articlesCount = 6.000.000, 10,44 s   <-- objetivo de §5
+
+5) Escritura (requiere JWT)
+   POST /api/users              -> 201 (usuario tomas_demo, token emitido)
+   POST /api/articles           -> 201 en 39 ms (slug Prueba-E2E-del-integrador-200001)
+   GET  /api/articles/:slug     -> 200
+   POST /api/articles/:slug/comments -> 200 (comentario creado)
+
+Conclusión: frontend -> nginx -> backend -> PostgreSQL funcionando en contenedores
+separados, con escrituras y lecturas verificadas.
+
+Nota: el listado público filtra por author.demo = true. El seed inicial creaba
+usuarios con demo = false y el API devolvía 0 artículos aunque la tabla tuviera 6M.
+Corregido en db/seed/10-seed.sql.

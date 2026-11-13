@@ -59,6 +59,8 @@ services:
       # se ejecuta solo cuando el volumen está vacío (primer arranque)
       - ./db/init:/docker-entrypoint-initdb.d:ro
       - ./db:/db:ro
+      # destino de los backups (§4). Fuera del repo por .gitignore.
+      - ./backups:/backups
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 10s

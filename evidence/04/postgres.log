@@ -1,0 +1,195 @@
+﻿pi-db  | 
+pi-db  | PostgreSQL Database directory appears to contain a database; Skipping initialization
+pi-db  | 
+pi-db  | 2026-11-13 13:00:27.197 UTC [1] LOG:  starting PostgreSQL 16.4 on x86_64-pc-linux-musl, compiled by gcc (Alpine 13.2.1_git20240309) 13.2.1 20240309, 64-bit
+pi-db  | 2026-11-13 13:00:27.198 UTC [1] LOG:  listening on IPv4 address "0.0.0.0", port 5432
+pi-db  | 2026-11-13 13:00:27.198 UTC [1] LOG:  listening on IPv6 address "::", port 5432
+pi-db  | 2026-11-13 13:00:27.261 UTC [1] LOG:  listening on Unix socket "/var/run/postgresql/.s.PGSQL.5432"
+pi-db  | 2026-11-13 13:00:27.300 UTC [29] LOG:  database system shutdown was interrupted; last known up at 2026-11-13 13:00:18 UTC
+pi-db  | 2026-11-13 13:00:28.321 UTC [30] FATAL:  the database system is starting up
+pi-db  | 2026-11-13 13:00:32.101 UTC [37] FATAL:  the database system is starting up
+pi-db  | 2026-11-13 13:00:35.626 UTC [46] FATAL:  the database system is starting up
+pi-db  | 2026-11-13 13:00:37.133 UTC [53] FATAL:  the database system is starting up
+pi-db  | 2026-11-13 13:00:37.305 UTC [29] LOG:  syncing data directory (fsync), elapsed time: 10.00 s, current path: ./base/5/2604
+pi-db  | 2026-11-13 13:00:40.828 UTC [29] LOG:  database system was not properly shut down; automatic recovery in progress
+pi-db  | 2026-11-13 13:00:40.838 UTC [29] LOG:  redo starts at D/5DC645A8
+pi-db  | 2026-11-13 13:00:42.167 UTC [60] FATAL:  the database system is not yet accepting connections
+pi-db  | 2026-11-13 13:00:42.167 UTC [60] DETAIL:  Consistent recovery state has not been yet reached.
+pi-db  | 2026-11-13 13:00:44.527 UTC [29] LOG:  invalid record length at D/92BF3D78: expected at least 24, got 0
+pi-db  | 2026-11-13 13:00:44.527 UTC [29] LOG:  redo done at D/92BF3D40 system usage: CPU: user: 3.07 s, system: 0.58 s, elapsed: 3.68 s
+pi-db  | 2026-11-13 13:00:44.685 UTC [27] LOG:  checkpoint starting: end-of-recovery immediate wait
+pi-db  | 2026-11-13 13:00:46.875 UTC [67] FATAL:  the database system is not yet accepting connections
+pi-db  | 2026-11-13 13:00:46.875 UTC [67] DETAIL:  Consistent recovery state has not been yet reached.
+pi-db  | 2026-11-13 13:00:55.171 UTC [27] LOG:  checkpoint complete: wrote 86126 buffers (65.7%); 0 WAL file(s) added, 53 removed, 0 recycled; write=5.187 s, sync=4.331 s, total=10.556 s; sync files=81, longest=2.938 s, average=0.054 s; distance=867901 kB, estimate=867901 kB; lsn=D/92BF3D78, redo lsn=D/92BF3D78
+pi-db  | 2026-11-13 13:00:55.196 UTC [1] LOG:  database system is ready to accept connections
+pi-db  | 2026-11-13 13:02:00.415 UTC [87] LOG:  duration: 61150.131 ms  statement: COPY public."Article" (id, slug, title, description, body, "createdAt", "updatedAt", "authorId") TO stdout;
+pi-db  | 2026-11-13 13:02:15.767 UTC [87] LOG:  duration: 15351.688 ms  statement: COPY public."Comment" (id, body, "createdAt", "updatedAt", "articleId", "authorId") TO stdout;
+pi-db  | 2026-11-13 13:02:16.183 UTC [87] LOG:  duration: 411.378 ms  statement: COPY public."User" (id, email, username, password, image, bio, demo) TO stdout;
+pi-db  | 2026-11-13 13:02:20.328 UTC [87] LOG:  duration: 4144.074 ms  statement: COPY public."_ArticleToTag" ("A", "B") TO stdout;
+pi-db  | 2026-11-13 13:02:23.640 UTC [87] LOG:  duration: 3304.189 ms  statement: COPY public."_UserFavorites" ("A", "B") TO stdout;
+pi-db  | 2026-11-13 13:06:33.360 UTC [27] LOG:  checkpoint starting: wal
+pi-db  | 2026-11-13 13:06:49.259 UTC [400] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:06:49.259 UTC [400] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:06:51.273 UTC [401] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:06:51.273 UTC [401] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:06:53.389 UTC [402] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:06:53.389 UTC [402] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:06:55.402 UTC [403] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:06:55.402 UTC [403] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:06:57.438 UTC [404] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:06:57.438 UTC [404] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:06:59.460 UTC [412] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:06:59.460 UTC [412] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:01.485 UTC [415] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:01.485 UTC [415] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:03.500 UTC [416] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:03.500 UTC [416] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:05.517 UTC [417] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:05.517 UTC [417] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:06.952 UTC [418] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:06.952 UTC [418] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:07.536 UTC [419] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:07.536 UTC [419] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:09.554 UTC [427] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:09.554 UTC [427] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:11.576 UTC [428] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:11.576 UTC [428] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:13.620 UTC [429] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:13.620 UTC [429] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:15.637 UTC [431] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:15.637 UTC [431] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:16.931 UTC [239] LOG:  duration: 228169.071 ms  statement: COPY public."Article" (id, slug, title, description, body, "createdAt", "updatedAt", "authorId") FROM stdin;
+pi-db  | 2026-11-13 13:07:17.656 UTC [432] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:17.656 UTC [432] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:19.046 UTC [433] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:19.046 UTC [433] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:19.674 UTC [441] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:19.674 UTC [441] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:21.685 UTC [442] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:21.685 UTC [442] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:23.709 UTC [443] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:23.709 UTC [443] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:25.737 UTC [444] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:25.737 UTC [444] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:27.750 UTC [445] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:27.750 UTC [445] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:29.761 UTC [453] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:29.761 UTC [453] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:31.784 UTC [456] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:31.784 UTC [456] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:33.801 UTC [457] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:33.801 UTC [457] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:35.816 UTC [458] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:35.816 UTC [458] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:37.838 UTC [459] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:37.838 UTC [459] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:39.853 UTC [467] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:39.853 UTC [467] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:41.871 UTC [468] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:41.871 UTC [468] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:43.886 UTC [469] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:43.886 UTC [469] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:45.903 UTC [471] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:45.903 UTC [471] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:47.920 UTC [472] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:47.920 UTC [472] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:49.937 UTC [480] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:49.937 UTC [480] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:51.955 UTC [481] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:51.955 UTC [481] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:53.969 UTC [482] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:53.969 UTC [482] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:55.979 UTC [483] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:55.979 UTC [483] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:57.436 UTC [239] LOG:  duration: 40503.911 ms  statement: COPY public."Comment" (id, body, "createdAt", "updatedAt", "articleId", "authorId") FROM stdin;
+pi-db  | 2026-11-13 13:07:57.988 UTC [484] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:07:57.988 UTC [484] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:07:58.349 UTC [239] LOG:  duration: 877.073 ms  statement: COPY public."User" (id, email, username, password, image, bio, demo) FROM stdin;
+pi-db  | 2026-11-13 13:08:00.003 UTC [493] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:08:00.003 UTC [493] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:08:00.881 UTC [239] LOG:  duration: 2531.737 ms  statement: COPY public."_ArticleToTag" ("A", "B") FROM stdin;
+pi-db  | 2026-11-13 13:08:02.023 UTC [495] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:08:02.023 UTC [495] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:08:03.102 UTC [239] LOG:  duration: 2220.324 ms  statement: COPY public."_UserFavorites" ("A", "B") FROM stdin;
+pi-db  | 2026-11-13 13:08:04.041 UTC [496] FATAL:  password authentication failed for user "nexo"
+pi-db  | 2026-11-13 13:08:04.041 UTC [496] DETAIL:  Role "nexo" does not exist.
+pi-db  | 	Connection matched file "/var/lib/postgresql/data/pg_hba.conf" line 128: "host all all all scram-sha-256"
+pi-db  | 2026-11-13 13:08:04.350 UTC [470] ERROR:  canceling autovacuum task
+pi-db  | 2026-11-13 13:08:04.350 UTC [470] CONTEXT:  while scanning block 4077 of relation "public.Article"
+pi-db  | 	automatic vacuum of table "restore_test.public.Article"
+pi-db  | 2026-11-13 13:10:45.442 UTC [620] LOG:  skipping vacuum of "Article" --- lock not available
+pi-db  | 2026-11-13 13:11:45.302 UTC [239] LOG:  duration: 221941.189 ms  statement: ALTER TABLE ONLY public."Article"
+pi-db  | 	    ADD CONSTRAINT "Article_pkey" PRIMARY KEY (id);
+pi-db  | 2026-11-13 13:12:19.368 UTC [27] LOG:  checkpoint complete: wrote 1167 buffers (0.9%); 0 WAL file(s) added, 20 removed, 249 recycled; write=202.946 s, sync=32.355 s, total=346.009 s; sync files=359, longest=15.033 s, average=0.091 s; distance=4397843 kB, estimate=4397843 kB; lsn=F/A29A7230, redo lsn=E/9F2B8A00
+pi-db  | 2026-11-13 13:12:19.373 UTC [27] LOG:  checkpoint starting: wal
+pi-db  | 2026-11-13 13:12:51.391 UTC [239] LOG:  duration: 66076.076 ms  statement: ALTER TABLE ONLY public."Article"
+pi-db  | 	    ADD CONSTRAINT "Article_slug_key" UNIQUE (slug);
+pi-db  | 2026-11-13 13:12:52.409 UTC [620] ERROR:  canceling autovacuum task
+pi-db  | 2026-11-13 13:12:52.409 UTC [620] CONTEXT:  while scanning block 13504 of relation "public.Comment"
+pi-db  | 	automatic vacuum of table "restore_test.public.Comment"
+pi-db  | 2026-11-13 13:13:23.702 UTC [239] LOG:  duration: 32310.995 ms  statement: ALTER TABLE ONLY public."Comment"
+pi-db  | 	    ADD CONSTRAINT "Comment_pkey" PRIMARY KEY (id);
+pi-db  | 2026-11-13 13:13:23.940 UTC [239] LOG:  duration: 237.554 ms  statement: ALTER TABLE ONLY public."Tag"
+pi-db  | 	    ADD CONSTRAINT "Tag_name_key" UNIQUE (name);
+pi-db  | 2026-11-13 13:13:28.499 UTC [239] LOG:  duration: 4474.857 ms  statement: ALTER TABLE ONLY public."User"
+pi-db  | 	    ADD CONSTRAINT "User_email_key" UNIQUE (email);
+pi-db  | 2026-11-13 13:13:28.987 UTC [239] LOG:  duration: 488.245 ms  statement: ALTER TABLE ONLY public."User"
+pi-db  | 	    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id);
+pi-db  | 2026-11-13 13:13:29.685 UTC [239] LOG:  duration: 697.512 ms  statement: ALTER TABLE ONLY public."User"
+pi-db  | 	    ADD CONSTRAINT "User_username_key" UNIQUE (username);
+pi-db  | 2026-11-13 13:13:30.685 UTC [571] ERROR:  canceling autovacuum task
+pi-db  | 2026-11-13 13:13:30.685 UTC [571] CONTEXT:  while scanning block 19012 of relation "public._ArticleToTag"
+pi-db  | 	automatic vacuum of table "restore_test.public._ArticleToTag"
+pi-db  | 2026-11-13 13:13:41.552 UTC [239] LOG:  duration: 11866.643 ms  statement: ALTER TABLE ONLY public."_ArticleToTag"
+pi-db  | 	    ADD CONSTRAINT "_ArticleToTag_AB_unique" UNIQUE ("A", "B");
+pi-db  | 2026-11-13 13:13:42.580 UTC [530] ERROR:  canceling autovacuum task
+pi-db  | 2026-11-13 13:13:42.580 UTC [530] CONTEXT:  while scanning block 18562 of relation "public._UserFavorites"
+pi-db  | 	automatic vacuum of table "restore_test.public._UserFavorites"
+pi-db  | 2026-11-13 13:13:55.674 UTC [781] LOG:  skipping vacuum of "_UserFavorites" --- lock not available
+pi-db  | 2026-11-13 13:13:55.776 UTC [239] LOG:  duration: 14223.621 ms  statement: ALTER TABLE ONLY public."_UserFavorites"
+pi-db  | 	    ADD CONSTRAINT "_UserFavorites_AB_unique" UNIQUE ("A", "B");
+pi-db  | 2026-11-13 13:13:56.438 UTC [239] LOG:  duration: 662.314 ms  statement: ALTER TABLE ONLY public."_UserFollows"
+pi-db  | 	    ADD CONSTRAINT "_UserFollows_AB_unique" UNIQUE ("A", "B");
+pi-db  | 2026-11-13 13:13:57.457 UTC [723] ERROR:  canceling autovacuum task
+pi-db  | 2026-11-13 13:13:57.457 UTC [723] CONTEXT:  while scanning block 9401 of relation "public.Article"
+pi-db  | 	automatic vacuum of table "restore_test.public.Article"
+pi-db  | 2026-11-13 13:14:12.885 UTC [239] LOG:  duration: 16446.417 ms  statement: CREATE INDEX "Article_authorId_idx" ON public."Article" USING btree ("authorId");
