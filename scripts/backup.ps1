@@ -80,9 +80,9 @@ UNION ALL SELECT '_ArticleToTag', count(*) FROM "_ArticleToTag"
 ORDER BY tabla;
 '@
 Write-Host "`n-- origen --"
-docker compose exec -T db psql -U $dbUser -d $dbName -c $query
+$query | docker compose exec -T db psql -U $dbUser -d $dbName -f -
 Write-Host "-- restaurada --"
-docker compose exec -T db psql -U $dbUser -d $target -c $query
+$query | docker compose exec -T db psql -U $dbUser -d $target -f -
 
 docker compose exec -T db psql -q -U $dbUser -d postgres -c "DROP DATABASE $target;" 2>&1 | Out-Null
 Write-Host "Base de prueba eliminada." -ForegroundColor DarkGray
