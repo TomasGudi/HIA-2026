@@ -34,6 +34,13 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Compilar
         run: npm run build
+      # Los tests heredados usan un mock de Prisma: no necesitan base de datos.
+      # NX_DAEMON=false evita el daemon de Nx en el runner.
+      - name: Tests
+        run: npm test
+        env:
+          NX_DAEMON: 'false'
+          CI: 'true'
 
   frontend:
     name: frontend
