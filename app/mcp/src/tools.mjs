@@ -9,6 +9,7 @@
 import { z } from 'zod';
 import { api } from './api.mjs';
 import { db } from './db.mjs';
+import { ops } from './ops.mjs';
 import { config } from './config.mjs';
 
 const texto = (datos) => ({
@@ -176,8 +177,116 @@ export function registrarHerramientas(server) {
     },
   );
 
-  // La escritura es opt-in: sin MCP_ALLOW_WRITE=true la herramienta ni aparece,
-  // así el modelo no puede intentar algo que el servidor va a rechazar.
+  // --- incidentes (extra de operación) -----------------------------------
+  // Se registran solo si hay un rol `mcp_ops` configurado. El agente puede
+  // consultar y explicar; aprobar la remediación es una acción aparte,
+  // habilitada con MCP_ALLOW_WRITE=true y siempre después de un "sí" humano.
+  if (config.incidentsEnabled) {
+    registrar(
+      'listar_incidentes',
+      {
+        title: 'Listar incidentes',
+        description:
+          'Devuelve los incidentes registrados en la base, del más reciente al más viejo, con estado, ' +
+          'severidad, síntoma, diagnóstico y solución propuesta. Usala cuando pregunten por incidentes, ' +
+          'por una caída o por "qué pasó". Si hay uno pendiente, mostralo y preguntá si querés resolverlo.',
+        inputSchema: {
+          estado: z
+            .string()
+            .optional()
+            .describe('filtra por estado: open, approved, resolving, resolved, failed o rejected'),
+          limit: z.number().int().min(1).max(50).optional().describe('cuántos devolver (1-50, por defecto 10)'),
+        },
+        annotations: { readOnlyHint: true },
+      },
+      async ({ estado, limit = 10 }) => {
+        try {
+          return texto({ incidentes: await ops.listar({ estado, limit }) });
+        } catch (e) {
+          return error(`no se pudieron listar los incidentes: ${e.message}`);
+        }
+      },
+    );
+
+    registrar(
+      'buscar_solucion',
+      {
+        title: 'Buscar solución en el runbook',
+        description:
+          'Busca en la tabla de runbooks la solución propuesta para un código de incidente (por ejemplo ' +
+          'PG_PRIMARY_DOWN) o por texto del síntoma. Devuelve causa, pasos y comando de referencia. ' +
+          'Usala antes de proponer una solución; no inventes pasos que no estén en el runbook.',
+        inputSchema: {
+          codigo: z.string().optional().describe('código exacto del runbook, por ejemplo PG_PRIMARY_DOWN'),
+          sintoma: z.string().optional().describe('texto libre para buscar por síntoma'),
+        },
+        annotations: { readOnlyHint: true },
+      },
+      async ({ codigo, sintoma }) => {
+        try {
+          const soluciones = await ops.buscarSolucion({ codigo, sintoma });
+          if (!soluciones.length) return error('no hay un runbook que coincida');
+          return texto({ soluciones });
+        } catch (e) {
+          return error(`no se pudo consultar el runbook: ${e.message}`);
+        }
+      },
+    );
+  }
+
+  if (config.allowWrite && config.incidentsEnabled) {
+    registrar(
+      'aprobar_remediacion',
+      {
+        title: 'Aprobar remediación de un incidente',
+        description:
+          'Marca un incidente pendiente como aprobado para que el watcher del host ejecute el failover ' +
+          '(promover la réplica y repuntar el backend). Usala SOLO si el usuario respondió explícitamente ' +
+          'que sí quiere resolverlo. Nunca la llames por iniciativa propia ni para "probar".',
+        inputSchema: {
+          id: z.number().int().positive().describe('id del incidente que el usuario aprobó'),
+          usuario: z.string().optional().describe('quién aprobó; por defecto telegram'),
+        },
+        annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false },
+      },
+      async ({ id, usuario = 'telegram' }) => {
+        try {
+          const inc = await ops.aprobar(id, usuario);
+          return texto({
+            aprobado: true,
+            incidente: inc,
+            siguiente_paso: 'el watcher del host detecta el estado approved y ejecuta el failover',
+          });
+        } catch (e) {
+          return error(`no se pudo aprobar: ${e.message}`);
+        }
+      },
+    );
+
+    registrar(
+      'rechazar_remediacion',
+      {
+        title: 'Rechazar remediación de un incidente',
+        description:
+          'Marca un incidente pendiente como rechazado, sin ejecutar ninguna acción. Usala si el usuario ' +
+          'dice que no quiere que se resuelva.',
+        inputSchema: {
+          id: z.number().int().positive().describe('id del incidente a rechazar'),
+          usuario: z.string().optional().describe('quién rechazó; por defecto telegram'),
+        },
+        annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false },
+      },
+      async ({ id, usuario = 'telegram' }) => {
+        try {
+          return texto({ rechazado: true, incidente: await ops.rechazar(id, usuario) });
+        } catch (e) {
+          return error(`no se pudo rechazar: ${e.message}`);
+        }
+      },
+    );
+  }
+
+
   if (config.allowWrite) {
     registrar(
       'crear_articulo',

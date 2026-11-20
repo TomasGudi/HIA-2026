@@ -1,3 +1,5 @@
 ﻿* text=auto eol=lf
 *.ps1 text eol=crlf
+# nginx compara el hash byte a byte: con CRLF la Basic auth del borde siempre da 401
+edge/.htpasswd text eol=lf
 *.pdf binary

@@ -24,6 +24,7 @@ export default function App() {
     <>
       <header className="topbar">
         <Link to="/" className="brand">Conduit</Link>
+        <Link to="/" className="brand">DEFENSA HIA 2026</Link>
         <nav>
           <Link to="/">Inicio</Link>
           {user && <Link to="/editor">Nuevo artículo</Link>}

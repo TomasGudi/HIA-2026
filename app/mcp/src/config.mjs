@@ -30,6 +30,43 @@ export const config = {
     email: process.env.MCP_USER_EMAIL ?? '',
     password: process.env.MCP_USER_PASSWORD ?? '',
   },
+
+  // incidentes: base de operación separada de la primaria
+  opsDb: {
+    host: process.env.OPS_DB_HOST ?? 'opsdb',
+    port: num(process.env.OPS_DB_PORT, 5432),
+    database: process.env.OPS_DB_NAME ?? 'ops',
+    user: process.env.OPS_DB_USER ?? 'mcp_ops',
+    password: process.env.MCP_OPS_DB_PASSWORD ?? '',
+  },
+
+  // correo saliente: MailHog en la demo (sin TLS ni auth)
+  smtp: {
+    host: process.env.SMTP_HOST ?? '',
+    port: num(process.env.SMTP_PORT, 1025),
+    from: process.env.MAIL_FROM ?? 'ops@pi.local',
+    to: process.env.MAIL_TO ?? 'operador@pi.local',
+  },
+
+  // aviso proactivo por Telegram (el bot es el mismo que usa Hermes)
+  telegram: {
+    token: process.env.TELEGRAM_BOT_TOKEN ?? '',
+    chatId:
+      process.env.TELEGRAM_CHAT_ID ??
+      (process.env.TELEGRAM_ALLOWED_USERS ?? '').split(',')[0].trim(),
+  },
+
+  // Mantis: el MCP crea la incidencia directamente para no depender de n8n
+  mantis: {
+    url: (process.env.MANTIS_URL ?? 'http://mantis').replace(/\/+$/, ''),
+    token: process.env.MANTIS_API_TOKEN ?? '',
+  },
+
+  // la base de incidentes es opcional: sin password el MCP sigue siendo
+  // solo-lectura y las herramientas de incidentes no se registran.
+  incidentsEnabled:
+    (process.env.MCP_INCIDENTS_ENABLED ?? 'true').toLowerCase() === 'true' &&
+    !!process.env.MCP_OPS_DB_PASSWORD,
 };
 
 export function validarConfig() {

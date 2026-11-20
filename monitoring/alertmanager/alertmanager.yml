@@ -12,8 +12,24 @@ route:
   group_wait: 10s          # demo: no esperar 30s a agrupar
   group_interval: 1m
   repeat_interval: 4h      # una alerta sostenida no spamea cada minuto
+  routes:
+    # La caída de la primaria va SOLO al MCP: n8n usa la primaria como base
+    # y no responde cuando `db` está caída. El MCP crea la incidencia en
+    # Mantis directamente, además del incidente en opsdb, correo y Telegram.
+    - matchers:
+        - alertname="PostgresCaido"
+      receiver: incidentes
 
 receivers:
+  - name: incidentes
+    webhook_configs:
+      - url: http://mcp:8080/incidentes
+        send_resolved: true
+        max_alerts: 0
+        http_config:
+          authorization:
+            type: Bearer
+            credentials_file: /etc/alertmanager/mcp_token
   - name: webhook
     webhook_configs:
       # §13: n8n recibe el webhook y crea la incidencia en Mantis.
@@ -26,6 +42,15 @@ receivers:
           authorization:
             type: Bearer
             credentials_file: /etc/alertmanager/n8n_token
+      # extra: el incidente va DIRECTO al MCP, sin pasar por n8n (n8n usa
+      # la primaria como base y no responde si `db` está caída).
+      - url: http://mcp:8080/incidentes
+        send_resolved: true
+        max_alerts: 0
+        http_config:
+          authorization:
+            type: Bearer
+            credentials_file: /etc/alertmanager/mcp_token
       # §10: receptor de evidencia, sin lógica (ver monitoring/sink/sink.py)
       - url: http://alert-sink:8080/alertmanager
         send_resolved: true

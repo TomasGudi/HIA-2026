@@ -23,3 +23,10 @@ $token = Get-EnvValue 'N8N_WEBHOOK_TOKEN'
 $destino = Join-Path $root 'monitoring/alertmanager/n8n_token'
 [System.IO.File]::WriteAllText($destino, $token, (New-Object System.Text.UTF8Encoding($false)))
 Write-Host "token de n8n escrito en monitoring/alertmanager/n8n_token" -ForegroundColor Green
+
+# El webhook de incidentes va directo de Alertmanager al MCP (no pasa por n8n,
+# que depende de la primaria). MCP valida el mismo MCP_TOKEN que usa Hermes.
+$mcpToken = Get-EnvValue 'MCP_TOKEN'
+$destinoMcp = Join-Path $root 'monitoring/alertmanager/mcp_token'
+[System.IO.File]::WriteAllText($destinoMcp, $mcpToken, (New-Object System.Text.UTF8Encoding($false)))
+Write-Host "token del MCP escrito en monitoring/alertmanager/mcp_token" -ForegroundColor Green

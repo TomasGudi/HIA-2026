@@ -135,11 +135,19 @@ services:
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
       PGADMIN_CONFIG_SERVER_MODE: "False"
       PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+      # sin keyring en el contenedor: con OS secret storage activo pgAdmin no
+      # puede cifrar contraseñas y vuelve a pedirla en cada conexión. En False
+      # usa el hash del usuario de escritorio como clave (persiste en el volumen)
+      PGADMIN_CONFIG_USE_OS_SECRET_STORAGE: "False"
+      # servidores precargados en el arbol: ./scripts/db.ps1 pgadmin lo genera
+      # desde .env (el archivo no se versiona porque lleva la contraseÃ±a)
+      PGADMIN_SERVER_JSON_FILE: /pgadmin4/config/servers.json
     ports:
       # consola de administraciÃ³n: solo loopback. En producciÃ³n se llega por tÃºnel/VPN.
       - "127.0.0.1:8080:80"
     volumes:
       - pgadmin:/var/lib/pgadmin
+      - ./db/pgadmin:/pgadmin4/config:ro
     networks:
       - dbnet
 
@@ -158,10 +166,11 @@ services:
     restart: unless-stopped
     profiles: ["ops"]
     depends_on:
-      db:
+      opsdb:
         condition: service_healthy
     environment:
-      MANTIS_DB_HOST: db
+      # Mantis usa la base de operación para sobrevivir a la caída de `db`
+      MANTIS_DB_HOST: opsdb
       MANTIS_DB_NAME: ${MANTIS_DB_NAME:-mantis}
       MANTIS_DB_USER: ${MANTIS_DB_USER:-mantis}
       MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
@@ -174,6 +183,7 @@ services:
       - mantis_files:/var/www/html/files
     networks:
       - dbnet
+      - appnet
 
   # ---------------------------------------------------------------
   # Taiga (§2). Gestor de backlog Scrum autoalojado. Reemplaza a Jira
@@ -455,6 +465,8 @@ services:
       - alertmanager_data:/alertmanager
     networks:
       - monnet
+      # el webhook de incidentes va directo a mcp:8080
+      - appnet
 
   grafana:
     image: grafana/grafana:11.2.0
@@ -555,6 +567,50 @@ services:
       - monnet
 
   # ---------------------------------------------------------------
+  # Base de operación (extra): incidentes y runbooks, separada de la
+  # primaria para que el incidente se registre aunque `db` esté caída.
+  # ---------------------------------------------------------------
+  opsdb:
+    image: postgres:16.4-alpine
+    container_name: pi-opsdb
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${OPS_DB_NAME:-ops}
+      POSTGRES_USER: ${OPS_DB_USER:-mcp_ops}
+      POSTGRES_PASSWORD: ${MCP_OPS_DB_PASSWORD}
+      # base propia de Mantis (02-mantis.sh / 03-mantis-schema.sql)
+      MANTIS_DB_NAME: ${MANTIS_DB_NAME:-mantis}
+      MANTIS_DB_USER: ${MANTIS_DB_USER:-mantis}
+      MANTIS_DB_PASSWORD: ${MANTIS_DB_PASSWORD}
+    volumes:
+      - ops_pgdata:/var/lib/postgresql/data
+      - ./opsdb/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${OPS_DB_USER:-mcp_ops} -d ${OPS_DB_NAME:-ops}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - appnet
+
+  # ---------------------------------------------------------------
+  # MailHog (extra): receptor SMTP de la demo. No entrega correo real:
+  # captura los mensajes y los muestra en la UI. Solo loopback.
+  # ---------------------------------------------------------------
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: pi-mailhog
+    restart: unless-stopped
+    profiles: ["ops"]
+    ports:
+      - "127.0.0.1:1025:1025"   # SMTP
+      - "127.0.0.1:8025:8025"   # UI
+    networks:
+      - appnet
+      - monnet
+
+  # ---------------------------------------------------------------
   # Servidor MCP (extra): expone la aplicación como herramientas para
   # agentes (Hermes). Solo lee; la escritura se habilita con
   # MCP_ALLOW_WRITE=true y un usuario dedicado.
@@ -566,9 +622,7 @@ services:
     container_name: pi-mcp
     restart: unless-stopped
     depends_on:
-      backend:
-        condition: service_healthy
-      db:
+      opsdb:
         condition: service_healthy
     environment:
       # sin token el servidor no arranca (falla cerrado)
@@ -582,6 +636,22 @@ services:
       MCP_ALLOW_WRITE: ${MCP_ALLOW_WRITE:-false}
       MCP_USER_EMAIL: ${MCP_USER_EMAIL:-}
       MCP_USER_PASSWORD: ${MCP_USER_PASSWORD:-}
+      # incidentes (extra Hermes): base separada de la primaria
+      MCP_INCIDENTS_ENABLED: ${MCP_INCIDENTS_ENABLED:-true}
+      OPS_DB_HOST: opsdb
+      OPS_DB_NAME: ${OPS_DB_NAME:-ops}
+      OPS_DB_USER: ${OPS_DB_USER:-mcp_ops}
+      MCP_OPS_DB_PASSWORD: ${MCP_OPS_DB_PASSWORD}
+      # el MCP crea la incidencia en Mantis sin depender de n8n
+      MANTIS_URL: ${MANTIS_URL:-http://mantis}
+      MANTIS_API_TOKEN: ${MANTIS_API_TOKEN}
+      # correo saliente (MailHog) y aviso por Telegram
+      SMTP_HOST: ${SMTP_HOST:-mailhog}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      MAIL_FROM: ${MAIL_FROM:-ops@pi.local}
+      MAIL_TO: ${MAIL_TO:-operador@pi.local}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
     ports:
       - "127.0.0.1:8098:8080"
     networks:
@@ -624,6 +694,8 @@ services:
       GENERIC_TIMEZONE: America/Argentina/Buenos_Aires
       MANTIS_TOKEN: ${MANTIS_API_TOKEN}
       N8N_WEBHOOK_TOKEN: ${N8N_WEBHOOK_TOKEN}
+      # flujo 04 (variante): llamada al MCP
+      MCP_TOKEN: ${MCP_TOKEN}
       # flujo 3: sube el informe semanal por WebDAV a Nextcloud (§12)
       NEXTCLOUD_ADMIN_USER: ${NEXTCLOUD_ADMIN_USER:-admin}
       NEXTCLOUD_ADMIN_PASSWORD: ${NEXTCLOUD_ADMIN_PASSWORD}
@@ -751,6 +823,8 @@ volumes:
     name: pi-n8n-data
   nextcloud_data:
     name: pi-nextcloud-data
+  ops_pgdata:
+    name: pi-opsdb-data
   taiga_db:
     name: pi-taiga-db
   taiga_static:
@@ -760,6 +834,7 @@ volumes:
   taiga_async_rabbit:
     name: pi-taiga-async-rabbit
   taiga_events_rabbit:
+    name: pi-taiga-events-rabbit
 
 networks:
   appnet:
