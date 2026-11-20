@@ -60,6 +60,12 @@ switch ($Action) {
       if ($u) { "{0} {1}" -f $t.label, $u } else { "{0} (sin URL todavía: docker logs {1})" -f $t.label, $t.name }
     }
     Write-Host "`nSon efímeras: cambian al reiniciar los túneles." -ForegroundColor DarkGray
+
+    # el archivo de credenciales se queda con URLs muertas si no se actualiza
+    if (Test-Path 'CREDENCIALES.local.md') {
+      Write-Host "`n== actualizando CREDENCIALES.local.md ==" -ForegroundColor DarkGray
+      python scripts/urls.py --escribir
+    }
   }
 
   'urls' {
