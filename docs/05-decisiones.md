@@ -47,7 +47,7 @@ se sube el número de tablas de volumen y se documenta el recorte de las demás 
 "**instalar o desplegar Mantis o GLPI**" para incidencias, con entregables propios
 ("herramienta funcionando", "historial de resolución"). ¿Puede Jira cubrir las dos?
 
-**Decisión**: **no**. Backlog en **Jira Free** (plan B: GitHub Projects) + **Mantis** para §11.
+**Decisión**: **no**. Backlog en **Taiga autoalojado** (ver D-25; originalmente Jira Cloud) + **Mantis** para §11.
 **Motivo (el argumento que cierra el tema)**: el propio enunciado, en §13 flujo 1, especifica
 "registra una incidencia en **Mantis/GLPI**". Usar solo Jira implica (a) dejar §11 sin
 "herramienta funcionando" propia, (b) desviar el flujo 1 de §13 hacia un destino no previsto.
@@ -216,3 +216,34 @@ en `monitoring/alertmanager/alertmanager.yml`.
 - Si el webhook de n8n se dejara activo sin el servicio, Alertmanager reintentaría 11 veces y
   llenaría el log de errores: ruido que oculta problemas reales.
 - En §13 solo hay que descomentar dos líneas y reiniciar Alertmanager.
+
+## D-25 — El backlog va en Taiga autoalojado, no en Jira Cloud
+
+**Contexto**: §2 pide "crear el proyecto en Jira o una herramienta equivalente", y el resto del
+enunciado insiste en que todo corre en un **servidor local**. El backlog se armó en Jira Cloud
+(plan gratuito) porque era el camino más rápido. El supuesto era que "Jira" podía ser el servicio
+en la nube; al revisar el alcance, el tablero también tiene que vivir en el servidor.
+
+**Verificación de la alternativa literal**: se levantó **Jira Data Center 10.4.1** en Docker
+(`atlassian/jira-software`), con PostgreSQL propio y el asistente de instalación completo. El
+asistente llega hasta el paso de licencia y genera el *server ID* `B2QG-OLZZ-7ULZ-6VFC`. El enlace
+de evaluación de Atlassian redirige a `atlassian.com/purchase/my/license-evaluation`, que exige
+**cuenta Atlassian y JavaScript**, y emite una licencia de **30 días**. Jira Server está
+discontinuado y Data Center nunca es gratuito: no existe una instalación local sin licencia.
+
+**Decisión**: **Taiga 6.10 autoalojado** en el mismo `compose.yaml` (perfil `ops`), con PostgreSQL
+propio y red `pi-taiganet`. Entra como "herramienta equivalente" del enunciado, es Scrum nativo
+(backlog, sprints, puntos, épicas, roles) y no vence.
+
+**Consecuencia**:
+- El tablero es local y queda detrás del túnel como el resto de los servicios (§9).
+- Jira Cloud se conserva **como historial**: no se borra nada y `backlog/jira-estados.csv` guarda
+  el estado real de las 139 incidencias en el momento de la migración.
+- Taiga no tiene campo de prioridad: se traduce a etiquetas `prio-alta` / `prio-media` / `prio-baja`.
+  Los puntos de historia sí van al campo nativo.
+- La migración es reproducible: `./scripts/taiga.ps1 init` crea usuarios, proyecto, épicas, sprints
+  e historias desde los dos CSV del repo.
+
+**Descartado**: Jira DC con licencia de 30 días (el entregable se bloquea solo); Jira Cloud como
+tablero principal (contradice el alcance local); GitHub Projects (no es Scrum: no tiene sprints).
+

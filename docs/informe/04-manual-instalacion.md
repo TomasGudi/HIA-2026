@@ -104,8 +104,15 @@ docker compose up -d db-replica
 docker compose --profile ops up -d
 ```
 
-Levanta Mantis, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
+Levanta Mantis, Taiga, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
 registro local. Sin `--profile ops` el stack queda en modo mínimo (solo app + base).
+
+Taiga necesita un primer arranque propio: crea el administrador, los usuarios de trabajo y carga el
+backlog desde los CSV del repo. Es idempotente, se puede repetir sin duplicar nada.
+
+```powershell
+./scripts/taiga.ps1 init
+```
 
 ### Paso 8 — Verificación integral
 
@@ -127,6 +134,7 @@ registro local. Sin `--profile ops` el stack queda en modo mínimo (solo app + b
 | Monitoreo | `http://127.0.0.1:9090/targets` | todos los targets `UP` |
 | Grafana | `http://127.0.0.1:3001` | 8 paneles con datos |
 | Mantis | `http://127.0.0.1:8081` | login y proyecto `HIA-2026` |
+| Taiga | `http://127.0.0.1:8084` | login y tablero con 15 épicas y 124 historias |
 | n8n | `http://127.0.0.1:5678` | flujo `01-alerta-a-mantis` activo |
 
 ## 5. Puertos publicados
@@ -138,6 +146,8 @@ Todos en `127.0.0.1`: nada se expone a la LAN.
 | 5433 | PostgreSQL primaria | 5432 queda libre para una instalación local |
 | 8080 | pgAdmin | |
 | 8081 | Mantis | |
+| 8082 | Nextcloud | |
+| 8084 | Taiga | tablero Scrum |
 | 8090 | Frontend | proxy a `/api/` del backend |
 | 3001 | Grafana | |
 | 5000 | Registro local de imágenes | plan B de GHCR |

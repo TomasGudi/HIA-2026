@@ -149,9 +149,12 @@ flowchart TB
     GRAF --> PROM
 ```
 
-Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y ocho de
-operación (`mantis`, `nextcloud`, `prometheus`, `alertmanager`, `grafana`, `n8n`, `edge`, `registry`),
-más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
+Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y nueve de
+operación (`mantis`, `nextcloud`, `taiga-gateway`, `prometheus`, `alertmanager`, `grafana`, `n8n`,
+`edge`, `registry`), más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
+Taiga es la única herramienta que arrastra una arquitectura interna propia: además del gateway suma
+su base, dos RabbitMQ, el backend Django, el worker asíncrono, los eventos y el servidor de adjuntos
+(nueve contenedores en la red `pi-taiganet`).
 
 ## 2. Componentes y responsabilidades
 
@@ -164,6 +167,7 @@ más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `pgadmin` | Administración de la base | pgAdmin 8 | `127.0.0.1:8080` |
 | `mantis` | Gestión de incidencias (§11) | MantisBT 2.28.4 sobre PostgreSQL | `127.0.0.1:8081` |
 | `nextcloud` | Gestión documental con permisos por grupo (§12) | Nextcloud 30 sobre PostgreSQL | `127.0.0.1:8082` |
+| `taiga-gateway` | Tablero Scrum: backlog, sprints, épicas y puntos (§2) | Taiga 6.10 (nginx + Django + PostgreSQL) | `127.0.0.1:8084` |
 | `prometheus` | Recolección y evaluación de reglas | Prometheus 2.54 | `127.0.0.1:9090` |
 | `alertmanager` | Agrupación, silencios y envío a n8n | Alertmanager 0.27 | `127.0.0.1:9093` |
 | `grafana` | 8 paneles de observabilidad | Grafana 11 | `127.0.0.1:3001` |
@@ -182,6 +186,7 @@ más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `pgadmin` | `dbnet` | `127.0.0.1:8080` | administración, jamás expuesta a Internet |
 | `mantis` | `dbnet` | `127.0.0.1:8081` | perfil `ops`; acceso por el borde |
 | `nextcloud` | `dbnet` | `127.0.0.1:8082` | perfil `ops`; túnel directo (login propio) |
+| `taiga-gateway` | `taiganet` | `127.0.0.1:8084` | perfil `ops`; red propia para no exponer su base |
 | `prometheus` | `monnet`, `appnet`, `dbnet` | `127.0.0.1:9090` | necesita scrapear exporters de las tres redes |
 | `n8n` | `appnet`, `dbnet`, `monnet` | `127.0.0.1:5678` | recibe webhooks y escribe en Mantis y en su base |
 
@@ -515,8 +520,15 @@ docker compose up -d db-replica
 docker compose --profile ops up -d
 ```
 
-Levanta Mantis, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
+Levanta Mantis, Taiga, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
 registro local. Sin `--profile ops` el stack queda en modo mínimo (solo app + base).
+
+Taiga necesita un primer arranque propio: crea el administrador, los usuarios de trabajo y carga el
+backlog desde los CSV del repo. Es idempotente, se puede repetir sin duplicar nada.
+
+```powershell
+./scripts/taiga.ps1 init
+```
 
 ### Paso 8 — Verificación integral
 
@@ -538,6 +550,7 @@ registro local. Sin `--profile ops` el stack queda en modo mínimo (solo app + b
 | Monitoreo | `http://127.0.0.1:9090/targets` | todos los targets `UP` |
 | Grafana | `http://127.0.0.1:3001` | 8 paneles con datos |
 | Mantis | `http://127.0.0.1:8081` | login y proyecto `HIA-2026` |
+| Taiga | `http://127.0.0.1:8084` | login y tablero con 15 épicas y 124 historias |
 | n8n | `http://127.0.0.1:5678` | flujo `01-alerta-a-mantis` activo |
 
 ## 5. Puertos publicados
@@ -549,6 +562,8 @@ Todos en `127.0.0.1`: nada se expone a la LAN.
 | 5433 | PostgreSQL primaria | 5432 queda libre para una instalación local |
 | 8080 | pgAdmin | |
 | 8081 | Mantis | |
+| 8082 | Nextcloud | |
+| 8084 | Taiga | tablero Scrum |
 | 8090 | Frontend | proxy a `/api/` del backend |
 | 3001 | Grafana | |
 | 5000 | Registro local de imágenes | plan B de GHCR |
@@ -620,6 +635,9 @@ para §6 y §10, no para que la aplicación funcione.
 | `frontend` | build `./app/frontend` | `127.0.0.1:8090` | `appnet` | — |
 | `mantis` | build `./app/mantis` | `127.0.0.1:8081` | `dbnet` | `ops` |
 | `nextcloud` | `nextcloud:30-apache` | `127.0.0.1:8082` | `dbnet` | `ops` |
+| `taiga-gateway` | `nginx:1.27-alpine` | `127.0.0.1:8084` | `taiganet` | `ops` |
+| `taiga-back` | `taigaio/taiga-back:6.10.2` | — (solo `expose 8000`) | `taiganet` | `ops` |
+| `taiga-db` | `postgres:16-alpine` | — | `taiganet` | `ops` |
 
 Regla transversal: **ningún puerto se publica fuera de `127.0.0.1`**. La publicación a Internet
 es por túnel (§9), no abriendo puertos.
@@ -2408,6 +2426,7 @@ Criterio: cada limitación tiene **causa**, **riesgo aceptado** y **qué haría 
 | G1 | **Nextcloud sin SSO/LDAP ni backup propio** | usuarios locales y volumen en el mismo host | la documentación está además versionada en Git, que es la fuente de verdad | SSO (SAML/LDAP) y backup del volumen |
 | G2 | **HS2-32 sin revisión cruzada real** | una sola cuenta de GitHub; GitHub no permite autoaprobar un PR | los 10 PRs tienen CI obligatorio y revisión del propio autor documentada | incorporar un segundo integrante con cuenta |
 | G3 | **HS2-67 sin E2E manual con capturas** | el flujo se validó por API y con el navegador, pero sin set de capturas sistemático | el E2E por API cubre los mismos pasos y queda versionado | agregar Playwright con capturas en CI |
+| G4 | **Taiga no tiene campo de prioridad** | el modelo de Taiga usa puntos y orden de backlog, no prioridad | la prioridad viaja como etiqueta `prio-alta`/`prio-media`/`prio-baja`, filtrable | campo personalizado o mover la prioridad al orden del backlog |
 
 ## 7. Limitaciones de publicación
 
