@@ -9,11 +9,12 @@
   ./scripts/db.ps1 indexes     # crea índices DESPUÉS de la carga
   ./scripts/db.ps1 stats       # tamaño de tablas e índices + conteos
   ./scripts/db.ps1 psql        # shell interactivo
+  ./scripts/db.ps1 pgadmin     # precarga la primaria en pgAdmin y lo reinicia
   ./scripts/db.ps1 reset       # BORRA el volumen y vuelve a empezar
 #>
 param(
   [Parameter(Position = 0)]
-  [ValidateSet('up','down','schema','seed','indexes','stats','psql','reset','logs')]
+  [ValidateSet('up','down','schema','seed','indexes','stats','psql','pgadmin','reset','logs')]
   [string]$Action = 'up'
 )
 
@@ -46,6 +47,52 @@ switch ($Action) {
   'schema'  { Invoke-Psql @('-f','/db/init/01-schema.sql','-f','/db/init/02-extensions.sql') }
   'indexes' { Invoke-Psql @('-f','/db/03-indexes.sql') }
   'psql'    { docker compose exec db psql -U $dbUser -d $dbName }
+  'pgadmin' {
+    # pgAdmin arranca sin servidores: al abrir la consola el arbol queda vacio
+    # ("Servers" sin hijos) aunque la base tenga datos. Se genera el archivo de
+    # precarga desde .env y se importa en el contenedor.
+    $dbPass = Get-EnvValue 'POSTGRES_PASSWORD' ''
+    if (-not $dbPass) { throw 'Falta POSTGRES_PASSWORD en .env' }
+    $cfg = @{
+      Servers = @{
+        '1' = @{
+          Name          = 'Practica (primaria)'
+          Group         = 'Servers'
+          Host          = 'db'          # nombre del servicio en pi-dbnet
+          Port          = 5432          # 5433 es solo el puerto del host
+          MaintenanceDB = $dbName
+          Username      = $dbUser
+          Password      = $dbPass
+          SSLMode       = 'prefer'
+          SavePassword  = $true
+        }
+      }
+    } | ConvertTo-Json -Depth 5
+
+    New-Item -ItemType Directory -Force -Path (Join-Path $root 'db/pgadmin') | Out-Null
+    $path = Join-Path $root 'db/pgadmin/servers.json'
+    # sin BOM y con LF: el archivo se monta en el contenedor Linux
+    [IO.File]::WriteAllText($path, ($cfg -replace "`r`n", "`n"), (New-Object Text.UTF8Encoding($false)))
+    Write-Host "servers.json generado: $path" -ForegroundColor Green
+
+    # docker escribe avisos por stderr y con ErrorActionPreference=Stop eso
+    # aborta el script: se baja la preferencia solo para estas llamadas
+    $prev = $ErrorActionPreference
+    $ErrorActionPreference = 'SilentlyContinue'
+    docker compose up -d pgadmin
+    if ($LASTEXITCODE -ne 0) { throw "docker compose up pgadmin falló (exit $LASTEXITCODE)" }
+    Start-Sleep -Seconds 3
+    # el entrypoint solo importa servers.json en el primer arranque (volumen
+    # vacío): con pi-pgadmin ya creado hay que importarlo a mano. --replace
+    # deja el arbol igual al archivo en cada corrida (sin duplicados).
+    docker exec pi-pgadmin /venv/bin/python3 /pgadmin4/setup.py load-servers /pgadmin4/config/servers.json --replace
+    if ($LASTEXITCODE -ne 0) { throw "importación de servers.json falló (exit $LASTEXITCODE)" }
+    # load-servers ignora el campo Password: se guarda cifrada para que pgAdmin
+    # no la pida en cada conexión (la clave sale del usuario de escritorio)
+    docker exec -e "PGGUI_DB_PASSWORD=$dbPass" pi-pgadmin /venv/bin/python3 /pgadmin4/config/seed_password.py
+    if ($LASTEXITCODE -ne 0) { throw "no se pudo guardar la contraseña en pgAdmin (exit $LASTEXITCODE)" }
+    $ErrorActionPreference = $prev
+  }
   'reset'   {
     Write-Host 'ATENCIÓN: se borra el volumen pi-pgdata y todos los datos.' -ForegroundColor Yellow
     $confirm = Read-Host 'Escribí BORRAR para confirmar'

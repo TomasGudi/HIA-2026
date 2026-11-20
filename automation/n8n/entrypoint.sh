@@ -30,6 +30,7 @@ for origen in /workflows/*.json; do
   destino="/tmp/wf/$(basename "$origen")"
   sed -e "s|__WEBHOOK_TOKEN__|${N8N_WEBHOOK_TOKEN}|g" \
       -e "s|__MANTIS_TOKEN__|${MANTIS_TOKEN}|g" \
+      -e "s|__MCP_TOKEN__|${MCP_TOKEN}|g" \
       -e "s|__NC_USER__|${NEXTCLOUD_ADMIN_USER:-admin}|g" \
       -e "s|__NC_BASIC__|${NC_BASIC}|g" \
       "$origen" > "$destino"

@@ -58,9 +58,12 @@ flowchart TB
     GRAF --> PROM
 ```
 
-Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y ocho de
-operación (`mantis`, `nextcloud`, `prometheus`, `alertmanager`, `grafana`, `n8n`, `edge`, `registry`),
-más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
+Cinco contenedores de aplicación (`frontend`, `backend`, `db`, `db-replica`, `pgadmin`) y nueve de
+operación (`mantis`, `nextcloud`, `taiga-gateway`, `prometheus`, `alertmanager`, `grafana`, `n8n`,
+`edge`, `registry`), más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
+Taiga es la única herramienta que arrastra una arquitectura interna propia: además del gateway suma
+su base, dos RabbitMQ, el backend Django, el worker asíncrono, los eventos y el servidor de adjuntos
+(nueve contenedores en la red `pi-taiganet`).
 
 ## 2. Componentes y responsabilidades
 
@@ -73,6 +76,7 @@ más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `pgadmin` | Administración de la base | pgAdmin 8 | `127.0.0.1:8080` |
 | `mantis` | Gestión de incidencias (§11) | MantisBT 2.28.4 sobre PostgreSQL | `127.0.0.1:8081` |
 | `nextcloud` | Gestión documental con permisos por grupo (§12) | Nextcloud 30 sobre PostgreSQL | `127.0.0.1:8082` |
+| `taiga-gateway` | Tablero Scrum: backlog, sprints, épicas y puntos (§2) | Taiga 6.10 (nginx + Django + PostgreSQL) | `127.0.0.1:8084` |
 | `prometheus` | Recolección y evaluación de reglas | Prometheus 2.54 | `127.0.0.1:9090` |
 | `alertmanager` | Agrupación, silencios y envío a n8n | Alertmanager 0.27 | `127.0.0.1:9093` |
 | `grafana` | 8 paneles de observabilidad | Grafana 11 | `127.0.0.1:3001` |
@@ -91,6 +95,7 @@ más cuatro exporters. Todos los puertos publicados están en `127.0.0.1`.
 | `pgadmin` | `dbnet` | `127.0.0.1:8080` | administración, jamás expuesta a Internet |
 | `mantis` | `dbnet` | `127.0.0.1:8081` | perfil `ops`; acceso por el borde |
 | `nextcloud` | `dbnet` | `127.0.0.1:8082` | perfil `ops`; túnel directo (login propio) |
+| `taiga-gateway` | `taiganet` | `127.0.0.1:8084` | perfil `ops`; red propia para no exponer su base |
 | `prometheus` | `monnet`, `appnet`, `dbnet` | `127.0.0.1:9090` | necesita scrapear exporters de las tres redes |
 | `n8n` | `appnet`, `dbnet`, `monnet` | `127.0.0.1:5678` | recibe webhooks y escribe en Mantis y en su base |
 

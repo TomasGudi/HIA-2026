@@ -8,6 +8,8 @@
 
 # --- datos y respaldos (NUNCA al repo) ---
 db/data/
+# precarga de servidores de pgAdmin: lleva la contraseña de la base
+db/pgadmin/servers.json
 backups/
 *.dump
 *.sql.gz
@@ -54,6 +56,8 @@ pr-resp.json
 api.json
 # token del webhook de n8n que lee Alertmanager (§13)
 monitoring/alertmanager/n8n_token
+# token del webhook de incidentes que lee Alertmanager (extra)
+monitoring/alertmanager/mcp_token
 
 # notas locales y credenciales del agente (nunca al repo)
 opencode.md
@@ -61,3 +65,4 @@ opencode.md
 
 # credenciales de la demo (locales, nunca al repo)
 CREDENCIALES.local.md
+.gstack/

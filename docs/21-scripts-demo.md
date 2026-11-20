@@ -49,8 +49,8 @@ docker compose --profile ops ps --format "table {{.Name}}\t{{.Status}}"
 ```
 
 Orden importante: `preparar-tokens.ps1` primero. Alertmanager monta
-`monitoring/alertmanager/n8n_token` como archivo; si no existe, Docker crea un directorio y el
-contenedor falla.
+`monitoring/alertmanager/n8n_token` y `monitoring/alertmanager/mcp_token` como archivos; si no
+existen, Docker crea directorios y el contenedor falla.
 
 ### Verificación T-30
 
@@ -64,6 +64,7 @@ curl.exe -s -o NUL -w "prometheus %{http_code}`n" http://127.0.0.1:9090/-/health
 curl.exe -s -o NUL -w "alertman   %{http_code}`n" http://127.0.0.1:9093/-/healthy
 curl.exe -s -o NUL -w "n8n        %{http_code}`n" http://127.0.0.1:5678/
 curl.exe -s -o NUL -w "nextcloud  %{http_code}`n" http://127.0.0.1:8082/status.php
+curl.exe -s -o NUL -w "mailhog    %{http_code}`n" http://127.0.0.1:8025/
 
 ./scripts/replica.ps1 status
 ./scripts/monitoreo.ps1 status
@@ -86,6 +87,7 @@ réplica `streaming` con lag de 0 bytes; 7 targets de Prometheus en `up`.
 | Prometheus | http://127.0.0.1:9090 |
 | Alertmanager | http://127.0.0.1:9093 |
 | n8n | http://127.0.0.1:5678 |
+| MailHog (correos) | http://127.0.0.1:8025 |
 | Borde con Basic auth | `:8088` pgAdmin · `:8089` Mantis · `:8091` Nextcloud |
 
 ## 3. Catálogo de scripts
@@ -103,6 +105,9 @@ réplica `streaming` con lag de 0 bytes; 7 targets de Prometheus en `up`.
 | `scripts/nextcloud.ps1` | provisión de usuarios, grupos y documentos | `init` `structure` `status` |
 | `scripts/mantis-seed.py` | carga las incidencias de ejemplo en Mantis | `python scripts/mantis-seed.py` |
 | `scripts/mantis-campos.sql` | agrega campos `commit_sha`/`pr` a Mantis | se aplica con `psql` (ver §4.8) |
+| `scripts/incidentes.ps1` | incidentes: init, demo, listar, aprobar, rechazar | `init` `demo` `listar` `aprobar <id>` `rechazar <id>` `estado <id>` |
+| `scripts/incidente-watcher.ps1` | ejecuta el failover de un incidente aprobado | `-DryRun` `-UnaVez` `-Force` `-Intervalo N` |
+| `scripts/restaurar-primaria.ps1` | reconstruye la primaria después de la demo | `-SwapBack` `-Force` |
 | `scripts/informe.py` | regenera el informe HTML + PDF | `--solo-html` |
 | `scripts/prueba-rate-limit.py` | dispara N requests y cuenta 200/429 | `python scripts/prueba-rate-limit.py 120` |
 
@@ -271,6 +276,32 @@ Nextcloud:
 Carpeta `HIA-2026` con 17 subcarpetas. Usuario `auditor` (solo lectura) e `invitado` (sin grupo)
 sirven para la prueba de permisos: `403` al intentar subir y carpeta invisible.
 
+### 4.7.1 Incidente + correo + Hermes (extra)
+
+Flujo completo documentado en [`22-incidentes-hermes.md`](22-incidentes-hermes.md).
+
+```powershell
+# preparar una vez
+docker compose up -d opsdb
+./scripts/incidentes.ps1 init
+docker compose --profile ops up -d mailhog
+docker compose -f automation/hermes/compose.yaml --env-file .env up -d --force-recreate
+
+# ensayo sin tocar la base: crea incidente sintético + correo + Telegram
+./scripts/incidentes.ps1 demo
+# MailHog: http://127.0.0.1:8025
+# Hermes: docker exec -it pi-hermes hermes chat
+
+# demo real (dos terminales)
+./scripts/incidente-watcher.ps1          # terminal 1
+docker stop pi-db                        # terminal 2; esperar ~60 s
+# en Telegram: "SÍ, resolvé el incidente #1"
+./scripts/incidentes.ps1 listar
+
+# después de la demo
+./scripts/restaurar-primaria.ps1 -SwapBack
+```
+
 ### 4.8 Bloque 8 — Seguridad (16:00–18:00)
 
 ```powershell
@@ -382,7 +413,7 @@ docker compose --profile ops down -v   # borra volúmenes: se pierden los 8,5 GB
 | Túnel de la app da 502 | `publicar.ps1` apunta a `frontend:8080` (correcto); el doc 10 dice `frontend:80` (incorrecto) | usar `./scripts/publicar.ps1 up` |
 | `GET /api/health` → 404 | el health cuelga de `/health`, no de `/api` | `http://127.0.0.1:8090/health` |
 | `deploy.ps1` no encuentra la imagen | el registro local no tiene ese tag | usar `v1`/`v2` o `-SkipPull` |
-| Alertmanager no arranca | falta `monitoring/alertmanager/n8n_token` | `./scripts/preparar-tokens.ps1` |
+| Alertmanager no arranca | falta `monitoring/alertmanager/n8n_token` o `mcp_token` | `./scripts/preparar-tokens.ps1` |
 | La alerta `CPUAlta` no dispara en 2 min | `for: 5m` + `rate[5m]` | usar `ServicioCaido` o mostrar `evidence/10/` |
 | Las URLs `.trycloudflare.com` cambian | quick tunnels efímeros | `./scripts/publicar.ps1 urls` |
 | `Found orphan containers (pi-mcp)` | contenedor de otro proyecto en la misma red | ignorar o `docker rm -f pi-mcp` |
@@ -405,5 +436,7 @@ docker stop pi-postgres-exporter      # esperar 2 min → alerta + incidencia
 docker start pi-postgres-exporter
 python scripts/prueba-rate-limit.py 120
 ./scripts/nextcloud.ps1 status
+./scripts/incidentes.ps1 demo           # incidente + correo + Telegram
+./scripts/incidente-watcher.ps1 -DryRun -UnaVez
 ./scripts/publicar.ps1 down
 ```

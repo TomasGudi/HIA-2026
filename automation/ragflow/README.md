@@ -75,3 +75,28 @@ resuelve `pi-ragflow` por nombre.
 
 `evidence/extra-mcp/ragflow-demo.md`: dos preguntas que solo se contestan con la
 documentación, con las citas que devolvió el agente.
+
+## Agente de consulta creado (extra)
+
+En la UI de RAGFlow (`http://127.0.0.1:8095`) quedó creado y publicado:
+
+| Dato | Valor |
+|---|---|
+| Título | `HIA-2026 — Consulta de documentación` |
+| ID | `3f164321d85646348f8cadd16733dc82` |
+| Usuario | `practica@example.com` |
+| Dataset | `practica-documentacion` (`c3afb03d617d43e1b5c4dda8aa708929`) |
+| Flujo | `Begin → Retrieval → Message` |
+| Estado | `release: true` |
+
+Es **retrieval-only**: devuelve los fragmentos recuperados con su ID, sin
+redactar una respuesta. Para generar texto hay que configurar un modelo de chat
+en RAGFlow y cambiar el nodo `Retrieval` por un nodo `Agent` con `llm_id`.
+
+Prueba por API (mismo usuario):
+
+```powershell
+# login + /api/v1/agents/chat/completions
+# respuesta 200 con los chunks de docs/
+```
+

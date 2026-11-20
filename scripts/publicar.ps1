@@ -3,8 +3,8 @@
   Publica el stack por Cloudflare Tunnel (§9).
 
 .DESCRIPTION
-  Levanta el borde con auth y tres túneles rápidos (app, pgAdmin, Mantis).
-  Imprime las URLs públicas, que cambian en cada arranque.
+  Levanta el borde con auth y cinco túneles rápidos (app, pgAdmin, Mantis,
+  Nextcloud y Taiga). Imprime las URLs públicas, que cambian en cada arranque.
 
 .EXAMPLE
   ./scripts/publicar.ps1 up
@@ -22,10 +22,11 @@ $root = Split-Path -Parent $PSScriptRoot
 Set-Location $root
 
 $tunnels = @(
-  @{ name = 'pi-tunnel';           net = 'pi-appnet'; url = 'http://frontend:8080';  label = 'app      ' },
-  @{ name = 'pi-tunnel-admin';     net = 'pi-dbnet';  url = 'http://edge:8080';      label = 'pgadmin  ' },
-  @{ name = 'pi-tunnel-mantis';    net = 'pi-dbnet';  url = 'http://edge:8081';      label = 'mantis   ' },
-  @{ name = 'pi-tunnel-nextcloud'; net = 'pi-dbnet';  url = 'http://nextcloud:80';   label = 'nextcloud' }
+  @{ name = 'pi-tunnel';           net = 'pi-appnet';   url = 'http://frontend:8080';     label = 'app      ' },
+  @{ name = 'pi-tunnel-admin';     net = 'pi-dbnet';    url = 'http://edge:8080';         label = 'pgadmin  ' },
+  @{ name = 'pi-tunnel-mantis';    net = 'pi-dbnet';    url = 'http://edge:8081';         label = 'mantis   ' },
+  @{ name = 'pi-tunnel-nextcloud'; net = 'pi-dbnet';    url = 'http://nextcloud:80';      label = 'nextcloud' },
+  @{ name = 'pi-tunnel-taiga';     net = 'pi-taiganet'; url = 'http://taiga-gateway:80';  label = 'taiga    ' }
 )
 
 function Get-TunnelUrl([string]$name) {
@@ -59,6 +60,12 @@ switch ($Action) {
       if ($u) { "{0} {1}" -f $t.label, $u } else { "{0} (sin URL todavía: docker logs {1})" -f $t.label, $t.name }
     }
     Write-Host "`nSon efímeras: cambian al reiniciar los túneles." -ForegroundColor DarkGray
+
+    # el archivo de credenciales se queda con URLs muertas si no se actualiza
+    if (Test-Path 'CREDENCIALES.local.md') {
+      Write-Host "`n== actualizando CREDENCIALES.local.md ==" -ForegroundColor DarkGray
+      python scripts/urls.py --escribir
+    }
   }
 
   'urls' {

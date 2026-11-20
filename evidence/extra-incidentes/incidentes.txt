@@ -1,0 +1,10 @@
+﻿ id |     codigo      |  estado  | severidad |                   titulo                    | aprobado_por |  creado  | resuelto |                                      resultado                                      
+----+-----------------+----------+-----------+---------------------------------------------+--------------+----------+----------+-------------------------------------------------------------------------------------
+  1 | PG_REPLICA_LAG  | open     | critical  | ReplicacionAtrasada en desconocido          |              | 18:30:12 |          | 
+  2 | ALERTA_GENERICA | open     | critical  | ServicioCaido en http://backend:3000/health |              | 18:30:24 |          | 
+  3 | PG_PRIMARY_DOWN | resolved | critical  | PostgresCaido en postgres-exporter:9187     | demo-script  | 18:30:27 | 18:31:04 | failover completado en 5.4s: db-replica promovida y backend repuntado (version=dev)
+  4 | ALERTA_GENERICA | open     | critical  | ServicioCaido en http://backend:3000/health |              | 18:31:19 |          | 
+  5 | PG_REPLICA_LAG  | resolved | critical  | ReplicacionAtrasada en desconocido          |              | 18:31:27 | 18:32:23 | alerta resuelta en Prometheus
+  6 | ALERTA_GENERICA | resolved | critical  | ServicioCaido en http://backend:3000/health |              | 18:34:19 | 18:36:20 | alerta resuelta en Prometheus
+(6 rows)
+

@@ -1,0 +1,519 @@
+﻿{
+    "total":  8,
+    "count":  8,
+    "start":  0,
+    "items":  [
+                  {
+                      "ID":  "j5yHZTrP5mPUEgIZW1Bwkk9S9gm3ORN125S7w-EY-_c=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:34:19 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003c9b0e5575-7306-571d-2ddb-efd72459d899@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id j5yHZTrP5mPUEgIZW1Bwkk9S9gm3ORN125S7w-EY-_c=@mailhog.example; Fri, 20 Nov 2026 18:34:19 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=236=5D_ServicioCaido_en_ht?= =?UTF-8?Q?tp=3A//backend=3A3000/health_=E2=80=94_c?= =?UTF-8?Q?reado?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Nuevo incidente #6\r\n\r\nT=C3=ADtulo: ServicioCaido en http://backend:3000/healt=\r\nh\r\nC=C3=B3digo: ALERTA_GENERICA\r\nSeveridad: critical\r\nEstado: open\r\nServicio: blackbox\r\n\r\nS=C3=ADntoma:\r\nServicio ca=C3=ADdo: =\r\nhttp://backend:3000/health (job blackbox)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ServicioCaido\r\nInstancia: http://backend:3000/health\r\nSeveridad: critical\r\nDetalle: El target http://backend:3000/health lleva =\r\nm=C3=A1s de 2 minutos sin responder. Acci=C3=B3n: `docker compose ps` y =\r\n`docker compose logs \u003cservicio\u003e`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Leer el resumen y la descripci=C3=B3n de la alerta.\r\n2. Revisar Grafana y los logs del servicio afectado.\r\n3. Si no hay impacto, silenciar con justificaci=C3=B3n.\r\n4. Si hay impacto, abrir una incidencia en Mantis y documentar la =\r\nacci=C3=B3n.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: =\r\n\"S=C3=8D, resolv=C3=A9 el incidente #6\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                      "Size":  1348,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:34:19.473727055Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=236=5D_ServicioCaido_en_ht?=\r\n =?UTF-8?Q?tp=3A//backend=3A3000/health_=E2=80=94_c?= =?UTF-8?Q?reado?=\r\nMessage-ID: \u003c9b0e5575-7306-571d-2ddb-efd72459d899@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:34:19 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nNuevo incidente #6\r\n\r\nT=C3=ADtulo: ServicioCaido en http://backend:3000/healt=\r\nh\r\nC=C3=B3digo: ALERTA_GENERICA\r\nSeveridad: critical\r\nEstado: open\r\nServicio: blackbox\r\n\r\nS=C3=ADntoma:\r\nServicio ca=C3=ADdo: =\r\nhttp://backend:3000/health (job blackbox)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ServicioCaido\r\nInstancia: http://backend:3000/health\r\nSeveridad: critical\r\nDetalle: El target http://backend:3000/health lleva =\r\nm=C3=A1s de 2 minutos sin responder. Acci=C3=B3n: `docker compose ps` y =\r\n`docker compose logs \u003cservicio\u003e`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Leer el resumen y la descripci=C3=B3n de la alerta.\r\n2. Revisar Grafana y los logs del servicio afectado.\r\n3. Si no hay impacto, silenciar con justificaci=C3=B3n.\r\n4. Si hay impacto, abrir una incidencia en Mantis y documentar la =\r\nacci=C3=B3n.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: =\r\n\"S=C3=8D, resolv=C3=A9 el incidente #6\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "nafsqpE8fpwWB6AfmHSXQ_7nJi2VBeMjliM5zxQ6v2s=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:31:27 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003c6878c742-b877-c2e4-b70a-3d6ca0597454@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id nafsqpE8fpwWB6AfmHSXQ_7nJi2VBeMjliM5zxQ6v2s=@mailhog.example; Fri, 20 Nov 2026 18:31:27 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=235=5D_ReplicacionAtrasada?= =?UTF-8?Q?_en_desconocido_=E2=80=94_creado?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Nuevo incidente #5\r\n\r\nT=C3=ADtulo: ReplicacionAtrasada en desconocido\r\nC=C3=B3digo: PG_REPLICA_LAG\r\nSeveridad: critical\r\nEstado: open\r\nServicio: db\r\n\r\nS=C3=ADntoma:\r\nReplicaci=C3=B3n atrasada o cortada\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ReplicacionAtrasada\r\nInstancia: desconocida\r\nSeveridad: critical\r\nDetalle: El lag de WAL supera 100 MB o no hay ninguna r=C3=A9plica =\r\nconectada. Acci=C3=B3n: `./scripts/replica.ps1 status` y revisar `docker =\r\ncompose logs db-replica`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Medir el lag: ./scripts/replica.ps1 lag.\r\n2. Revisar I/O y red del host.\r\n3. Si el lag no baja, evaluar reiniciar la r=C3=A9plica con .=\r\n/scripts/replica.ps1 reinit.\r\n4. No promover una r=C3=A9plica atrasada sin =\r\ndeclarar la p=C3=A9rdida de datos.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: \"S=C3=8D, resolv=C3=A9 el incidente #5\"=\r\n.\r\nSi no quer=C3=A9s que se ejecute, respond=C3=A9 \"NO\".",
+                                      "Size":  1274,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:31:27.40592148Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=235=5D_ReplicacionAtrasada?=\r\n =?UTF-8?Q?_en_desconocido_=E2=80=94_creado?=\r\nMessage-ID: \u003c6878c742-b877-c2e4-b70a-3d6ca0597454@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:31:27 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nNuevo incidente #5\r\n\r\nT=C3=ADtulo: ReplicacionAtrasada en desconocido\r\nC=C3=B3digo: PG_REPLICA_LAG\r\nSeveridad: critical\r\nEstado: open\r\nServicio: db\r\n\r\nS=C3=ADntoma:\r\nReplicaci=C3=B3n atrasada o cortada\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ReplicacionAtrasada\r\nInstancia: desconocida\r\nSeveridad: critical\r\nDetalle: El lag de WAL supera 100 MB o no hay ninguna r=C3=A9plica =\r\nconectada. Acci=C3=B3n: `./scripts/replica.ps1 status` y revisar `docker =\r\ncompose logs db-replica`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Medir el lag: ./scripts/replica.ps1 lag.\r\n2. Revisar I/O y red del host.\r\n3. Si el lag no baja, evaluar reiniciar la r=C3=A9plica con .=\r\n/scripts/replica.ps1 reinit.\r\n4. No promover una r=C3=A9plica atrasada sin =\r\ndeclarar la p=C3=A9rdida de datos.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: \"S=C3=8D, resolv=C3=A9 el incidente #5\"=\r\n.\r\nSi no quer=C3=A9s que se ejecute, respond=C3=A9 \"NO\".",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "iFpUXhFZA9kcsiyI-ci5l7jK_sc9HaFKB3B3LWEQgwA=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:31:19 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003c37610fe9-a8fc-1027-e621-64868effbb8d@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id iFpUXhFZA9kcsiyI-ci5l7jK_sc9HaFKB3B3LWEQgwA=@mailhog.example; Fri, 20 Nov 2026 18:31:19 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=234=5D_ServicioCaido_en_ht?= =?UTF-8?Q?tp=3A//backend=3A3000/health_=E2=80=94_c?= =?UTF-8?Q?reado?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Nuevo incidente #4\r\n\r\nT=C3=ADtulo: ServicioCaido en http://backend:3000/healt=\r\nh\r\nC=C3=B3digo: ALERTA_GENERICA\r\nSeveridad: critical\r\nEstado: open\r\nServicio: blackbox\r\n\r\nS=C3=ADntoma:\r\nServicio ca=C3=ADdo: =\r\nhttp://backend:3000/health (job blackbox)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ServicioCaido\r\nInstancia: http://backend:3000/health\r\nSeveridad: critical\r\nDetalle: El target http://backend:3000/health lleva =\r\nm=C3=A1s de 2 minutos sin responder. Acci=C3=B3n: `docker compose ps` y =\r\n`docker compose logs \u003cservicio\u003e`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Leer el resumen y la descripci=C3=B3n de la alerta.\r\n2. Revisar Grafana y los logs del servicio afectado.\r\n3. Si no hay impacto, silenciar con justificaci=C3=B3n.\r\n4. Si hay impacto, abrir una incidencia en Mantis y documentar la =\r\nacci=C3=B3n.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: =\r\n\"S=C3=8D, resolv=C3=A9 el incidente #4\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                      "Size":  1348,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:31:19.433676224Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=234=5D_ServicioCaido_en_ht?=\r\n =?UTF-8?Q?tp=3A//backend=3A3000/health_=E2=80=94_c?= =?UTF-8?Q?reado?=\r\nMessage-ID: \u003c37610fe9-a8fc-1027-e621-64868effbb8d@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:31:19 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nNuevo incidente #4\r\n\r\nT=C3=ADtulo: ServicioCaido en http://backend:3000/healt=\r\nh\r\nC=C3=B3digo: ALERTA_GENERICA\r\nSeveridad: critical\r\nEstado: open\r\nServicio: blackbox\r\n\r\nS=C3=ADntoma:\r\nServicio ca=C3=ADdo: =\r\nhttp://backend:3000/health (job blackbox)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ServicioCaido\r\nInstancia: http://backend:3000/health\r\nSeveridad: critical\r\nDetalle: El target http://backend:3000/health lleva =\r\nm=C3=A1s de 2 minutos sin responder. Acci=C3=B3n: `docker compose ps` y =\r\n`docker compose logs \u003cservicio\u003e`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Leer el resumen y la descripci=C3=B3n de la alerta.\r\n2. Revisar Grafana y los logs del servicio afectado.\r\n3. Si no hay impacto, silenciar con justificaci=C3=B3n.\r\n4. Si hay impacto, abrir una incidencia en Mantis y documentar la =\r\nacci=C3=B3n.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: =\r\n\"S=C3=8D, resolv=C3=A9 el incidente #4\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "3z1iC3Kyk1DMrXMLKNLJfKa2rj-TKGXdt8VBtaB9QhI=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:31:04 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003c3ade90eb-f1b8-5b6a-1798-c0ef9f8d457a@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id 3z1iC3Kyk1DMrXMLKNLJfKa2rj-TKGXdt8VBtaB9QhI=@mailhog.example; Fri, 20 Nov 2026 18:31:04 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=233=5D_PostgresCaido_en_po?= =?UTF-8?Q?stgres-exporter=3A9187_=E2=80=94_resolve?= =?UTF-8?Q?d?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Incidente #3 resuelto\r\n\r\nT=C3=ADtulo: PostgresCaido en postgres-exporter:9187\r\nC=C3=B3digo: PG_PRIMARY_DOWN\r\nSeveridad: critical\r\nEstado: resolved\r\nServicio: postgres\r\n\r\nS=C3=ADntoma:\r\nPostgreSQL no responde =\r\n(postgres-exporter:9187)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: PostgresCaido\r\nInstancia: postgres-exporter:9187\r\nSeveridad: critical\r\nDetalle: postgres_exporter no puede conectarse a la base. Acci=C3=B3n: =\r\n`docker compose ps db` y revisar `docker compose logs db`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Confirmar que la primaria no responde: docker =\r\ncompose ps db y pg_isready.\r\n2. Verificar que la r=C3=A9plica sigue en =\r\nstreaming y sin lag: ./scripts/replica.ps1 status.\r\n3. Promover la =\r\nr=C3=A9plica: SELECT pg_promote(wait =3D\u003e true, wait_seconds =3D\u003e 30).\r\n4. Repuntar el backend a db-replica: DATABASE_HOST=3Ddb-replica y recrear =\r\nel servicio backend.\r\n5. Esperar /health con status=3Dok y db=3Dup.\r\n6. Registrar el RTO y dejar la primaria vieja detenida hasta reconstruirla.\r\n\r\nResultado:\r\nfailover completado en 5.4s: db-replica promovida y backend =\r\nrepuntado (version=3Ddev)",
+                                      "Size":  1474,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:31:04.273686566Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=233=5D_PostgresCaido_en_po?=\r\n =?UTF-8?Q?stgres-exporter=3A9187_=E2=80=94_resolve?= =?UTF-8?Q?d?=\r\nMessage-ID: \u003c3ade90eb-f1b8-5b6a-1798-c0ef9f8d457a@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:31:04 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nIncidente #3 resuelto\r\n\r\nT=C3=ADtulo: PostgresCaido en postgres-exporter:9187\r\nC=C3=B3digo: PG_PRIMARY_DOWN\r\nSeveridad: critical\r\nEstado: resolved\r\nServicio: postgres\r\n\r\nS=C3=ADntoma:\r\nPostgreSQL no responde =\r\n(postgres-exporter:9187)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: PostgresCaido\r\nInstancia: postgres-exporter:9187\r\nSeveridad: critical\r\nDetalle: postgres_exporter no puede conectarse a la base. Acci=C3=B3n: =\r\n`docker compose ps db` y revisar `docker compose logs db`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Confirmar que la primaria no responde: docker =\r\ncompose ps db y pg_isready.\r\n2. Verificar que la r=C3=A9plica sigue en =\r\nstreaming y sin lag: ./scripts/replica.ps1 status.\r\n3. Promover la =\r\nr=C3=A9plica: SELECT pg_promote(wait =3D\u003e true, wait_seconds =3D\u003e 30).\r\n4. Repuntar el backend a db-replica: DATABASE_HOST=3Ddb-replica y recrear =\r\nel servicio backend.\r\n5. Esperar /health con status=3Dok y db=3Dup.\r\n6. Registrar el RTO y dejar la primaria vieja detenida hasta reconstruirla.\r\n\r\nResultado:\r\nfailover completado en 5.4s: db-replica promovida y backend =\r\nrepuntado (version=3Ddev)",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "teVgtBOTdbgwpdkqmXAcpKabbwrzwKl_IE2S0h5AvjI=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:30:57 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003ca69798fe-7ccd-3b37-3421-a1dde9b473dc@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id teVgtBOTdbgwpdkqmXAcpKabbwrzwKl_IE2S0h5AvjI=@mailhog.example; Fri, 20 Nov 2026 18:30:57 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=233=5D_PostgresCaido_en_po?= =?UTF-8?Q?stgres-exporter=3A9187_=E2=80=94_aprobad?= =?UTF-8?Q?o?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Incidente #3 aprobado para remediaci=C3=B3n\r\n\r\nT=C3=ADtulo: PostgresCaido en =\r\npostgres-exporter:9187\r\nC=C3=B3digo: PG_PRIMARY_DOWN\r\nSeveridad: critical\r\nEstado: approved\r\nServicio: postgres\r\n\r\nS=C3=ADntoma:\r\nPostgreSQL no responde =\r\n(postgres-exporter:9187)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: PostgresCaido\r\nInstancia: postgres-exporter:9187\r\nSeveridad: critical\r\nDetalle: postgres_exporter no puede conectarse a la base. Acci=C3=B3n: =\r\n`docker compose ps db` y revisar `docker compose logs db`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Confirmar que la primaria no responde: docker =\r\ncompose ps db y pg_isready.\r\n2. Verificar que la r=C3=A9plica sigue en =\r\nstreaming y sin lag: ./scripts/replica.ps1 status.\r\n3. Promover la =\r\nr=C3=A9plica: SELECT pg_promote(wait =3D\u003e true, wait_seconds =3D\u003e 30).\r\n4. Repuntar el backend a db-replica: DATABASE_HOST=3Ddb-replica y recrear =\r\nel servicio backend.\r\n5. Esperar /health con status=3Dok y db=3Dup.\r\n6. Registrar el RTO y dejar la primaria vieja detenida hasta reconstruirla.",
+                                      "Size":  1395,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:30:57.50566391Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=233=5D_PostgresCaido_en_po?=\r\n =?UTF-8?Q?stgres-exporter=3A9187_=E2=80=94_aprobad?= =?UTF-8?Q?o?=\r\nMessage-ID: \u003ca69798fe-7ccd-3b37-3421-a1dde9b473dc@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:30:57 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nIncidente #3 aprobado para remediaci=C3=B3n\r\n\r\nT=C3=ADtulo: PostgresCaido en =\r\npostgres-exporter:9187\r\nC=C3=B3digo: PG_PRIMARY_DOWN\r\nSeveridad: critical\r\nEstado: approved\r\nServicio: postgres\r\n\r\nS=C3=ADntoma:\r\nPostgreSQL no responde =\r\n(postgres-exporter:9187)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: PostgresCaido\r\nInstancia: postgres-exporter:9187\r\nSeveridad: critical\r\nDetalle: postgres_exporter no puede conectarse a la base. Acci=C3=B3n: =\r\n`docker compose ps db` y revisar `docker compose logs db`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Confirmar que la primaria no responde: docker =\r\ncompose ps db y pg_isready.\r\n2. Verificar que la r=C3=A9plica sigue en =\r\nstreaming y sin lag: ./scripts/replica.ps1 status.\r\n3. Promover la =\r\nr=C3=A9plica: SELECT pg_promote(wait =3D\u003e true, wait_seconds =3D\u003e 30).\r\n4. Repuntar el backend a db-replica: DATABASE_HOST=3Ddb-replica y recrear =\r\nel servicio backend.\r\n5. Esperar /health con status=3Dok y db=3Dup.\r\n6. Registrar el RTO y dejar la primaria vieja detenida hasta reconstruirla.",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "0TJlZvPDVPm7ysq0tjzTazL3wWbl9PuOOTx2anSpPiE=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:30:27 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003c5626b628-5133-52a4-b173-f0050f40a9cc@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id 0TJlZvPDVPm7ysq0tjzTazL3wWbl9PuOOTx2anSpPiE=@mailhog.example; Fri, 20 Nov 2026 18:30:27 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=233=5D_PostgresCaido_en_po?= =?UTF-8?Q?stgres-exporter=3A9187_=E2=80=94_creado?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Nuevo incidente #3\r\n\r\nT=C3=ADtulo: PostgresCaido en postgres-exporter:9187\r\nC=C3=B3digo: PG_PRIMARY_DOWN\r\nSeveridad: critical\r\nEstado: open\r\nServicio: postgres\r\n\r\nS=C3=ADntoma:\r\nPostgreSQL no responde =\r\n(postgres-exporter:9187)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: PostgresCaido\r\nInstancia: postgres-exporter:9187\r\nSeveridad: critical\r\nDetalle: postgres_exporter no puede conectarse a la base. Acci=C3=B3n: =\r\n`docker compose ps db` y revisar `docker compose logs db`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Confirmar que la primaria no responde: docker =\r\ncompose ps db y pg_isready.\r\n2. Verificar que la r=C3=A9plica sigue en =\r\nstreaming y sin lag: ./scripts/replica.ps1 status.\r\n3. Promover la =\r\nr=C3=A9plica: SELECT pg_promote(wait =3D\u003e true, wait_seconds =3D\u003e 30).\r\n4. Repuntar el backend a db-replica: DATABASE_HOST=3Ddb-replica y recrear =\r\nel servicio backend.\r\n5. Esperar /health con status=3Dok y db=3Dup.\r\n6. Registrar el RTO y dejar la primaria vieja detenida hasta reconstruirla.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: \"S=C3=8D, =\r\nresolv=C3=A9 el incidente #3\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                      "Size":  1513,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:30:27.378001563Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=233=5D_PostgresCaido_en_po?=\r\n =?UTF-8?Q?stgres-exporter=3A9187_=E2=80=94_creado?=\r\nMessage-ID: \u003c5626b628-5133-52a4-b173-f0050f40a9cc@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:30:27 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nNuevo incidente #3\r\n\r\nT=C3=ADtulo: PostgresCaido en postgres-exporter:9187\r\nC=C3=B3digo: PG_PRIMARY_DOWN\r\nSeveridad: critical\r\nEstado: open\r\nServicio: postgres\r\n\r\nS=C3=ADntoma:\r\nPostgreSQL no responde =\r\n(postgres-exporter:9187)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: PostgresCaido\r\nInstancia: postgres-exporter:9187\r\nSeveridad: critical\r\nDetalle: postgres_exporter no puede conectarse a la base. Acci=C3=B3n: =\r\n`docker compose ps db` y revisar `docker compose logs db`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Confirmar que la primaria no responde: docker =\r\ncompose ps db y pg_isready.\r\n2. Verificar que la r=C3=A9plica sigue en =\r\nstreaming y sin lag: ./scripts/replica.ps1 status.\r\n3. Promover la =\r\nr=C3=A9plica: SELECT pg_promote(wait =3D\u003e true, wait_seconds =3D\u003e 30).\r\n4. Repuntar el backend a db-replica: DATABASE_HOST=3Ddb-replica y recrear =\r\nel servicio backend.\r\n5. Esperar /health con status=3Dok y db=3Dup.\r\n6. Registrar el RTO y dejar la primaria vieja detenida hasta reconstruirla.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: \"S=C3=8D, =\r\nresolv=C3=A9 el incidente #3\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "mS_iCafqigP7V98xBfD1K_wRNKmbgqvkgK4mA4yCYdk=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:30:24 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003c3f859537-83c9-7567-69ce-c0c6a9bb324d@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id mS_iCafqigP7V98xBfD1K_wRNKmbgqvkgK4mA4yCYdk=@mailhog.example; Fri, 20 Nov 2026 18:30:24 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=232=5D_ServicioCaido_en_ht?= =?UTF-8?Q?tp=3A//backend=3A3000/health_=E2=80=94_c?= =?UTF-8?Q?reado?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Nuevo incidente #2\r\n\r\nT=C3=ADtulo: ServicioCaido en http://backend:3000/healt=\r\nh\r\nC=C3=B3digo: ALERTA_GENERICA\r\nSeveridad: critical\r\nEstado: open\r\nServicio: blackbox\r\n\r\nS=C3=ADntoma:\r\nServicio ca=C3=ADdo: =\r\nhttp://backend:3000/health (job blackbox)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ServicioCaido\r\nInstancia: http://backend:3000/health\r\nSeveridad: critical\r\nDetalle: El target http://backend:3000/health lleva =\r\nm=C3=A1s de 2 minutos sin responder. Acci=C3=B3n: `docker compose ps` y =\r\n`docker compose logs \u003cservicio\u003e`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Leer el resumen y la descripci=C3=B3n de la alerta.\r\n2. Revisar Grafana y los logs del servicio afectado.\r\n3. Si no hay impacto, silenciar con justificaci=C3=B3n.\r\n4. Si hay impacto, abrir una incidencia en Mantis y documentar la =\r\nacci=C3=B3n.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: =\r\n\"S=C3=8D, resolv=C3=A9 el incidente #2\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                      "Size":  1348,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:30:24.985648258Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=232=5D_ServicioCaido_en_ht?=\r\n =?UTF-8?Q?tp=3A//backend=3A3000/health_=E2=80=94_c?= =?UTF-8?Q?reado?=\r\nMessage-ID: \u003c3f859537-83c9-7567-69ce-c0c6a9bb324d@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:30:24 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nNuevo incidente #2\r\n\r\nT=C3=ADtulo: ServicioCaido en http://backend:3000/healt=\r\nh\r\nC=C3=B3digo: ALERTA_GENERICA\r\nSeveridad: critical\r\nEstado: open\r\nServicio: blackbox\r\n\r\nS=C3=ADntoma:\r\nServicio ca=C3=ADdo: =\r\nhttp://backend:3000/health (job blackbox)\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ServicioCaido\r\nInstancia: http://backend:3000/health\r\nSeveridad: critical\r\nDetalle: El target http://backend:3000/health lleva =\r\nm=C3=A1s de 2 minutos sin responder. Acci=C3=B3n: `docker compose ps` y =\r\n`docker compose logs \u003cservicio\u003e`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Leer el resumen y la descripci=C3=B3n de la alerta.\r\n2. Revisar Grafana y los logs del servicio afectado.\r\n3. Si no hay impacto, silenciar con justificaci=C3=B3n.\r\n4. Si hay impacto, abrir una incidencia en Mantis y documentar la =\r\nacci=C3=B3n.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: =\r\n\"S=C3=8D, resolv=C3=A9 el incidente #2\".\r\nSi no quer=C3=A9s que se ejecute, =\r\nrespond=C3=A9 \"NO\".",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  },
+                  {
+                      "ID":  "uAjpeT8z4agrP8rvmXBPlH5AKTVN3MRps5t2pIZ4aZ0=@mailhog.example",
+                      "From":  {
+                                   "Relays":  null,
+                                   "Mailbox":  "ops",
+                                   "Domain":  "pi.local",
+                                   "Params":  ""
+                               },
+                      "To":  [
+                                 {
+                                     "Relays":  null,
+                                     "Mailbox":  "operador",
+                                     "Domain":  "pi.local",
+                                     "Params":  ""
+                                 }
+                             ],
+                      "Content":  {
+                                      "Headers":  {
+                                                      "Content-Transfer-Encoding":  [
+                                                                                        "quoted-printable"
+                                                                                    ],
+                                                      "Content-Type":  [
+                                                                           "text/plain; charset=utf-8"
+                                                                       ],
+                                                      "Date":  [
+                                                                   "Fri, 20 Nov 2026 18:30:12 +0000"
+                                                               ],
+                                                      "From":  [
+                                                                   "ops@pi.local"
+                                                               ],
+                                                      "MIME-Version":  [
+                                                                           "1.0"
+                                                                       ],
+                                                      "Message-ID":  [
+                                                                         "\u003cf6346f81-5750-228b-a604-f3f3c1d50ba0@pi.local\u003e"
+                                                                     ],
+                                                      "Received":  [
+                                                                       "from [127.0.0.1] by mailhog.example (MailHog)\r\n          id uAjpeT8z4agrP8rvmXBPlH5AKTVN3MRps5t2pIZ4aZ0=@mailhog.example; Fri, 20 Nov 2026 18:30:12 +0000"
+                                                                   ],
+                                                      "Return-Path":  [
+                                                                          "\u003cops@pi.local\u003e"
+                                                                      ],
+                                                      "Subject":  [
+                                                                      "=?UTF-8?Q?=5BINCIDENTE_=231=5D_ReplicacionAtrasada?= =?UTF-8?Q?_en_desconocido_=E2=80=94_creado?="
+                                                                  ],
+                                                      "To":  [
+                                                                 "operador@pi.local"
+                                                             ]
+                                                  },
+                                      "Body":  "Nuevo incidente #1\r\n\r\nT=C3=ADtulo: ReplicacionAtrasada en desconocido\r\nC=C3=B3digo: PG_REPLICA_LAG\r\nSeveridad: critical\r\nEstado: open\r\nServicio: db\r\n\r\nS=C3=ADntoma:\r\nReplicaci=C3=B3n atrasada o cortada\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ReplicacionAtrasada\r\nInstancia: desconocida\r\nSeveridad: critical\r\nDetalle: El lag de WAL supera 100 MB o no hay ninguna r=C3=A9plica =\r\nconectada. Acci=C3=B3n: `./scripts/replica.ps1 status` y revisar `docker =\r\ncompose logs db-replica`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Medir el lag: ./scripts/replica.ps1 lag.\r\n2. Revisar I/O y red del host.\r\n3. Si el lag no baja, evaluar reiniciar la r=C3=A9plica con .=\r\n/scripts/replica.ps1 reinit.\r\n4. No promover una r=C3=A9plica atrasada sin =\r\ndeclarar la p=C3=A9rdida de datos.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: \"S=C3=8D, resolv=C3=A9 el incidente #1\"=\r\n.\r\nSi no quer=C3=A9s que se ejecute, respond=C3=A9 \"NO\".",
+                                      "Size":  1274,
+                                      "MIME":  null
+                                  },
+                      "Created":  "2026-11-20T18:30:12.485637689Z",
+                      "MIME":  null,
+                      "Raw":  {
+                                  "From":  "ops@pi.local",
+                                  "To":  [
+                                             "operador@pi.local"
+                                         ],
+                                  "Data":  "From: ops@pi.local\r\nTo: operador@pi.local\r\nSubject: =?UTF-8?Q?=5BINCIDENTE_=231=5D_ReplicacionAtrasada?=\r\n =?UTF-8?Q?_en_desconocido_=E2=80=94_creado?=\r\nMessage-ID: \u003cf6346f81-5750-228b-a604-f3f3c1d50ba0@pi.local\u003e\r\nContent-Transfer-Encoding: quoted-printable\r\nDate: Fri, 20 Nov 2026 18:30:12 +0000\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=utf-8\r\n\r\nNuevo incidente #1\r\n\r\nT=C3=ADtulo: ReplicacionAtrasada en desconocido\r\nC=C3=B3digo: PG_REPLICA_LAG\r\nSeveridad: critical\r\nEstado: open\r\nServicio: db\r\n\r\nS=C3=ADntoma:\r\nReplicaci=C3=B3n atrasada o cortada\r\n\r\nDiagn=C3=B3stico:\r\nAlerta: ReplicacionAtrasada\r\nInstancia: desconocida\r\nSeveridad: critical\r\nDetalle: El lag de WAL supera 100 MB o no hay ninguna r=C3=A9plica =\r\nconectada. Acci=C3=B3n: `./scripts/replica.ps1 status` y revisar `docker =\r\ncompose logs db-replica`.\r\n\r\nSoluci=C3=B3n propuesta:\r\n1. Medir el lag: ./scripts/replica.ps1 lag.\r\n2. Revisar I/O y red del host.\r\n3. Si el lag no baja, evaluar reiniciar la r=C3=A9plica con .=\r\n/scripts/replica.ps1 reinit.\r\n4. No promover una r=C3=A9plica atrasada sin =\r\ndeclarar la p=C3=A9rdida de datos.\r\n\r\nAcci=C3=B3n requerida:\r\nRespond=C3=A9 a Hermes en Telegram: \"S=C3=8D, resolv=C3=A9 el incidente #1\"=\r\n.\r\nSi no quer=C3=A9s que se ejecute, respond=C3=A9 \"NO\".",
+                                  "Helo":  "[127.0.0.1]"
+                              }
+                  }
+              ]
+}
