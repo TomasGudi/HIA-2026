@@ -31,11 +31,11 @@ function Get-EnvValue([string]$key, [string]$default) {
 $dbUser = Get-EnvValue 'POSTGRES_USER' 'practica_app'
 $dbName = Get-EnvValue 'POSTGRES_DB' 'practica'
 
-function Invoke-Psql([string[]]$args, [switch]$NoTty) {
+function Invoke-Psql([string[]]$SqlArgs, [switch]$NoTty) {
   $flags = @('compose','exec')
   if ($NoTty) { $flags += '-T' }
   $flags += @('db','psql','-U',$dbUser,'-d',$dbName,'-v','ON_ERROR_STOP=1')
-  & docker @flags @args
+  & docker @flags @SqlArgs
   if ($LASTEXITCODE -ne 0) { throw "psql falló (exit $LASTEXITCODE)" }
 }
 
@@ -66,7 +66,7 @@ switch ($Action) {
   }
   'stats' {
     Invoke-Psql @('-c', @'
-SELECT relname AS tabla,
+SELECT t.relname AS tabla,
        n_live_tup AS filas_aprox,
        pg_size_pretty(pg_total_relation_size(c.oid)) AS tamano_total
 FROM pg_stat_user_tables t
