@@ -39,6 +39,10 @@ git fetch origin; git rev-parse --short origin/main
 # 4. verificar los 4 accesos
 curl.exe -s http://127.0.0.1:8090/health
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8081/
+
+# 4b. el borde pide Basic auth antes de pgAdmin: 401 sin credenciales, 200 con ellas
+curl.exe -s -o NUL -w "sin auth -> %{http_code}`n" http://127.0.0.1:8088/browser/
+curl.exe -s -o NUL -w "con auth -> %{http_code}`n" -u "admin:CONTRASENA_DEL_BORDE" http://127.0.0.1:8088/browser/
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:3001/login
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:5678/
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8082/login
