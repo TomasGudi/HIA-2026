@@ -23,6 +23,9 @@ services:
       MCP_TOKEN: ${MCP_TOKEN}
       # API key del MCP de RAGFlow (motor documental)
       RAGFLOW_API_KEY: ${RAGFLOW_API_KEY}
+      # Telegram: el bot solo atiende a los IDs listados
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_ALLOWED_USERS: ${TELEGRAM_ALLOWED_USERS}
       # proveedor del modelo
       OPENCODE_GO_API_KEY: ${OPENCODE_GO_API_KEY}
       # respuestas largas: el default corta antes de terminar
