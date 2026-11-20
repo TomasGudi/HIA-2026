@@ -429,9 +429,12 @@ de los diagramas existe en <code>compose.yaml</code> y se puede verificar con <c
     N8N --> MAN
     GRAF --> PROM
 </pre>
-<p>Cinco contenedores de aplicación (<code>frontend</code>, <code>backend</code>, <code>db</code>, <code>db-replica</code>, <code>pgadmin</code>) y ocho de
-operación (<code>mantis</code>, <code>nextcloud</code>, <code>prometheus</code>, <code>alertmanager</code>, <code>grafana</code>, <code>n8n</code>, <code>edge</code>, <code>registry</code>),
-más cuatro exporters. Todos los puertos publicados están en <code>127.0.0.1</code>.</p>
+<p>Cinco contenedores de aplicación (<code>frontend</code>, <code>backend</code>, <code>db</code>, <code>db-replica</code>, <code>pgadmin</code>) y nueve de
+operación (<code>mantis</code>, <code>nextcloud</code>, <code>taiga-gateway</code>, <code>prometheus</code>, <code>alertmanager</code>, <code>grafana</code>, <code>n8n</code>,
+<code>edge</code>, <code>registry</code>), más cuatro exporters. Todos los puertos publicados están en <code>127.0.0.1</code>.
+Taiga es la única herramienta que arrastra una arquitectura interna propia: además del gateway suma
+su base, dos RabbitMQ, el backend Django, el worker asíncrono, los eventos y el servidor de adjuntos
+(nueve contenedores en la red <code>pi-taiganet</code>).</p>
 <h2 id="2-componentes-y-responsabilidades">2. Componentes y responsabilidades</h2>
 <table>
 <thead>
@@ -484,6 +487,12 @@ más cuatro exporters. Todos los puertos publicados están en <code>127.0.0.1</c
 <td>Gestión documental con permisos por grupo (§12)</td>
 <td>Nextcloud 30 sobre PostgreSQL</td>
 <td><code>127.0.0.1:8082</code></td>
+</tr>
+<tr>
+<td><code>taiga-gateway</code></td>
+<td>Tablero Scrum: backlog, sprints, épicas y puntos (§2)</td>
+<td>Taiga 6.10 (nginx + Django + PostgreSQL)</td>
+<td><code>127.0.0.1:8084</code></td>
 </tr>
 <tr>
 <td><code>prometheus</code></td>
@@ -575,6 +584,12 @@ más cuatro exporters. Todos los puertos publicados están en <code>127.0.0.1</c
 <td><code>dbnet</code></td>
 <td><code>127.0.0.1:8082</code></td>
 <td>perfil <code>ops</code>; túnel directo (login propio)</td>
+</tr>
+<tr>
+<td><code>taiga-gateway</code></td>
+<td><code>taiganet</code></td>
+<td><code>127.0.0.1:8084</code></td>
+<td>perfil <code>ops</code>; red propia para no exponer su base</td>
 </tr>
 <tr>
 <td><code>prometheus</code></td>
@@ -1203,8 +1218,12 @@ curl.exe http://127.0.0.1:8090/health
 <h3>Paso 7 — Servicios de operación</h3>
 <pre><code class="language-powershell">docker compose --profile ops up -d
 </code></pre>
-<p>Levanta Mantis, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
+<p>Levanta Mantis, Taiga, Prometheus, Alertmanager, Grafana, exporters, n8n, el borde administrativo y el
 registro local. Sin <code>--profile ops</code> el stack queda en modo mínimo (solo app + base).</p>
+<p>Taiga necesita un primer arranque propio: crea el administrador, los usuarios de trabajo y carga el
+backlog desde los CSV del repo. Es idempotente, se puede repetir sin duplicar nada.</p>
+<pre><code class="language-powershell">./scripts/taiga.ps1 init
+</code></pre>
 <h3>Paso 8 — Verificación integral</h3>
 <pre><code class="language-powershell">./scripts/monitoreo.ps1 status
 ./scripts/publicar.ps1 up
@@ -1256,6 +1275,11 @@ registro local. Sin <code>--profile ops</code> el stack queda en modo mínimo (s
 <td>login y proyecto <code>HIA-2026</code></td>
 </tr>
 <tr>
+<td>Taiga</td>
+<td><code>http://127.0.0.1:8084</code></td>
+<td>login y tablero con 15 épicas y 124 historias</td>
+</tr>
+<tr>
 <td>n8n</td>
 <td><code>http://127.0.0.1:5678</code></td>
 <td>flujo <code>01-alerta-a-mantis</code> activo</td>
@@ -1287,6 +1311,16 @@ registro local. Sin <code>--profile ops</code> el stack queda en modo mínimo (s
 <td>8081</td>
 <td>Mantis</td>
 <td></td>
+</tr>
+<tr>
+<td>8082</td>
+<td>Nextcloud</td>
+<td></td>
+</tr>
+<tr>
+<td>8084</td>
+<td>Taiga</td>
+<td>tablero Scrum</td>
 </tr>
 <tr>
 <td>8090</td>
@@ -1474,6 +1508,27 @@ para §6 y §10, no para que la aplicación funcione.</p></section><section clas
 <td><code>nextcloud:30-apache</code></td>
 <td><code>127.0.0.1:8082</code></td>
 <td><code>dbnet</code></td>
+<td><code>ops</code></td>
+</tr>
+<tr>
+<td><code>taiga-gateway</code></td>
+<td><code>nginx:1.27-alpine</code></td>
+<td><code>127.0.0.1:8084</code></td>
+<td><code>taiganet</code></td>
+<td><code>ops</code></td>
+</tr>
+<tr>
+<td><code>taiga-back</code></td>
+<td><code>taigaio/taiga-back:6.10.2</code></td>
+<td>— (solo <code>expose 8000</code>)</td>
+<td><code>taiganet</code></td>
+<td><code>ops</code></td>
+</tr>
+<tr>
+<td><code>taiga-db</code></td>
+<td><code>postgres:16-alpine</code></td>
+<td>—</td>
+<td><code>taiganet</code></td>
 <td><code>ops</code></td>
 </tr>
 </tbody>
@@ -5137,6 +5192,13 @@ correspondía".</p>
 <td>el flujo se validó por API y con el navegador, pero sin set de capturas sistemático</td>
 <td>el E2E por API cubre los mismos pasos y queda versionado</td>
 <td>agregar Playwright con capturas en CI</td>
+</tr>
+<tr>
+<td>G4</td>
+<td><strong>Taiga no tiene campo de prioridad</strong></td>
+<td>el modelo de Taiga usa puntos y orden de backlog, no prioridad</td>
+<td>la prioridad viaja como etiqueta <code>prio-alta</code>/<code>prio-media</code>/<code>prio-baja</code>, filtrable</td>
+<td>campo personalizado o mover la prioridad al orden del backlog</td>
 </tr>
 </tbody>
 </table>

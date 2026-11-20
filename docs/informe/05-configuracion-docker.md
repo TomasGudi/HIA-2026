@@ -10,6 +10,9 @@
 | `frontend` | build `./app/frontend` | `127.0.0.1:8090` | `appnet` | — |
 | `mantis` | build `./app/mantis` | `127.0.0.1:8081` | `dbnet` | `ops` |
 | `nextcloud` | `nextcloud:30-apache` | `127.0.0.1:8082` | `dbnet` | `ops` |
+| `taiga-gateway` | `nginx:1.27-alpine` | `127.0.0.1:8084` | `taiganet` | `ops` |
+| `taiga-back` | `taigaio/taiga-back:6.10.2` | — (solo `expose 8000`) | `taiganet` | `ops` |
+| `taiga-db` | `postgres:16-alpine` | — | `taiganet` | `ops` |
 
 Regla transversal: **ningún puerto se publica fuera de `127.0.0.1`**. La publicación a Internet
 es por túnel (§9), no abriendo puertos.

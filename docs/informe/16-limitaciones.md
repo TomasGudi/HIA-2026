@@ -57,6 +57,7 @@ Criterio: cada limitación tiene **causa**, **riesgo aceptado** y **qué haría 
 | G1 | **Nextcloud sin SSO/LDAP ni backup propio** | usuarios locales y volumen en el mismo host | la documentación está además versionada en Git, que es la fuente de verdad | SSO (SAML/LDAP) y backup del volumen |
 | G2 | **HS2-32 sin revisión cruzada real** | una sola cuenta de GitHub; GitHub no permite autoaprobar un PR | los 10 PRs tienen CI obligatorio y revisión del propio autor documentada | incorporar un segundo integrante con cuenta |
 | G3 | **HS2-67 sin E2E manual con capturas** | el flujo se validó por API y con el navegador, pero sin set de capturas sistemático | el E2E por API cubre los mismos pasos y queda versionado | agregar Playwright con capturas en CI |
+| G4 | **Taiga no tiene campo de prioridad** | el modelo de Taiga usa puntos y orden de backlog, no prioridad | la prioridad viaja como etiqueta `prio-alta`/`prio-media`/`prio-baja`, filtrable | campo personalizado o mover la prioridad al orden del backlog |
 
 ## 7. Limitaciones de publicación
 

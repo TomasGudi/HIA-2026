@@ -17,13 +17,16 @@ no solo screenshot. Estado: ☐ pendiente · ◐ en curso · ☑ listo · ✗ re
 
 | ☐ | Entregable | Evidencia esperada |
 |---|---|---|
-| ☐ | Tablero (GitHub Projects / Jira) | link público + screenshot del board |
-| ☐ | Product Backlog | `docs/01-product-backlog.csv` cargado como issues |
-| ☐ | Plan de sprints | `docs/00-plan-proyecto.md` §3 |
-| ☐ | Responsables y criterios de aceptación | columnas Owner + Criterio del backlog |
+| ☐ | Tablero (Taiga autoalojado) | `127.0.0.1:8084` + `evidence/02/taiga-backlog.png` |
+| ☐ | Product Backlog | 15 épicas y 124 historias cargadas desde `backlog/jira-import.csv` |
+| ☐ | Plan de sprints | 5 sprints en Taiga (`Sprint 1..5`), 1-3 cerrados |
+| ☐ | Responsables y criterios de aceptación | 3 responsables por sección + criterios en la descripción |
 | ☐ | Evidencias de seguimiento | 3+ dailies en `docs/dailies/` + changelog de alcance |
 
 > El backlog debe incluir infra, pruebas, seguridad y documentación — ya está en el CSV (E4..E15).
+>
+> El tablero vive en **Taiga local** (§2, decisión D-25). Jira Cloud quedó como historial: el estado
+> real de las 139 incidencias al migrar está en `backlog/jira-estados.csv`.
 
 ## §3 Control de versiones — R2
 
