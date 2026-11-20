@@ -37,10 +37,14 @@ start http://127.0.0.1:9119
 ## Verificar la conexión MCP
 
 ```powershell
-docker exec pi-hermes hermes mcp catalog    # debe listar `practica  custom — enabled`
+docker exec pi-hermes hermes mcp catalog    # debe listar `practica` y `ragflow`
 docker exec pi-hermes sh -c "grep 'MCP:' /opt/data/logs/agent.log | tail -2"
-# MCP: registered 5 tool(s) from 1 server(s)
+# MCP: registered 7 tool(s) from 2 server(s)
 ```
+
+`practica` responde sobre los datos de la aplicación; `ragflow` (extra) sobre la
+documentación indexada. El segundo requiere el stack de RAGFlow levantado y el
+contenedor conectado a la red `docker_ragflow` (ya declarada en `compose.yaml`).
 
 Si dice `Name or service not known`, el contenedor del MCP no está en
 `pi-appnet` o cambió de nombre: la URL de `config.yaml` usa el alias `mcp`.

@@ -21,6 +21,8 @@ services:
     environment:
       # token del servidor MCP (se resuelve desde el .env del proyecto)
       MCP_TOKEN: ${MCP_TOKEN}
+      # API key del MCP de RAGFlow (motor documental)
+      RAGFLOW_API_KEY: ${RAGFLOW_API_KEY}
       # proveedor del modelo
       OPENCODE_GO_API_KEY: ${OPENCODE_GO_API_KEY}
       # respuestas largas: el default corta antes de terminar
@@ -39,6 +41,8 @@ services:
       - "127.0.0.1:8642:8642"
     networks:
       - appnet
+      # red de RAGFlow (extra): el agente llega a http://pi-ragflow:9380
+      - ragflow
 
 volumes:
   hermes_data:
@@ -48,4 +52,8 @@ networks:
   # red de la aplicación, ya creada por el compose principal
   appnet:
     name: pi-appnet
+    external: true
+  # red del stack de RAGFlow (docker/ de ragflow), creada aparte
+  ragflow:
+    name: docker_ragflow
     external: true

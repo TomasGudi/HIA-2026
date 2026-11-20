@@ -128,3 +128,72 @@ consultar datos reales.
 | Sin caché de tags | `GET /api/tags` tarda ~4 s; se prefirió no esconder latencia real |
 | El agente no ejecuta comandos ni toca archivos | su alcance es la plataforma, por diseño (SOUL.md) |
 | Sin cuota por usuario en el MCP | un solo cliente interno autenticado; el rate limit de nginx cubre la API pública |
+
+## 9. Segundo motor: RAGFlow (extra)
+
+El MCP `practica` responde sobre datos vivos. No responde "qué RTO medimos en el
+failover": eso está en `docs/`, no en la base. Para cerrar esa brecha se sumó
+**RAGFlow 1.0** como motor documental, con su propio servidor MCP.
+
+```
+                       ┌──────────────────────────┐
+   pregunta ─────────▶ │  Hermes (pi-hermes)      │
+                       └───────┬──────────┬───────┘
+                               │          │
+                    MCP practica│          │MCP ragflow
+                               ▼          ▼
+                     ┌──────────────┐  ┌────────────────────┐
+                     │ app/mcp      │  │ RAGFlow (pi-ragflow)│
+                     │ datos vivos  │  │ 643 chunks de docs/ │
+                     └──────┬───────┘  └─────────┬──────────┘
+                            │                    │
+                     backend + PostgreSQL    Infinity + MySQL
+```
+
+### 9.1 Qué se configuró
+
+| Pieza | Decisión |
+|---|---|
+| Motor de documentos | **Infinity** (evita `vm.max_map_count` de Elasticsearch en WSL2) |
+| Embeddings | **TEI** con `paraphrase-multilingual-MiniLM-L12-v2` (local, ~470 MB, español) |
+| Corpus | 26 documentos de `docs/` (informe 01–16, guion de demo y anexos) → **643 chunks** |
+| Puerto | 8095 UI, 9380 API/MCP, 9381 admin — todos en `127.0.0.1` |
+| Proveedor | instancia `default` de `OpenAI-API-Compatible` apuntando a `http://tei:80` |
+
+Los detalles de despliegue y las trampas de la API quedaron en
+`automation/ragflow/README.md` y el script idempotente en
+`scripts/ragflow-ingestar.mjs`.
+
+### 9.2 Integración
+
+Hermes tiene **dos** servidores MCP declarados en `automation/hermes/config.yaml`.
+RAGFlow expone tres herramientas; se habilitaron dos de solo lectura:
+`ragflow_retrieval` y `ragflow_list_datasets`. El registro al arrancar reporta
+`MCP: registered 7 tool(s) from 2 server(s)`.
+
+### 9.3 Resultado
+
+`evidence/extra-mcp/ragflow-demo.md`:
+
+| Pregunta | Respuesta | Citas |
+|---|---|---|
+| RTO del failover y divergencia | 8,6 s (promoción 1,2 s) y la escritura perdida en el nodo promovido | `08-replicacion.md` §4 y §6, `16-limitaciones.md` A1, `02-arquitectura.md` §5 |
+| Limitaciones de Mantis | corre como root porque Apache necesita el puerto 80 y escribir en el web root | `16-limitaciones.md` §7 y §4 (S1), `14-seguridad.md` §3.3 |
+
+El agente citó archivo y sección, y aclaró que las herramientas de la plataforma
+no pueden verificar en vivo el usuario del proceso: distingue lo documentado de
+lo observable.
+
+### 9.4 Costo y límites
+
+| Punto | Valor |
+|---|---|
+| Contenedores nuevos | 6 + TEI |
+| RAM en reposo | ~4,5 GB |
+| Disco | ~20 GB de imágenes |
+| Duplicación | MySQL, object storage y colas propios: **no** reemplaza la arquitectura de la práctica |
+
+Se declara como **alternativa evaluada**, no como parte del stack principal: el
+proyecto sigue funcionando sin RAGFlow, y el agente solo pierde las respuestas
+documentales.
+
