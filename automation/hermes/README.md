@@ -49,6 +49,31 @@ contenedor conectado a la red `docker_ragflow` (ya declarada en `compose.yaml`).
 Si dice `Name or service not known`, el contenedor del MCP no está en
 `pi-appnet` o cambió de nombre: la URL de `config.yaml` usa el alias `mcp`.
 
+## Telegram
+
+El bot atiende en privado y **solo** a los IDs de `TELEGRAM_ALLOWED_USERS`:
+
+```powershell
+# en .env
+TELEGRAM_BOT_TOKEN=123456:ABC...
+TELEGRAM_ALLOWED_USERS=7648327101
+
+docker compose -f automation/hermes/compose.yaml --env-file .env up -d
+docker logs pi-hermes 2>&1 | Select-String "Telegram"
+# [Telegram] Connected to Telegram (polling mode)
+```
+
+Verificación rápida:
+
+```powershell
+# si Hermes está haciendo polling, Telegram responde 409
+curl.exe -s "https://api.telegram.org/bot$env:TELEGRAM_BOT_TOKEN/getUpdates?timeout=0"
+```
+
+El bot usa el mismo `config.yaml`, así que desde Telegram tiene las mismas
+herramientas MCP que por consola: `estado_plataforma`, `listar_articulos`,
+`estadisticas_bd` y `ragflow_retrieval`.
+
 ## Apagarlo
 
 ```powershell
