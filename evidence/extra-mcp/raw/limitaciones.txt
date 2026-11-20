@@ -1,0 +1,132 @@
+docker.exe : ⚠ install out of sync (pnpm: not installed or outdated) — this docker-managed install must rebuild the 
+artifact to fix
+At C:\Users\tomas\OneDrive\Documents\tarea\final-mcp\scripts\ragflow-demo.ps1:46 char:14
++ ...    $crudo = & docker exec pi-hermes hermes chat -q $p.texto 2>&1 | Ou ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (⚠ install out o...artifact to fix:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Query: Que limitaciones declaramos sobre Mantis y por que corre como root? Cita 
+el documento.
+
+────────────────────────────────────────
+The user asks: "Qué limitaciones declaramos sobre Mantis y por qué corre como root? Cita el
+ documento."
+
+Mantis is a bug tracker. This seems related to the Conduit platform docs. I need to find a document
+ that declares limitations about Mantis and why it runs as root. Let me search the workspace /
+ files.
+
+Let me search files for "Mantis".
+∴ Thought for 1s
+────────────────────────────────────────
+
+🔎 Grep Mantis  2.0s
+🔎 Find *mantis*  2.0s
+
+────────────────────────────────────────
+No Mantis docs in /opt/hermes. Maybe there's a "practica" MCP tool that can search
+ documents. Or maybe a RAGFlow dataset. The user asks about a document declaring limitations about Mant
+is and why it runs as root. This sounds like an infrastructure doc — maybe in an Obs
+idian vault or in the practica platform docs.
+
+There's mcp__practica tools but they're about Conduit articles. And ragflow tools for
+ knowledge bases. Let me check ragflow datasets — maybe there's a doc there.
+
+Also let me search broader: /opt/data, /mnt/c/Users.
+
+Let me batch: search for "Mantis" in /opt/data and /mnt, plus list ragflow datasets.
+∴ Thought for 2s
+────────────────────────────────────────
+
+🔎 Grep Mantis|mantis
+🔌 Ragflow · ragflow list datasets
+
+────────────────────────────────────────
+There's a RAGFlow dataset "practica-documentacion". Let's retrieve chunks about Mantis limitations
+ and root.
+
+Let me check the tool schema for ragflow_retrieval.
+∴ Thought for 1s
+────────────────────────────────────────
+
+📖 Reading tool details · 1 tool
+✗ Unnamed call [tool_call calls[0] requires a 'name']
+⚡ Unnamed call
+🔌 Ragflow · ragflow retrieval  0.1s
+🔌 Ragflow · ragflow retrieval
+
+────────────────────────────────────────
+We have solid citations. Key sources:
+
+1. `16-limitaciones.md`, §7 "Limitaciones declaradas" — table: Mantis corre como root / Mot
+ivo: Apache necesita el puerto 80 y escribir en el web root / Riesgo aceptado: mitig
+ado con borde autenticado y /admin bloqueado. Also §4 "Limitaciones de seguridad" S
+1 with "Para cerrarla: imagen con su-exec y puerto alto".
+
+2. `14-seguridad.md`, §3.3 Semgrep — 6 hallazgos dockerfile.security.missing-user en app
+/mantis/Dockerfile (Apache corre como root); is the same hallazgo the matrix declares; no se corrig
+e porque Apache necesita el puerto 80 y escribir en el web root; se mitiga con borde autenticado y
+ /admin bloqueado.
+
+3. `informe-consolidado.md` has the same tables (consolidated report).
+
+4. `03-checklist-entregables.md` has a one-line summary: "Limitaciones declaradas: Mant
+is corre como root, Prometheus/Grafana sin auth propia, tar y zlib con CVE crítica
+ sin fix compatible."
+
+Should I verify the running container actually runs as root? The user asks "por qué corre como root"
+ — the reason is documented. But it might be worth checking live state via estado_plata
+forma? That tool returns health, not process user. Hmm. The question is about documentation. But I
+ could also check docker if reachable... My scope says I don't execute commands; the
+ platform tools are the source. Let me not run docker. However "verification" — maybe check
+ estado_plataforma to see if there's data. Actually not needed; but a quick check of whether
+ the doc claim matches live state would be valuable. The practica tools don't expose
+ process users. I'll note that.
+
+Let me quote precisely. Quote the S1 row from 16-limitaciones.md §4 and the one-line summary
+ from 03-checklist-entregables.md.
+
+Also the Semgrep quote from 14-seguridad.md §3.3.
+
+Note OCR-ish nuance: 14-seguridad.md says "no se corrige porque Apache necesita el puerto 80 y
+ escribir en el web root; se mitiga con el borde autenticado y /admin bloqueado" — consistent.
+
+
+Answer in Spanish, plain text, brief, with citation. Also mention where the same appears
+ (informe-consolidado.md duplicates).
+
+Format: plain text, no markdown. Provide quotes with document name and section.
+∴ Thought for 7s
+────────────────────────────────────────
+
+────────────────────────────────────────
+☤ Hermes
+Según la documentación de la práctica (dataset practica-documentacion), hay tres documentos que lo declaran, y coinciden.Fuente principal: 16-limitaciones.md, §7 "Limitaciones declaradas" (tabla Limitación / Motivo / Riesgo aceptado):
+
+  "Mantis corre como root | Apache necesita el puerto 80 y escribir en el web root | mitigado con borde autenticado y /admin bloqueado"
+
+La misma limitación aparece en el §4 "Limitaciones de seguridad" de ese documento, como S1, con dos columnas más:
+
+  "S1 | Mantis corre como root | Apache necesita el puerto 80 y escribir en el web root | mitigado con borde autenticado y /admin bloqueado (403) | Para cerrarla: imagen con su-exec y puerto alto"
+
+Y en 14-seguridad.md, §3.3 Semgrep, que explica por qué se acepta el hallazgo en vez de corregirlo:
+
+  "Semgrep --config=auto sobre app/: 6 hallazgos, todos dockerfile.security.missing-user en app/mantis/Dockerfile (Apache corre como root). Es el mismo hallazgo que declara la matriz: no se corrige porque Apache necesita el puerto 80 y escribir en el web root; se mitiga con el borde autenticado y /admin bloqueado."
+
+Resumen de las dos preguntas:
+
+- Por qué corre como root: decisión de diseño del contenedor, no un descuido. Apache necesita bindear el puerto 80 (privilegiado) y escribir en el web root; en lugar de montar una imagen con su-exec y puerto alto, se aceptó el privilegio.
+- Qué limitaciones se declaran: (a) el proceso corre como root — hallazgo de Semgrep dockerfile.security.missing-user, 6 ocurrencias en app/mantis/Dockerfile; (b) riesgo aceptado = mitigado por borde autenticado + /admin bloqueado con 403; (c) cierre pendiente = imagen con su-exec y puerto alto.
+
+Contexto adicional de la misma lista: 03-checklist-entregables.md lo resume en una línea — "Limitaciones declaradas: Mantis corre como root, Prometheus/Grafana sin auth propia, tar y zlib con CVE crítica sin fix compatible" — y el informe-consolidado.md reproduce las mismas tablas.
+
+Aclaración: esto es lo que declara el documento. Las herramientas de la plataforma (estado_plataforma, estadisticas_bd) no exponen el usuario de proceso de los contenedores, así que no puedo verificar en vivo que hoy siga corriendo como root; solo cito lo documentado.
+────────────────────────────────────────
+
+Resume this session with:
+  hermes --resume local-5070262d6ff529969fe5b8b515cd6f65d04225512a294ef128592c87937c5f51
+
+Session:        local-5070262d6ff529969fe5b8b515cd6f65d04225512a294ef128592c87937c5f51
+Duration:       1m 10s
+Messages:       15 (1 user, 13 tool calls)

@@ -1,0 +1,20 @@
+# Override local de TEI para la Práctica Integradora (extra RAGFlow).
+#
+# El compose oficial hornea dos modelos en /data (bge-m3 y bge-small-en-v1.5).
+# bge-m3 multilingüe consume ~16 GB de RAM en CPU; bge-small-en es solo inglés.
+# Acá se usa un MiniLM multilingüe liviano, descargado a un volumen propio.
+
+services:
+  tei-cpu:
+    command:
+      - --model-id
+      - sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2
+      - --auto-truncate
+      - --huggingface-hub-cache
+      - /cache
+    volumes:
+      - tei_cache:/cache
+
+volumes:
+  tei_cache:
+    name: pi-ragflow-tei-cache

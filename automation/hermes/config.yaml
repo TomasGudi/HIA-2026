@@ -27,7 +27,25 @@ mcp_servers:
       resources: false
       prompts: false
 
+  # RAGFlow (extra): motor documental con su propio servidor MCP.
+  # Responde sobre la documentación del proyecto (docs/) con fragmentos citados.
+  ragflow:
+    url: "http://pi-ragflow:9380/api/v1/mcp"
+    enabled: true
+    headers:
+      Authorization: "Bearer ${RAGFLOW_API_KEY}"
+    connect_timeout: 30
+    timeout: 90
+    tools:
+      # solo lectura: alcanza para preguntar sobre la documentación
+      include: [ragflow_retrieval, ragflow_list_datasets]
+      resources: false
+      prompts: false
+
 # No encadenar decenas de llamadas: el agente responde con una o dos tools.
 tool_loop_guardrails:
   non_interactive_hard_stop_enabled: true
 _config_version: 53
+onboarding:
+  seen:
+    tool_progress_prompt: true
