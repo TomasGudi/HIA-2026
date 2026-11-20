@@ -42,6 +42,7 @@ curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8081/
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:3001/login
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:5678/
 curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8082/login
+curl.exe -s -o NUL -w "%{http_code}`n" http://127.0.0.1:8084/api/v1/
 
 # 5. targets de Prometheus en UP
 Start-Process http://127.0.0.1:9090/targets
@@ -53,7 +54,7 @@ Start-Process http://127.0.0.1:9090/targets
 ### T-5 min
 
 - Cerrar Slack/Discord/actualizaciones. Modo avión en el celular **excepto** el hotspot del bloque 1.
-- Abrir 6 pestañas en orden: app pública, Grafana, Prometheus/alertas, Mantis, n8n, GitHub PR #10.
+- Abrir 7 pestañas en orden: app pública, Grafana, Prometheus/alertas, Mantis, n8n, **Taiga**, GitHub PR #10.
 - Terminal 1: repo en `main`. Terminal 2: `psql` abierto con `./scripts/db.ps1 psql`.
 - Tener `docs/20-guion-demo.md` impreso: el que habla no mira la pantalla para saber qué sigue.
 
@@ -233,7 +234,8 @@ Cerrar con la URL pública en pantalla y el repo:
 | ¿Qué pasa si cae la primaria? | promoción manual, RTO 8,6 s, divergencia documentada | 08 |
 | ¿El rollback es automático? | sí, si `/health` no responde en 90 s | 09 |
 | ¿Por qué el umbral de CPU es 85%? | por debajo, el stack normal ya roza el 60-70% | 11 |
-| ¿Mantis o Jira? | Jira para Scrum, Mantis para incidencias: son propósitos distintos | 12 |
+| ¿Mantis o Jira? | Taiga para Scrum, Mantis para incidencias: son propósitos distintos (D-06) | 12 |
+| ¿Por qué no Jira? | Se probó Jira Data Center local: exige licencia de 30 días. Taiga es Scrum nativo y no vence (D-25) | 2 |
 | ¿Qué pasa si n8n está caído? | Alertmanager reintenta; la ejecución queda en error | 13 |
 | ¿La app es segura? | no se afirma: se midió. ZAP 0 fallos, 2 CVE declaradas | 14 |
 | ¿Dónde está la documentación? | Nextcloud con 17 carpetas y permisos por grupo; el repo es la fuente | 12 |

@@ -1,6 +1,20 @@
 # Product Backlog
 
-## Estado real en Jira (13/11/2026)
+## Tablero local: Taiga (20/11/2026)
+
+El tablero de trabajo ya no es Jira Cloud: vive en **Taiga 6.10** dentro del
+`compose.yaml` (perfil `ops`), decisión **D-25**.
+
+- URL local: `http://127.0.0.1:8084` — proyecto `HIA-2026` (slug `hia-2026`)
+- Contenido migrado: **15 épicas, 124 historias, 5 sprints, 3 responsables**
+- Carga reproducible: `./scripts/taiga.ps1 init` (idempotente)
+- Estructura: `jira-import.csv` (136 filas = 15 épicas + 121 ítems)
+- Estado real: `jira-estados.csv` (139 incidencias con el estado que tenían al migrar)
+
+Jira Cloud se conserva **como historial**: ahí se hizo el seguimiento diario y de
+ahí salieron los estados que Taiga reproduce.
+
+## Estado real en Jira Cloud (historial, 13/11/2026)
 
 - Sitio: `tomassgudi-1794538432846.atlassian.net` · Proyecto **HIA-Scrum-2026 (`HS2`)** · Scrum, **team-managed**
 - Board: https://tomassgudi-1794538432846.atlassian.net/jira/software/projects/HS2/boards/3

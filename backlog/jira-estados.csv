@@ -1,0 +1,140 @@
+key|estado|resumen
+HS2-1|Por hacer|E01 Selección y diagnóstico
+HS2-2|Listo|Documentar descripción funcional, usuarios y alcance
+HS2-3|Por hacer|E02 Gestión ágil (Scrum)
+HS2-4|Por hacer|E03 Control de versiones y calidad
+HS2-5|Por hacer|E04 Contenerización de la base de datos
+HS2-6|Por hacer|E05 Optimización y análisis SQL
+HS2-7|Por hacer|E06 Clúster y replicación
+HS2-8|Por hacer|E07 Contenerización de la aplicación
+HS2-9|Por hacer|E08 Integración y despliegue continuos
+HS2-10|Por hacer|E09 Publicación y acceso desde Internet
+HS2-11|Por hacer|E10 Monitoreo con Prometheus y Grafana
+HS2-12|Por hacer|E11 Gestión de incidencias
+HS2-13|Listo|E12 Gestión documental con Nextcloud
+HS2-14|Por hacer|E13 Automatización de procesos con n8n
+HS2-15|Por hacer|E14 Seguridad informática y amenazas
+HS2-16|Por hacer|E15 Documentación final y defensa
+HS2-17|Listo|Inventario tecnológico con versiones exactas
+HS2-18|Listo|Diagrama de arquitectura inicial
+HS2-19|Listo|Diagnóstico técnico con 10 hallazgos y plan de mejoras
+HS2-20|Listo|Configurar proyecto Jira Free con épicas y tablero
+HS2-21|Listo|Importar backlog y asignar responsables y criterios
+HS2-22|Listo|Definir DoD y plantilla de criterios de aceptación
+HS2-23|Listo|Sprint planning de los 3 sprints con objetivos
+HS2-24|Listo|Registrar dailies y bloqueos
+HS2-25|Por hacer|Sprint review y retrospectiva con acciones
+HS2-26|Listo|Registrar un cambio de alcance con su decisión
+HS2-27|Listo|Crear repositorio público con README, LICENSE y .gitignore
+HS2-28|Listo|Definir estrategia de ramas y proteger main
+HS2-29|Listo|Implementar gitleaks en pre-commit y en CI
+HS2-30|Listo|Configurar linter y formateador compartidos
+HS2-31|Listo|Vincular commits y ramas con la clave de Jira
+HS2-32|Por hacer|Abrir y revisar 5 PRs con otro integrante
+HS2-33|Listo|Resolver un conflicto de merge documentado
+HS2-34|Por hacer|Publicar release v1.0.0 con tag y changelog
+HS2-35|Listo|Compose con Postgres primaria, red interna y volumen
+HS2-36|Listo|pgAdmin en red interna sin puerto público
+HS2-37|Listo|Configurar .env y .env.example con credenciales
+HS2-38|Listo|Definir esquema SQL y migraciones
+HS2-39|Listo|Escribir script de seed masivo reproducible
+HS2-40|Listo|Ejecutar carga y medir tiempo y tamaño
+HS2-41|Listo|Verificar integridad referencial del dataset
+HS2-42|Listo|Probar persistencia al recrear contenedores
+HS2-43|Listo|Automatizar backups con retención
+HS2-44|Listo|Probar restauración y comparar conteos
+HS2-45|Listo|Correr pgBadger y archivar el análisis
+HS2-46|Listo|Documentar dataset y decisiones de carga
+HS2-47|Listo|Habilitar pg_stat_statements y extraer top de consultas
+HS2-48|Listo|Seleccionar 8 consultas y registrar baseline
+HS2-49|Listo|Construir harness de medición reproducible
+HS2-50|Listo|Analizar planes iniciales y detectar Seq Scans
+HS2-51|Listo|Optimizar las primeras 4 consultas con índices
+HS2-52|Listo|Optimizar las 4 restantes y 2 casos no SARGables
+HS2-53|Listo|Justificar costo de escritura y tamaño de cada índice
+HS2-54|Listo|Ajustar parámetros del motor y medir el efecto
+HS2-55|Listo|Redactar informe con 8 pares antes/después
+HS2-56|Listo|Configurar primaria para replicación streaming
+HS2-57|Listo|Crear réplica con pg_basebackup -R
+HS2-58|Listo|Verificar streaming y medir lag
+HS2-59|Listo|Probar replicación con escritura real
+HS2-60|Listo|Documentar y ejecutar failover manual
+HS2-61|Listo|Simular caída de réplica y de primaria
+HS2-62|Listo|Redactar informe de consistencia y limitaciones
+HS2-63|Listo|Dockerfile multistage del backend con healthcheck
+HS2-64|Listo|Build del frontend servido por nginx con proxy /api
+HS2-65|Listo|Conectar la app a la DB por variables de entorno
+HS2-66|Listo|Separar configuración dev y prod
+HS2-67|En revisión|Validar flujo E2E en navegador
+HS2-68|Listo|Verificar persistencia y reinicio de servicios
+HS2-69|Listo|Documentar comunicación FE-BE-DB con evidencia
+HS2-70|Listo|Workflow de CI con lint, tests y build
+HS2-71|Listo|Prueba negativa: test roto debe romper el pipeline
+HS2-72|Listo|Construir y publicar imagen en GHCR con tag por SHA
+HS2-73|Listo|Gestionar secretos del pipeline fuera del repo
+HS2-74|Listo|Configurar despliegue automático
+HS2-75|Listo|Agregar healthcheck post-deploy con fallo explícito
+HS2-76|Listo|Probar rollback al tag anterior
+HS2-77|Listo|Documentar fallos y mecanismo de reversión
+HS2-78|Listo|Registrar evidencia del commit de prueba end-to-end
+HS2-79|Listo|Publicar la app con Cloudflare Tunnel
+HS2-80|Listo|Aplicar auth y HTTPS en rutas administrativas
+HS2-81|Listo|Verificar superficie expuesta con nmap externo
+HS2-82|Por hacer|Configurar Tailscale Funnel como plan B
+HS2-83|Listo|Documentar evidencia de acceso externo
+HS2-84|Listo|Elaborar diagrama de red de la publicación
+HS2-85|Listo|Analizar riesgos y limitaciones del túnel
+HS2-86|Listo|Desplegar Prometheus con targets de todos los servicios
+HS2-87|Listo|Incorporar node-exporter y cAdvisor
+HS2-88|Listo|Incorporar postgres-exporter y métricas de la app
+HS2-89|Listo|Incorporar blackbox-exporter para disponibilidad
+HS2-90|Listo|Construir dashboard con los 8 paneles exigidos
+HS2-91|Listo|Definir 6 reglas de alerta con umbral justificado
+HS2-92|Listo|Configurar Alertmanager con webhook a n8n
+HS2-93|Listo|Provocar anomalía controlada y verificar la alerta
+HS2-94|Listo|Documentar límites del monitoreo
+HS2-95|Listo|Desplegar Mantis con persistencia y sin admin expuesto
+HS2-96|Listo|Configurar categorías, severidades, prioridades y usuarios
+HS2-97|Listo|Agregar campo commit_sha/pr_url y relaciones entre issues
+HS2-98|Listo|Registrar 10 incidencias reproducibles
+HS2-99|Listo|Resolver y cerrar 5 incidencias con evidencia
+HS2-100|Listo|Documentar el proceso de gestión de incidencias
+HS2-101|Listo|Desplegar Nextcloud con volumen y autenticación
+HS2-102|Listo|Crear estructura de carpetas por sección
+HS2-103|Listo|Definir matriz de permisos por grupo
+HS2-104|Listo|Centralizar informes y versionar entregables
+HS2-105|Listo|Verificar que un usuario no autorizado no accede
+HS2-106|Listo|Desplegar n8n con Postgres propio, volumen y auth
+HS2-107|Listo|Flujo 1: alerta de Prometheus a incidencia en Mantis
+HS2-108|Listo|Flujo 2: verificación de backup con alerta de error
+HS2-109|Listo|Flujo 3: informe de rendimiento asistido por IA a Nextcloud
+HS2-110|Listo|Validación de datos y rama de error en los 3 flujos
+HS2-111|Listo|Autenticar webhooks con token
+HS2-112|Listo|Exportar JSON de los flujos y diagramarlos
+HS2-113|Listo|Probar fallo controlado de un destino
+HS2-114|Listo|Analizar riesgos de las automatizaciones
+HS2-115|Listo|Escanear imágenes con Trivy y corregir críticas
+HS2-116|Listo|Auditar dependencias con npm audit y pip-audit
+HS2-117|Listo|Analizar código con Semgrep o Bandit
+HS2-118|Listo|Escanear secretos en todo el historial
+HS2-119|Listo|Construir matriz STRIDE de 7 componentes
+HS2-120|Listo|Aplicar controles: headers, rate limit y non-root
+HS2-121|Listo|Ejecutar prueba controlada de SQLi
+HS2-122|Listo|Ejecutar ZAP baseline sobre la URL pública
+HS2-123|Listo|Redactar runbook de respuesta a incidentes
+HS2-124|Listo|Redactar los 16 documentos obligatorios
+HS2-125|Listo|Generar informe consolidado en PDF
+HS2-126|Listo|Escribir guion de demo de 20 minutos
+HS2-127|Por hacer|Ensayo cronometrado con los 5 integrantes
+HS2-128|Por hacer|Revisión cruzada: cada uno defiende una sección ajena
+HS2-129|Listo|Congelar versión y tag v1.0.0
+HS2-130|Listo|Verificar el checklist completo de entregables
+HS2-131|Por hacer|Extra: cuarto flujo de n8n para eventos de seguridad
+HS2-132|Por hacer|Extra: índice de cobertura para consulta de búsqueda
+HS2-133|Por hacer|Extra: segunda réplica de lectura
+HS2-134|Por hacer|Extra: retención larga de métricas en Prometheus
+HS2-135|Por hacer|Extra: fuzzing de endpoints con AFL o similar
+HS2-136|Por hacer|Extra: video de demo como respaldo
+HS2-137|Listo|Extra: servidor MCP de la aplicación + agente Hermes
+HS2-138|Listo|Extra: RAGFlow como motor documental y segundo servidor MCP
+HS2-139|Por hacer|Extra: agente Hermes por Telegram

@@ -4,9 +4,12 @@ Aplicación web (Conduit/RealWorld) contenerizada con PostgreSQL, réplica, CI/C
 monitoreo, seguridad y automatización con n8n.
 
 - **Sección del trabajo:** Práctica Integradora Final 2026
-- **Backlog:** [Jira HIA-Scrum-2026](https://tomassgudi-1794538432846.atlassian.net/jira/software/projects/HS2/boards/3)
+- **Backlog (local):** Taiga autoalojado — `http://127.0.0.1:8084`, proyecto `HIA-2026`
+  (`docker compose --profile ops up -d taiga-gateway`)
+- **Backlog (historial):** [Jira HIA-Scrum-2026](https://tomassgudi-1794538432846.atlassian.net/jira/software/projects/HS2/boards/3)
 - **Documentación del proyecto:** [`docs/`](docs/) — empezar por [`docs/00-plan-proyecto.md`](docs/00-plan-proyecto.md)
-- **Backlog versionado:** [`backlog/jira-import.csv`](backlog/jira-import.csv)
+- **Backlog versionado:** [`backlog/jira-import.csv`](backlog/jira-import.csv) (estructura) y
+  [`backlog/jira-estados.csv`](backlog/jira-estados.csv) (estado real al migrar)
 
 ## Stack
 

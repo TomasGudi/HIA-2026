@@ -176,6 +176,186 @@ services:
       - dbnet
 
   # ---------------------------------------------------------------
+  # Taiga (§2). Gestor de backlog Scrum autoalojado. Reemplaza a Jira
+  # Cloud: el tablero vive en el servidor local, sin licencia y sin
+  # depender de un servicio externo.
+  #   docker compose --profile ops up -d taiga-gateway
+  # Primera vez: ./scripts/taiga.ps1 init
+  # ---------------------------------------------------------------
+  taiga-db:
+    image: postgres:16-alpine
+    container_name: pi-taiga-db
+    restart: unless-stopped
+    profiles: ["ops"]
+    environment:
+      POSTGRES_DB: taiga
+      POSTGRES_USER: ${TAIGA_DB_USER:-taiga}
+      POSTGRES_PASSWORD: ${TAIGA_DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TAIGA_DB_USER:-taiga} -d taiga"]
+      interval: 5s
+      timeout: 10s
+      retries: 12
+    volumes:
+      - taiga_db:/var/lib/postgresql/data
+    networks:
+      - taiganet
+
+  # Cola de tareas asincronicas (envio de mails, exportaciones)
+  taiga-async-rabbitmq:
+    image: rabbitmq:3.13-alpine
+    container_name: pi-taiga-async-rabbitmq
+    restart: unless-stopped
+    profiles: ["ops"]
+    environment:
+      RABBITMQ_DEFAULT_USER: ${TAIGA_RABBIT_USER:-taiga}
+      RABBITMQ_DEFAULT_PASS: ${TAIGA_RABBIT_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: taiga
+      RABBITMQ_ERLANG_COOKIE: ${TAIGA_ERLANG_COOKIE}
+    volumes:
+      - taiga_async_rabbit:/var/lib/rabbitmq
+    networks:
+      - taiganet
+
+  # Cola del websocket: el tablero se actualiza sin recargar
+  taiga-events-rabbitmq:
+    image: rabbitmq:3.13-alpine
+    container_name: pi-taiga-events-rabbitmq
+    restart: unless-stopped
+    profiles: ["ops"]
+    environment:
+      RABBITMQ_DEFAULT_USER: ${TAIGA_RABBIT_USER:-taiga}
+      RABBITMQ_DEFAULT_PASS: ${TAIGA_RABBIT_PASSWORD}
+      RABBITMQ_DEFAULT_VHOST: taiga
+      RABBITMQ_ERLANG_COOKIE: ${TAIGA_ERLANG_COOKIE}
+    volumes:
+      - taiga_events_rabbit:/var/lib/rabbitmq
+    networks:
+      - taiganet
+
+  taiga-back:
+    image: taigaio/taiga-back:6.10.2
+    container_name: pi-taiga-back
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      taiga-db:
+        condition: service_healthy
+      taiga-async-rabbitmq:
+        condition: service_started
+      taiga-events-rabbitmq:
+        condition: service_started
+    environment:
+      POSTGRES_DB: taiga
+      POSTGRES_USER: ${TAIGA_DB_USER:-taiga}
+      POSTGRES_PASSWORD: ${TAIGA_DB_PASSWORD}
+      POSTGRES_HOST: taiga-db
+      TAIGA_SECRET_KEY: ${TAIGA_SECRET_KEY}
+      TAIGA_SITES_SCHEME: http
+      TAIGA_SITES_DOMAIN: ${TAIGA_DOMAIN:-localhost:8084}
+      TAIGA_SUBPATH: ""
+      # sin SMTP: los mails salen por el log del contenedor
+      EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+      DEFAULT_FROM_EMAIL: taiga@pi.local
+      RABBITMQ_USER: ${TAIGA_RABBIT_USER:-taiga}
+      RABBITMQ_PASS: ${TAIGA_RABBIT_PASSWORD}
+      ENABLE_TELEMETRY: "False"
+    volumes:
+      - taiga_static:/taiga-back/static
+      - taiga_media:/taiga-back/media
+    networks:
+      - taiganet
+
+  taiga-async:
+    image: taigaio/taiga-back:6.10.2
+    container_name: pi-taiga-async
+    restart: unless-stopped
+    profiles: ["ops"]
+    entrypoint: ["/taiga-back/docker/async_entrypoint.sh"]
+    depends_on:
+      taiga-db:
+        condition: service_healthy
+    environment:
+      POSTGRES_DB: taiga
+      POSTGRES_USER: ${TAIGA_DB_USER:-taiga}
+      POSTGRES_PASSWORD: ${TAIGA_DB_PASSWORD}
+      POSTGRES_HOST: taiga-db
+      TAIGA_SECRET_KEY: ${TAIGA_SECRET_KEY}
+      TAIGA_SITES_SCHEME: http
+      TAIGA_SITES_DOMAIN: ${TAIGA_DOMAIN:-localhost:8084}
+      EMAIL_BACKEND: django.core.mail.backends.console.EmailBackend
+      DEFAULT_FROM_EMAIL: taiga@pi.local
+      RABBITMQ_USER: ${TAIGA_RABBIT_USER:-taiga}
+      RABBITMQ_PASS: ${TAIGA_RABBIT_PASSWORD}
+      ENABLE_TELEMETRY: "False"
+    volumes:
+      - taiga_static:/taiga-back/static
+      - taiga_media:/taiga-back/media
+    networks:
+      - taiganet
+
+  taiga-events:
+    image: taigaio/taiga-events:6.10.0
+    container_name: pi-taiga-events
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      taiga-events-rabbitmq:
+        condition: service_started
+    environment:
+      RABBITMQ_USER: ${TAIGA_RABBIT_USER:-taiga}
+      RABBITMQ_PASS: ${TAIGA_RABBIT_PASSWORD}
+      TAIGA_SECRET_KEY: ${TAIGA_SECRET_KEY}
+    networks:
+      - taiganet
+
+  # Sirve los adjuntos: la URL de descarga es un token de corta vida
+  taiga-protected:
+    image: taigaio/taiga-protected:6.10.1
+    container_name: pi-taiga-protected
+    restart: unless-stopped
+    profiles: ["ops"]
+    environment:
+      MAX_AGE: "360"
+      SECRET_KEY: ${TAIGA_SECRET_KEY}
+    networks:
+      - taiganet
+
+  taiga-front:
+    image: taigaio/taiga-front:6.10.3
+    container_name: pi-taiga-front
+    restart: unless-stopped
+    profiles: ["ops"]
+    environment:
+      TAIGA_URL: http://${TAIGA_DOMAIN:-localhost:8084}
+      TAIGA_WEBSOCKETS_URL: ws://${TAIGA_DOMAIN:-localhost:8084}
+    volumes:
+      # rutas relativas: el mismo build funciona en 127.0.0.1 y por tunel
+      - ./app/taiga/conf.json:/usr/share/nginx/html/conf.json:ro
+    networks:
+      - taiganet
+
+  taiga-gateway:
+    image: nginx:1.27-alpine
+    container_name: pi-taiga-gateway
+    restart: unless-stopped
+    profiles: ["ops"]
+    depends_on:
+      - taiga-back
+      - taiga-front
+      - taiga-events
+      - taiga-protected
+    ports:
+      # solo loopback: en produccion se llega por el tunel del borde (§9)
+      - "127.0.0.1:8084:80"
+    volumes:
+      - ./app/taiga/taiga.conf:/etc/nginx/conf.d/default.conf:ro
+      - taiga_static:/taiga/static:ro
+      - taiga_media:/taiga/media:ro
+    networks:
+      - taiganet
+
+  # ---------------------------------------------------------------
   # AplicaciÃ³n (Â§7): backend y frontend en contenedores separados,
   # comunicados por la red interna appnet. Solo el frontend publica
   # puerto, y en loopback: en producciÃ³n se llega por tÃºnel (Â§9).
@@ -571,6 +751,15 @@ volumes:
     name: pi-n8n-data
   nextcloud_data:
     name: pi-nextcloud-data
+  taiga_db:
+    name: pi-taiga-db
+  taiga_static:
+    name: pi-taiga-static
+  taiga_media:
+    name: pi-taiga-media
+  taiga_async_rabbit:
+    name: pi-taiga-async-rabbit
+  taiga_events_rabbit:
 
 networks:
   appnet:
@@ -587,3 +776,7 @@ networks:
     # conectados solo a una red interna (el binding se descarta sin error).
     # El aislamiento se logra asÃ­: la DB solo se publica en 127.0.0.1 y en
     # producciÃ³n no se publica ningÃºn puerto de db/pgadmin (se llega por tÃºnel).
+  # red de Taiga: su base y sus colas no se mezclan con el resto
+  taiganet:
+    name: pi-taiganet
+    driver: bridge
